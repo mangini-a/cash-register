@@ -28,20 +28,19 @@ Ad es., un progetto potrebbe dichiarare di seguire le convenzioni per la program
 
 # 5. Attività di gestione
 
-***Sono guidate da obiettivi e priorità fissati per il progetto.
-Ad es., la direzione dovrà presentare relazioni periodiche sullo stato di avanzamento del progetto.
-Dovrà anche seguire alcune priorità nel bilanciamento di requisiti, tempi e costi.***
+Sarà essenziale assicurarsi che gli obiettivi del progetto risultino allineati con le aspettative degli utenti finali, pertanto si prevede di ricorrere ad una dashboard di progetto.
+Tra le operazioni da non trascurare rientreranno anche il monitoraggio costante dello stato di avanzamento delle attività, il quale consente di individuare eventuali deviazioni rispetto al piano ed adottare misure correttive ove necessario, e la gestione accurata di requisiti, tempi e costi, in grado di garantire che le risorse vengano allocate efficacemente. 
 
 # 6. Rischi
 
-***Ci saranno sempre dei rischi: l’hardware potrebbe non essere consegnato in tempo, il personale qualificato potrebbe non essere disponibile quando necessario, le informazioni critiche potrebbero mancare quando necessario e via dicendo.
-Bisognerebbe diagnosticare precocemente i rischi di un progetto software e fornire misure per affrontarli.
-Più incerti sono i vari aspetti del progetto, maggiori sono i rischi.***
+Le potenziali situazioni critiche, come la scarsa adozione dell'applicazione o i ritardi nella consegna, sono stati identificati.
+Al fine di mitigare tali rischi si prevedono il coinvolgimento attivo degli utenti ed una pianificazione flessibile, con lo scopo di introdurre risorse aggiuntive in caso di necessità. 
 
 # 7. Personale
 
-***In momenti diversi, il progetto richiederà diverse quantità di personale, con competenze differenti.
-L’inizio, la durata, l’importo e la competenza delle categorie di personale sono elencati in questa voce.***
+La quantità di personale richiesta rimarrà invariata lungo l'intero processo di sviluppo, a meno di incorrere in circostanze straordinarie.
+La pianificazione delle risorse umane prevede la presenza, in linea di massima, di 2 sviluppatori (DEV) e 1 tester (TEST). 
+Tra le competenze richieste si segnalano l'esperienza nello sviluppo di applicazioni desktop in Java ed una buona conoscenza dei database.
 
 # 8. Metodi e tecniche
 
@@ -60,6 +59,8 @@ I test sono discussi nel Capitolo 13.***
 I molti aspetti di un piano di assicurazione della qualità possono anche essere trattati in un documento separato.
 Il tema della garanzia della qualità è discusso nel Capitolo 6.***
 
+Tenendo a mente il fatto che un buon software debba risultare il meno complesso possibile, dal punto di vista operativo i fattori di qualità a cui prestare maggiore attenzione saranno la non-suscettibilità ad input erronei (reliability) e l'intuitività nell'utilizzo (usability).
+
 # 10. Workpackages
 
 ***I progetti più grandi devono essere suddivisi in attività, parti gestibili che possono essere allocate ai singoli membri del team.
@@ -69,9 +70,7 @@ La scomposizione gerarchica del progetto è rappresentata in una struttura di sc
 
 # 11. Risorse
 
-***Durante il progetto sono necessarie molte risorse.
-L’hardware, i cicli della CPU e gli strumenti necessari per supportare il progetto sono elencati in questa voce.
-Occorre anche indicare il personale necessario per le varie fasi del processo.***
+Le risorse indispensabili comprenderanno la parte hardware (stazioni di lavoro per il team, potenza computazionale, ecc.) ed il personale (articolato in sviluppatori e tester) durante tutte le fasi del progetto.
 
 # 12. Budget e programma
 
@@ -81,12 +80,10 @@ In tale rubrica è indicato anche il modo in cui vengono tracciate le risorse e 
 
 # 13. Cambiamenti
 
-***Sono necessarie procedure chiare su come verranno gestite le modifiche proposte.
-Se il processo è agile, ogni iterazione comporta modifiche che vengono gestite in modo leggero (non sono, in realtà, viste come cambiamenti).
-Nei processi più pesanti, ogni modifica proposta dev’essere registrata e rivista.
-Quando una richiesta di modifica è stata approvata, è necessario stimarne l’impatto (costo).
-Infine, la modifica deve essere incorporata nel progetto.***
+Trovandosi nel contesto di un processo agile, le modifiche introdotte ad ogni iterazione verranno gestite in modo leggero (senza essere, nel concreto, viste come cambiamenti) ed incorporate rapidamente.
+I cambiamenti in questione saranno registrati, valutati in termini di costo ed implementati soltanto dopo essere stati approvati, oltre che giudicati congeniali. 
 
 # 14. Consegna
 
-***Devono essere indicate le procedure da seguire per la consegna dell’impianto al cliente.***
+Le procedure di consegna dell'applicativo al cliente saranno precedute da una revisione finale del software e dalla redazione di una documentazione completa.
+Ultimato ciò, non dovrà passare in secondo piano l'organizzazione di sessioni formative per gli operatori che si interfacceranno con il prodotto.

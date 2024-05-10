@@ -1,30 +1,31 @@
 # 1. Introduzione
 
-***Vengono forniti il background e la storia del progetto, insieme ai suoi obiettivi, i suoi risultati, i nomi delle persone responsabili ed una sintesi dello stesso.***
+Il progetto nasce dalla volontà di proporre una soluzione intuitiva ed efficace per la gestione dell'inventario e la registrazione degli scontrini nel contesto di piccoli esercizi commerciali (botteghe, minimarket, ecc.), ancora diffusi nelle aree meno densamente popolate.
+Nello specifico, l'operatore di cassa potrà usufruire del sistema interagendo con un'interfaccia grafica, la quale faciliterà l'emissione degli scontrini e la consultazione dell'elenco dei prodotti, dei relativi prezzi e delle quantità rimanenti.
+Ad occuparsi del lavoro saranno Alessandro Mangini, Alessandro Pesenti e Luca Pesenti.
 
 # 2. Modello di processo
 
-***Si deve decidere l’esatto modello di processo da seguire: quali attività intraprendere, quali pietre miliari possono essere identificate, come si accerta se quest’ultime vengano raggiunte e quali siano i percorsi critici.
-Ad es., il piano di progetto potrebbe stabilire che si utilizzerà un processo agile SCRUM.
-(scelta + motivazione)***
+Si seguirà l'approccio allo sviluppo software noto come RAD (Rapid Application Development), il quale risulta particolarmente adatto allo sviluppo di applicativi guidati dai requisiti dell'interfaccia utente.
+Tale modello di sviluppo permette di delineare sin da subito le funzioni chiave necessarie a soddisfare le esigenze dell'utenza, rifinendole sulla base delle evidenze raccolte sul campo nelle fasi iniziali, deputate alla prototipazione.
+Intraprendendo un approccio incrementale vengono minimizzate le chance di incappare in intricate situazioni di errore che contraddistinguono, ad esempio, i grandi progetti fondati sul modello a cascata.
 
 # 3. Organizzazione del progetto
 
-***Il rapporto del progetto con altri enti e l’organizzazione del progetto stesso sono trattati in questa rubrica.
-I potenziali utenti saranno, di volta in volta, coinvolti nel progetto.
-Il piano di progetto deve indicare quali informazioni, servizi, risorse e strutture debbano essere fornite dagli utenti e quando.
-All’interno del team di progetto possono essere individuati vari ruoli: project manager, tester, programmatore, analista, ecc.
-Bisogna delineare chiaramente tali ruoli ed identificare le responsabilità di ciascuno di essi.
-Se ci sono lacune nelle conoscenze richieste per ricoprire uno di questi ruoli si devono identificare la formazione e l’istruzione necessarie per colmarle.
-Diverse forme di organizzazione del team sono discusse nel Capitolo 5.
-(idea: richiesta di software da parte di un cliente)***
+La squadra farà riferimento ad un'organizzazione a matrice:
+
+| **Member** | **Requirements Planning** | **User Design** | **Construction** | **Cutover** |
+|:----------:|:-------------------------:|:---------------:|:----------------:|:-----------:|
+| A. Mangini |           **x**           |      **x**      |                  |    **x**    |
+| A. Pesenti |                           |      **x**      |       **x**      |    **x**    |
+| L. Pesenti |           **x**           |                 |       **x**      |    **x**    | 
+
+Oltre a ciò, si prevede il coinvolgimento attivo degli utenti attraverso sessioni di feedback periodiche per garantire un prodotto che rispecchi a pieno le necessità del cliente.
 
 # 4. Standard, linee guida, procedure
 
-***Oltre ad essere dichiarati su carta, molti di questi possono essere supportati o applicati da strumenti.
-Di estrema importanza sono gli accordi chiari sulla documentazione: quando consegnarla, come valutarne la qualità, come garantirne l’aggiornamento?
-In larga misura, questi standard e procedure saranno descritti in documenti separati, come il piano di controllo della configurazione od il piano di garanzia della qualità.
-Ad es., un progetto potrebbe dichiarare di seguire le convenzioni per la programmazione Java come definite da Oracle.***
+Il progetto si atterrà alle convenzioni per la programmazione Java come definite da Oracle.
+Le procedure per la documentazione saranno stabilite e rispettate per garantire una traccia chiara delle attività svolte durante l'intero ciclo di sviluppo.
 
 # 5. Attività di gestione
 
@@ -38,45 +39,53 @@ Al fine di mitigare tali rischi si prevedono il coinvolgimento attivo degli uten
 
 # 7. Personale
 
-La quantità di personale richiesta rimarrà invariata lungo l'intero processo di sviluppo, a meno di incorrere in circostanze straordinarie.
-La pianificazione delle risorse umane prevede la presenza, in linea di massima, di 2 sviluppatori (DEV) e 1 tester (TEST). 
-Tra le competenze richieste si segnalano l'esperienza nello sviluppo di applicazioni desktop in Java ed una buona conoscenza dei database.
+La quantità di personale richiesta rimarrà invariata lungo l'intero processo di sviluppo.
+Come dettagliato nel punto 3, i componenti del team si alterneranno nelle varie fasi del progetto, sulla base delle competenze pregresse e delle inclinazioni individuali.
 
 # 8. Metodi e tecniche
 
-***(tool utilizzati ecc.)
-In questa sezione vengono forniti i metodi e le tecniche da utilizzare durante l’ingegneria dei requisiti, la progettazione, l’implementazione e le prove.
-In genere, qui viene descritto anche il modo in cui vengono gestiti il versioning control ed il controllo della configurazione per i componenti SW.
-Dal momento che gran parte della documentazione tecnica sarà prodotta durante queste fasi, si deve precisare come questa sarà curata.
-Vengono descritti l’ambiente di prova e le apparecchiature di prova necessari.
-L’ordine in cui i componenti vengono integrati e testati dev’essere indicato esplicitamente.
-Devono anche essere indicate le procedure da seguire durante i test d’accettazione, ovvero i test effettuati sotto la supervisione dell’utente.
-I test sono discussi nel Capitolo 13.***
+Per l'elicitazione dei requisiti verranno impiegate le tecniche di intervista, analisi delle attività ed analisi degli scenari.
+Successivamente a tali requisiti verrà assegnata una priorità sulla base dello schema MoSCoW.
+Per le fasi di modellazione, strutturazione dell'architettura e design del software verrà utilizzato il tool StarUML, con cui si realizzeranno i diagrammi UML.
+Le attività di testing verranno condotte tramite simulazioni di utilizzo dell'applicativo, oltre che prevedendo test di unità con JUnit.
 
 # 9. Garanzia di qualità
 
-***Quali procedure ed organizzazione verranno utilizzate per garantire che il SW in fase di sviluppo soddisfi i requisiti di qualità dichiarati?
-I molti aspetti di un piano di assicurazione della qualità possono anche essere trattati in un documento separato.
-Il tema della garanzia della qualità è discusso nel Capitolo 6.***
-
-Tenendo a mente il fatto che un buon software debba risultare il meno complesso possibile, dal punto di vista operativo i fattori di qualità a cui prestare maggiore attenzione saranno la non-suscettibilità ad input erronei (reliability) e l'intuitività nell'utilizzo (usability).
+Tenendo a mente il fatto che un buon software debba risultare il meno complesso possibile, dal punto di vista operativo i fattori di qualità a cui prestare maggiore attenzione saranno la non-suscettibilità ad input erronei (affidabilità) e l'intuitività nell'utilizzo (usabilità).
+La portabilità verrà garantita dall'utilizzo del linguaggio Java, i cui programmi possono essere eseguiti su diverse piattaforme senza dover essere riscritti, grazie all'astrazione fornita dalla JVM.
 
 # 10. Workpackages
 
-***I progetti più grandi devono essere suddivisi in attività, parti gestibili che possono essere allocate ai singoli membri del team.
-Ciascuna di queste attività dev’essere identificata nel piano di progetto.
-La scomposizione gerarchica del progetto è rappresentata in una struttura di scomposizione del lavoro.
-(sviluppo UI ecc.)***
+Il progetto si articolerà in diverse attività, riportate a seguire:
+
+| **Slot** |      **Activity**     |
+|:--------:|:---------------------:|
+|     1    |        Overview       |
+|     2    |      Project Plan     |
+|     3    | Requirements Planning |
+|     4    |      UML Diagrams     |
+|     5    |      User Design      |
+|     6    |      Construction     |
+|     7    |        Cutover        |
 
 # 11. Risorse
 
-Le risorse indispensabili comprenderanno la parte hardware (stazioni di lavoro per il team, potenza computazionale, ecc.) ed il personale (articolato in sviluppatori e tester) durante tutte le fasi del progetto.
+Ogni componente della squadra si servirà del proprio laptop, oltre che dei comuni servizi di messaggistica per la comunicazione interna.
+Si consulterà anche del materiale online al fine di determinare le complicazioni più comunemente riscontrate dagli utilizzatori di applicativi analoghi, ma anche le inefficienze caratterizzanti i registratori di cassa tradizionali.
 
 # 12. Budget e programma
 
-***Il budget totale per il progetto deve essere assegnato alle varie attività come indicato nella struttura di ripartizione del lavoro.
-Anche le attività devono essere programmate in tempo, ad esempio utilizzando un grafico PERT.
-In tale rubrica è indicato anche il modo in cui vengono tracciate le risorse e le altre spese.***
+Ipotizzando, come da specifica, che ciascun membro dedichi 35 ore alla realizzazione del progetto, la pianificazione condurrà all'allocazione del lavoro nella seguente modalità:
+
+| **Hours**|      **Activity**     |
+|:--------:|:---------------------:|
+|     5    |        Overview       |
+|     10    |      Project Plan     |
+|     25    | Requirements Planning |
+|     20    |      UML Diagrams     |
+|     20    |      User Design      |
+|     20    |      Construction     |
+|     5    |        Cutover        |
 
 # 13. Cambiamenti
 

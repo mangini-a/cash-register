@@ -3,7 +3,7 @@ package com.mpp.dbinit;
 import java.io.IOException;
 import java.sql.*;
 
-public class CreateTable {
+class CreateTables {
 
 	public static void main(String[] args) throws IOException {
 		try {
@@ -34,12 +34,12 @@ public class CreateTable {
 	            
 				stmt.close();
 				conn.close();
-				System.out.println("Tables created successfully");
+				System.out.println("Tables created successfully.");
 			}
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		} finally {
-			System.out.println("Operations finished");
+			System.out.println("Operations finished.");
 		}
 	}
 

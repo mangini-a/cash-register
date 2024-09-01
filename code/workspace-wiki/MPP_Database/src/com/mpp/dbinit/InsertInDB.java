@@ -6,7 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class InsertInDB {
+class InsertInDB {
 
 	public static void main(String[] args) throws IOException {
 		try {
@@ -90,7 +90,7 @@ public class InsertInDB {
 	            
 				stmt.close();
 				conn.close();
-				System.out.println("Products and receipt items entered successfully");
+				System.out.println("Products and receipt items entered successfully.");
 			}
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());

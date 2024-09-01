@@ -3,7 +3,7 @@ package com.mpp.dbinit;
 import java.io.IOException;
 import java.sql.*;
 
-public class SelectFromTable {
+class SelectFromTable {
 
 	public static void main(String[] args) throws IOException, SQLException {
 		try {
@@ -12,7 +12,7 @@ public class SelectFromTable {
 				Statement stmt = conn.createStatement();
 		
 				// Stampa dei prodotti
-				System.out.println("Prodotti Disponibili:");
+				System.out.println("Prodotti disponibili:");
 				System.out.println("============================================================");
 				System.out.printf("%-10s %-20s %-10s %-15s %-30s\n", "IdProdotto", "Nome", "Prezzo", "QtaDisponibile", "Descrizione");
 				System.out.println("------------------------------------------------------------");
@@ -29,7 +29,7 @@ public class SelectFromTable {
 				rsProdotti.close();
 
 				// Stampa delle voci scontrino
-				System.out.println("\nVoci Scontrino:");
+				System.out.println("\nVoci scontrino:");
 				System.out.println("====================================================================================");
 				System.out.printf("%-10s %-10s %-15s %-20s\n", "IdScontrino", "IdProdotto", "QtaProdotto", "DataOra");
 				System.out.println("------------------------------------------------------------------------------------");
@@ -46,7 +46,7 @@ public class SelectFromTable {
 		
 				stmt.close();
 				conn.close();
-				System.out.println("Query executed successfully");
+				System.out.println("\nQuery executed successfully.");
 			}
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());

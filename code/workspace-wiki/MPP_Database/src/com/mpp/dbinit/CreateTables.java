@@ -3,7 +3,7 @@ package com.mpp.dbinit;
 import java.io.IOException;
 import java.sql.*;
 
-class CreateTables {
+public class CreateTables {
 
 	public static void main(String[] args) throws IOException {
 		try {

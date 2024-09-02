@@ -6,7 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-class InsertInDB {
+public class InsertInDB {
 
 	public static void main(String[] args) throws IOException {
 		try {

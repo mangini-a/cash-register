@@ -7,7 +7,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-class CreateDB {
+public class CreateDB {
 	
 	// Percorso relativo del file che contiene il database
 	public static String DB_REL_FILE = "../db/inventario.db3";

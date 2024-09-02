@@ -81,14 +81,20 @@ class InsertInDB {
 
 	            for (int i = 0; i < scontrinoProdotti.length; i++) {
 	                int idScontrino = i + 1;
-	                // Associazione dello scontrino al registratore di cassa
-	                String insertRegistratore = "INSERT INTO Registratore (IdRegistratore, IdScontrino) VALUES (1, " + idScontrino + ");";
-	                stmt.executeUpdate(insertRegistratore);
 	                for (int idProdotto : scontrinoProdotti[i]) {
 	                    String insertVoceScontrino = "INSERT INTO VoceScontrino (IdScontrino, IdProdotto, QtaProdotto) VALUES (" +
 	                            idScontrino + ", " + idProdotto + ", " + (int) (Math.random() * 5 + 1) + ");";
 	                    stmt.executeUpdate(insertVoceScontrino);
 	                }
+	            }
+	            
+	            // Inserimento di 4 registratori, ciascuno associato a un differente scontrino
+	            for (int i = 0; i < scontrinoProdotti.length; i++) {
+	                int idRegistratore = i + 1;
+	                int idScontrino = i + 1;
+	                String insertRegistratore = "INSERT INTO Registratore (IdRegistratore, IdScontrino) VALUES (" +
+	                                            idRegistratore + ", " + idScontrino + ");";
+	                stmt.executeUpdate(insertRegistratore);
 	            }
 	            
 				stmt.close();

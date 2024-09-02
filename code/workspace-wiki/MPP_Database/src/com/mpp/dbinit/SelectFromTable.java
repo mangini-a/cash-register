@@ -44,6 +44,21 @@ class SelectFromTable {
 				}
 				rsVociScontrino.close();
 		
+				// Stampa dei registratori di cassa
+				System.out.println("\nRegistratori di cassa:");
+				System.out.println("===========================================");
+				System.out.printf("%-15s %-15s\n", "IdRegistratore", "IdScontrino");
+				System.out.println("-------------------------------------------");
+				String queryRegistratori = "SELECT * FROM Registratore;";
+				ResultSet rsRegistratori = stmt.executeQuery(queryRegistratori);
+				while (rsRegistratori.next()) {
+				    int idRegistratore = rsRegistratori.getInt("IdRegistratore");
+				    int idScontrino = rsRegistratori.getInt("IdScontrino");
+				    System.out.printf("%-15d %-15d\n", idRegistratore, idScontrino);
+				}
+				rsRegistratori.close();
+
+				
 				stmt.close();
 				conn.close();
 				System.out.println("\nQuery executed successfully.");

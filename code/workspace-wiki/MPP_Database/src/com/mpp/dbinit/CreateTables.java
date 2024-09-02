@@ -32,6 +32,15 @@ class CreateTables {
 	                    ");";
 	            stmt.executeUpdate(createVoceScontrinoTable);
 	            
+	            // Creazione della tabella Registratore
+	            String createRegistratoreTable = "CREATE TABLE Registratore (" +
+	            		"IdRegistratore INTEGER NOT NULL, " +
+	            		"IdScontrino INTEGER NOT NULL, " +
+	            		"PRIMARY KEY (IdRegistratore, IdScontrino), " +
+	            		"FOREIGN KEY (IdScontrino) REFERENCES VoceScontrino(IdScontrino)" +
+	            		");";
+	            stmt.executeUpdate(createRegistratoreTable);
+	            
 				stmt.close();
 				conn.close();
 				System.out.println("Tables created successfully.");

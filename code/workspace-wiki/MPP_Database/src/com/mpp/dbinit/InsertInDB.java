@@ -14,7 +14,7 @@ class InsertInDB {
 			if (conn != null) {
 				Statement stmt = conn.createStatement();
 				
-				// Inserimento di 50 prodotti
+				// Inserimento di 48 prodotti
 	            String[] prodotti = {
 	                "('Latte', 1.50, 100, 'Latte fresco intero 1L')",
 	                "('Pane', 0.80, 200, 'Pane bianco da 500g')",
@@ -71,7 +71,7 @@ class InsertInDB {
 	                stmt.executeUpdate(insertProdotto);
 	            }
 
-	            // Inserimento di 4 voci scontrino con 6-7 prodotti ciascuno
+	            // Inserimento di 4 scontrini con 6-7 prodotti (che ne costituiscono le voci) ciascuno
 	            int[][] scontrinoProdotti = {
 	                {1, 2, 3, 4, 5, 6}, // Scontrino 1
 	                {7, 8, 9, 10, 11, 12}, // Scontrino 2
@@ -81,6 +81,9 @@ class InsertInDB {
 
 	            for (int i = 0; i < scontrinoProdotti.length; i++) {
 	                int idScontrino = i + 1;
+	                // Associazione dello scontrino al registratore di cassa
+	                String insertRegistratore = "INSERT INTO Registratore (IdRegistratore, IdScontrino) VALUES (1, " + idScontrino + ");";
+	                stmt.executeUpdate(insertRegistratore);
 	                for (int idProdotto : scontrinoProdotti[i]) {
 	                    String insertVoceScontrino = "INSERT INTO VoceScontrino (IdScontrino, IdProdotto, QtaProdotto) VALUES (" +
 	                            idScontrino + ", " + idProdotto + ", " + (int) (Math.random() * 5 + 1) + ");";

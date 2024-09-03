@@ -9,13 +9,15 @@ import org.jooq.meta.jaxb.Target;
 
 import com.mpp.dbinit.CreateDB;
 
-//codice per generare i sorgenti a partire dal DB
+/*
+ * Generazione automatica del codice Java per accedere al DB, nella directory src-generated.
+ */
 public class GenerateCode {
 
 	public static void main(String[] args) throws Exception {
 		Jdbc JDBC = new Jdbc().withDriver("org.sqlite.JDBC").withUrl(CreateDB.DB_URL);
 		Database database = new Database().withName("org.jooq.meta.sqlite.SQLiteDatabase").withIncludes(".*").withExcludes("");
-		Target target = new Target().withPackageName("mpp.jooq.generated").withDirectory("src-generated/");
+		Target target = new Target().withPackageName("com.mpp.jooq.generated").withDirectory("src-generated/");
 		Generator generator = new Generator().withDatabase(database).withTarget(target);
 		//generator.getGenerate().setPojos(true);
 		Configuration configuration = new Configuration()

@@ -19,7 +19,22 @@ public class InsertInDB {
 		Connection conn = DriverManager.getConnection(CreateDB.DB_URL);
 		DSLContext create = DSL.using(conn, SQLDialect.SQLITE);
 		
-		ProdottoRecord mango = new ProdottoRecord(49, "Mango", 2.20, 30, "Mango 1pz");
+		// Dettagli del prodotto "Mango"
+        Integer idProdotto = 49;
+        String nome = "Mango";
+        Float prezzo = 0.60f; // Prezzo del Mango
+        Integer qtaDisponibile = 200; // Quantità disponibile
+        String descrizione = "Mango fresco 1pz"; // Descrizione del Mango
+
+        // Creazione di un nuovo record di prodotto
+        ProdottoRecord prodottoRecord = new ProdottoRecord(idProdotto, nome, prezzo, qtaDisponibile, descrizione);
+
+        // Inserimento del prodotto nel database
+        create.insertInto(Prodotto.PRODOTTO)
+              .set(prodottoRecord)
+              .execute();
+
+        System.out.println("Product 'Mango' successfully inserted!");
 	}
 
 }

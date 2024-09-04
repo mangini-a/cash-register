@@ -23,8 +23,8 @@ public class DataService {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(CreateDB.DB_URL);
-			DSLContext create = DSL.using(conn, SQLDialect.SQLITE);
-			return create.selectFrom(Prodotto.PRODOTTO).fetchInto(ProdottoRecord.class);
+			DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
+			return context.selectFrom(Prodotto.PRODOTTO).fetchInto(ProdottoRecord.class);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

@@ -17,7 +17,7 @@ public class InsertInDB {
 	public static void main(String[] args) throws SQLException {
 		
 		Connection conn = DriverManager.getConnection(CreateDB.DB_URL);
-		DSLContext create = DSL.using(conn, SQLDialect.SQLITE);
+		DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
 		
 		// Dettagli del prodotto "Mango"
         Integer idProdotto = 49;
@@ -30,11 +30,20 @@ public class InsertInDB {
         ProdottoRecord prodottoRecord = new ProdottoRecord(idProdotto, nome, prezzo, qtaDisponibile, descrizione);
 
         // Inserimento del prodotto nel database
-        create.insertInto(Prodotto.PRODOTTO)
+        context.insertInto(Prodotto.PRODOTTO)
               .set(prodottoRecord)
               .execute();
 
         System.out.println("Product 'Mango' successfully inserted!");
+        
+        // In alternativa: operazione di CREATE sulla tabella Prodotto (in forma più intuitiva)
+        ProdottoRecord prodotto = context.newRecord(Prodotto.PRODOTTO);
+        prodotto.setIdprodotto(50);
+        prodotto.setNome("Papaya");
+        prodotto.setPrezzo(1.10f);
+        prodotto.setQtadisponibile(60);
+        prodotto.setDescrizione("Papaya fresca 1pz");
+        prodotto.store();
 	}
 
 }

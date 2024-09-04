@@ -18,14 +18,14 @@ public class SelectQueryDB {
 	public static void main(String[] args) throws SQLException {
 		
 		Connection conn = DriverManager.getConnection(CreateDB.DB_URL);
-		DSLContext create = DSL.using(conn, SQLDialect.SQLITE);
+		DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
 		
-		Result<ProdottoRecord> result = create.selectFrom(Prodotto.PRODOTTO)
+		Result<ProdottoRecord> prodotti = context.selectFrom(Prodotto.PRODOTTO)
                 							  .fetch();
 
 		// Visualizzazione dei risultati
-		if (!result.isEmpty()) {
-			for (ProdottoRecord prodotto : result) {
+		if (!prodotti.isEmpty()) {
+			for (ProdottoRecord prodotto : prodotti) {
 				System.out.println("ID Prodotto: " + prodotto.getIdprodotto());
 				System.out.println("Nome: " + prodotto.getNome());
 				System.out.println("Prezzo: " + prodotto.getPrezzo());

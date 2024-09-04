@@ -17,12 +17,12 @@ public class SelectOneQueryDB {
 	public static void main(String[] args) throws SQLException {
 		
 		Connection conn = DriverManager.getConnection(CreateDB.DB_URL);
-		DSLContext create = DSL.using(conn, SQLDialect.SQLITE);
+		DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
 
 		Integer idProdottoMango = 49;
 
         // Esecuzione della query per ottenere il prodotto Mango con ID 49
-        ProdottoRecord mango = create.selectFrom(Prodotto.PRODOTTO)
+        ProdottoRecord mango = context.selectFrom(Prodotto.PRODOTTO)
                                      .where(Prodotto.PRODOTTO.IDPRODOTTO.eq(idProdottoMango))
                                      .fetchOne();
 

@@ -15,6 +15,7 @@ import com.mpp.jooq.generated.tables.records.ProdottoRecord;
 public class SelectOneQueryDB {
 
 	public static void main(String[] args) throws SQLException {
+		
 		Connection conn = DriverManager.getConnection(CreateDB.DB_URL);
 		DSLContext create = DSL.using(conn, SQLDialect.SQLITE);
 
@@ -33,7 +34,7 @@ public class SelectOneQueryDB {
             System.out.println("Quantità Disponibile: " + mango.getQtadisponibile());
             System.out.println("Descrizione: " + mango.getDescrizione());
         } else {
-            System.out.println("The product with ID"  + idProdottoMango +  "was not found.");
+            System.out.println("The product with ID "  + idProdottoMango +  " was not found.");
         }
 	}
 

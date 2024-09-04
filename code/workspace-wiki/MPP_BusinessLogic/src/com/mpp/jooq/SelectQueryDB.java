@@ -16,6 +16,7 @@ import com.mpp.jooq.generated.tables.records.ProdottoRecord;
 public class SelectQueryDB {
 
 	public static void main(String[] args) throws SQLException {
+		
 		Connection conn = DriverManager.getConnection(CreateDB.DB_URL);
 		DSLContext create = DSL.using(conn, SQLDialect.SQLITE);
 		

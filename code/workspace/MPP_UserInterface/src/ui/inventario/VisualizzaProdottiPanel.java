@@ -1,13 +1,12 @@
 package ui.inventario;
 
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.util.List;
 
 import jooq.DataService;
 import jooq.generated.tables.records.ProdottoRecord;
-
-import java.awt.*;
-import java.util.List;
 
 @SuppressWarnings("serial")
 public class VisualizzaProdottiPanel extends JPanel {
@@ -20,29 +19,30 @@ public class VisualizzaProdottiPanel extends JPanel {
 		this.dataService = new DataService();
 		setLayout(new BorderLayout());
 
-		// Create a table model with columns for product details
-		tableModel = new DefaultTableModel(new Object[] { "ID", "Nome", "Prezzo", "Quantità", "Descrizione" }, 0);
+		// Crea un template tabulare dotato di colonne, atto a visualizzare i dettagli
+		// di ciascun prodotto
+		tableModel = new DefaultTableModel(new Object[] { "Nome", "Prezzo", "Quantità", "Descrizione" }, 0);
 		productTable = new JTable(tableModel);
 
-		// Add the table to a scroll pane
+		// Aggiungi la tabella ad un pannello che si possa scorrere verticalmente
 		JScrollPane scrollPane = new JScrollPane(productTable);
 		add(scrollPane, BorderLayout.CENTER);
 
-		// Load products into the table
+		// Carica i prodotti dal database
 		caricaProdotti();
 	}
 
 	private void caricaProdotti() {
-		// Clear existing rows in the table
+		// Resetta le entry esistenti nella tabella
 		tableModel.setRowCount(0);
 
-		// Retrieve products from the database using jOOQ
+		// Recupera i prodotti dal database per mezzo di jOOQ
 		List<ProdottoRecord> prodotti = dataService.getProdotti();
 
-		// Add each product to the table
+		// Aggiungi ciascuno dei prodotti alla tabella
 		for (ProdottoRecord prodotto : prodotti) {
-			tableModel.addRow(new Object[] { prodotto.getIdprodotto(), prodotto.getNome(), prodotto.getPrezzo(),
-					prodotto.getQtadisponibile(), prodotto.getDescrizione() });
+			tableModel.addRow(new Object[] { prodotto.getNome(), prodotto.getPrezzo(), prodotto.getQtadisponibile(),
+					prodotto.getDescrizione() });
 		}
 	}
 }

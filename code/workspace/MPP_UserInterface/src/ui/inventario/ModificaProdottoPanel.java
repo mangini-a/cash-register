@@ -20,15 +20,23 @@ public class ModificaProdottoPanel extends JPanel {
 
 	public ModificaProdottoPanel(GestisciInventarioPanel gestisciInventarioPanel) {
 		this.dataService = new DataService();
-		setLayout(new GridLayout(6, 2, 5, 5));
+		setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(5, 5, 5, 5);
 
-		JLabel lblProdotto = new JLabel("Seleziona prodotto:");
-		add(lblProdotto);
+		// Selezione del prodotto da modificare
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.EAST;
+		add(new JLabel("Seleziona prodotto da modificare:"), gbc);
 
+		gbc.gridx = 1;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		// Carica le descrizioni dei prodotti nella combo box
 		String[] descrizioniProdotti = caricaDescrizioniProdotti();
 		prodottiComboBox = new JComboBox<>(descrizioniProdotti);
-		add(prodottiComboBox);
+		add(prodottiComboBox, gbc);
 
 		prodottiComboBox.addItemListener(new ItemListener() {
 			@Override
@@ -39,36 +47,66 @@ public class ModificaProdottoPanel extends JPanel {
 			}
 		});
 
-		JLabel lblNomeProdotto = new JLabel("Nuovo nome:");
-		add(lblNomeProdotto);
+		// Nuovo nome del prodotto
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.anchor = GridBagConstraints.EAST;
+		gbc.fill = GridBagConstraints.NONE;
+		add(new JLabel("Nuovo nome:"), gbc);
 
-		nomeProdottoField = new JTextField();
-		add(nomeProdottoField);
-		nomeProdottoField.setColumns(10);
+		gbc.gridx = 1;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		nomeProdottoField = new JTextField(20);
+		add(nomeProdottoField, gbc);
 
-		JLabel lblPrezzoProdotto = new JLabel("Nuovo prezzo:");
-		add(lblPrezzoProdotto);
+		// Nuovo prezzo del prodotto
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		gbc.anchor = GridBagConstraints.EAST;
+		gbc.fill = GridBagConstraints.NONE;
+		add(new JLabel("Nuovo prezzo:"), gbc);
 
-		prezzoProdottoField = new JTextField();
-		add(prezzoProdottoField);
-		prezzoProdottoField.setColumns(10);
+		gbc.gridx = 1;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		prezzoProdottoField = new JTextField(20);
+		add(prezzoProdottoField, gbc);
 
-		JLabel lblQtaProdotto = new JLabel("Nuova quantità:");
-		add(lblQtaProdotto);
+		// Nuova quantità del prodotto
+		gbc.gridx = 0;
+		gbc.gridy = 3;
+		gbc.anchor = GridBagConstraints.EAST;
+		gbc.fill = GridBagConstraints.NONE;
+		add(new JLabel("Nuova quantità:"), gbc);
 
-		qtaProdottoField = new JTextField();
-		add(qtaProdottoField);
-		qtaProdottoField.setColumns(10);
+		gbc.gridx = 1;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		qtaProdottoField = new JTextField(20);
+		add(qtaProdottoField, gbc);
 
-		JLabel lblDescrizioneProdotto = new JLabel("Nuova descrizione:");
-		add(lblDescrizioneProdotto);
+		// Nuova descrizione del prodotto
+		gbc.gridx = 0;
+		gbc.gridy = 4;
+		gbc.anchor = GridBagConstraints.EAST;
+		gbc.fill = GridBagConstraints.NONE;
+		add(new JLabel("Nuova descrizione:"), gbc);
 
-		descrizioneProdottoField = new JTextField();
-		add(descrizioneProdottoField);
-		descrizioneProdottoField.setColumns(10);
+		gbc.gridx = 1;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		descrizioneProdottoField = new JTextField(20);
+		add(descrizioneProdottoField, gbc);
 
-		JButton btnModificaProdotto = new JButton("Modifica Prodotto");
-		add(btnModificaProdotto);
+		// Pulsante "Modifica Prodotto"
+		gbc.gridx = 0;
+		gbc.gridy = 5;
+		gbc.gridwidth = 2;
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		JButton btnModificaProdotto = new JButton("Modifica prodotto", new ImageIcon("../img/update-icon.png"));
+		add(btnModificaProdotto, gbc);
 
 		btnModificaProdotto.addActionListener(e -> modificaProdotto());
 	}
@@ -158,7 +196,8 @@ public class ModificaProdottoPanel extends JPanel {
 			qtaProdottoField.setText("");
 			descrizioneProdottoField.setText("");
 		} else {
-			JOptionPane.showMessageDialog(this, "Non è stato possibile modificare il prodotto.", "Errore", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Non è stato possibile modificare il prodotto.", "Errore",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 }

@@ -14,18 +14,32 @@ public class EliminaProdottoPanel extends JPanel {
 
 	public EliminaProdottoPanel(GestisciInventarioPanel gestisciInventarioPanel) {
 		this.dataService = new DataService();
-		setLayout(new GridLayout(2, 2, 5, 5));
+		setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(5, 5, 5, 5);
 
-		JLabel lblProdotto = new JLabel("Seleziona prodotto:");
-		add(lblProdotto);
+		// Selezione del prodotto da eliminare
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.EAST;
+		add(new JLabel("Seleziona prodotto da rimuovere:"), gbc);
 
+		gbc.gridx = 1;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		// Carica le descrizioni dei prodotti nella combo box
 		String[] descrizioniProdotti = caricaDescrizioniProdotti();
 		prodottiComboBox = new JComboBox<>(descrizioniProdotti);
-		add(prodottiComboBox);
-
-		JButton btnEliminaProdotto = new JButton("Elimina Prodotto");
-		add(btnEliminaProdotto);
+		add(prodottiComboBox, gbc);
+		
+		// Pulsante "Elimina prodotto"
+		gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+		JButton btnEliminaProdotto = new JButton("Elimina prodotto", new ImageIcon("../img/delete-icon.png"));
+		add(btnEliminaProdotto, gbc);
 
 		btnEliminaProdotto.addActionListener(e -> eliminaProdotto());
 	}
@@ -44,11 +58,13 @@ public class EliminaProdottoPanel extends JPanel {
 		// Recupera il prodotto selezionato dall'utente attraverso la combo box
 		String descrizioneProdotto = (String) prodottiComboBox.getSelectedItem();
 
-		// Richiede conferma all'utente prima di rimuovere effettivamente il prodotto dalla relativa tabella del DB
+		// Richiede conferma all'utente prima di rimuovere effettivamente il prodotto
+		// dalla relativa tabella del DB
 		int confirm = JOptionPane.showConfirmDialog(this, "Sei sicuro di voler rimuovere " + descrizioneProdotto + "?",
 				"Conferma eliminazione", JOptionPane.YES_NO_OPTION);
 		if (confirm == JOptionPane.YES_OPTION) {
-			// Gestisci la rimozione del prodotto in questione mediante la Business Logic (classe DataService)
+			// Gestisci la rimozione del prodotto in questione mediante la Business Logic
+			// (classe DataService)
 			int rowsAffected = dataService.eliminaProdotto(descrizioneProdotto);
 
 			if (rowsAffected > 0) {
@@ -61,7 +77,8 @@ public class EliminaProdottoPanel extends JPanel {
 				// Aggiorna la combo box per rendere palese la rimozione
 				prodottiComboBox.removeItem(descrizioneProdotto);
 			} else {
-				JOptionPane.showMessageDialog(this, "Non è stato possibile rimuovere il prodotto.", "Errore", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Non è stato possibile rimuovere il prodotto.", "Errore",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}

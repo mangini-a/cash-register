@@ -13,8 +13,10 @@ public class AggiungiProdottoPanel extends JPanel {
 	private JTextField prezzoProdottoField;
 	private JTextField qtaProdottoField;
 	private JTextField descrizioneProdottoField;
+	private DataService dataService;
 
 	public AggiungiProdottoPanel(GestisciInventarioPanel gestisciInventarioPanel) {
+		this.dataService = new DataService();
 		setLayout(new GridLayout(5, 2, 5, 5));
 
 		JLabel lblNomeProdotto = new JLabel("Nome:");
@@ -93,7 +95,6 @@ public class AggiungiProdottoPanel extends JPanel {
 		}
 
 		// Handle the product addition using the underlying business logic
-		DataService dataService = new DataService();
 		dataService.aggiungiProdotto(nomeProdotto, prezzoProdotto, qtaProdotto, descrizioneProdotto);
 
 		// Show a confirmation message

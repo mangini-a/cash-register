@@ -1,13 +1,13 @@
 package ui.inventario;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 
 import ui.MainFrame;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
+@SuppressWarnings("serial")
 public class GestisciInventarioPanel extends JPanel {
 	
 	private JPanel mainPanel;

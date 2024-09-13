@@ -3,6 +3,7 @@ package jooq;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -52,14 +53,37 @@ public class DataService {
 	}
 
 	/*
-	 * Rimuove dal database (minimarket.db3) un prodotto selezionato dall'utente
-	 * tramite UI.
+	 * Recupera dal database tutti i prodotti contenuti nella tabella Prodotto.
 	 */
-	public void eliminaProdotto(String nome, float prezzo, int qtaDisponibile, String descrizione) {
-		context.delete(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.DESCRIZIONE.eq("")).execute();
+	public List<ProdottoRecord> getProdotti() {
+		return context.selectFrom(Prodotto.PRODOTTO).fetch();
+	}
 
-		// Recupera l'ID generato automaticamente dal database
-		int idGenerato = prodottoRecord.getIdprodotto();
-		System.out.println("IdProdotto generato: " + idGenerato);
+	/*
+	 * Recupera dal database uno specifico prodotto selezionato dall'utente.
+	 */
+	public ProdottoRecord getProdotto(String descrizione) {
+		return context.selectFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.DESCRIZIONE.eq(descrizione)).fetchOne();
+	}
+
+	/*
+	 * Rimuove dal database un determinato prodotto, selezionato dall'utente indicandone la descrizione.
+	 */
+	public int eliminaProdotto(String descrizione) {
+		return context.deleteFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.DESCRIZIONE.eq(descrizione)).execute();
+	}
+
+	/*
+	 * Modifica un certo prodotto già contenuto nel database, selezionato dall'utente indicandone la descrizione.
+	 */
+	public int modificaProdotto(String nuovoNomeProdotto, float nuovoPrezzoProdotto, int nuovaQtaProdotto,
+			String nuovaDescrizioneProdotto, String prodottoSelezionato) {
+		return context.update(Prodotto.PRODOTTO)
+                .set(Prodotto.PRODOTTO.NOME, nuovoNomeProdotto)
+                .set(Prodotto.PRODOTTO.PREZZO, nuovoPrezzoProdotto)
+                .set(Prodotto.PRODOTTO.QTADISPONIBILE, nuovaQtaProdotto)
+                .set(Prodotto.PRODOTTO.DESCRIZIONE, nuovaDescrizioneProdotto)
+                .where(Prodotto.PRODOTTO.DESCRIZIONE.eq(prodottoSelezionato))
+                .execute();
 	}
 }

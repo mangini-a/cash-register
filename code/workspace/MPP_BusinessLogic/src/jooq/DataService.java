@@ -42,10 +42,22 @@ public class DataService {
 		prodottoRecord.setPrezzo(prezzo);
 		prodottoRecord.setQtadisponibile(qtaDisponibile);
 		prodottoRecord.setDescrizione(descrizione);
-		
+
 		// Inserisce il record, omettendo la colonna IdProdotto
 		prodottoRecord.insert();
-		
+
+		// Recupera l'ID generato automaticamente dal database
+		int idGenerato = prodottoRecord.getIdprodotto();
+		System.out.println("IdProdotto generato: " + idGenerato);
+	}
+
+	/*
+	 * Rimuove dal database (minimarket.db3) un prodotto selezionato dall'utente
+	 * tramite UI.
+	 */
+	public void eliminaProdotto(String nome, float prezzo, int qtaDisponibile, String descrizione) {
+		context.delete(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.DESCRIZIONE.eq("")).execute();
+
 		// Recupera l'ID generato automaticamente dal database
 		int idGenerato = prodottoRecord.getIdprodotto();
 		System.out.println("IdProdotto generato: " + idGenerato);

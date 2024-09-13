@@ -18,7 +18,7 @@
 		</plugins>
 	</build>
 	<properties>
-		<projectSourceEncoding>UTF-8</projectSourceEncoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
 		<!-- Dipendenza dal livello sottostante (BusinessLogic) -->

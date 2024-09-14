@@ -17,7 +17,7 @@ import jooq.generated.tables.records.ScontrinoRecord;
 
 /*
  * Fornisce servizi per interfacciarsi con il database usando il linguaggio Java, evitando di scrivere codice SQL.
- * Per usare questa classe bisogna creare un oggetto con new DataService(), per poi chiamare i metodi di interesse.
+ * Per usare questa classe bisogna creare un oggetto con new DataService(), per poi invocare i metodi di interesse.
  */
 public class DataService {
 
@@ -36,8 +36,7 @@ public class DataService {
 	}
 
 	/*
-	 * Inserisce nel database (minimarket.db3) un nuovo prodotto, servendosi dei
-	 * dati passati dall'utente tramite UI.
+	 * Inserisce uno scontrino nella rispettiva tabella del database.
 	 */
 	public void aggiungiProdotto(String nome, float prezzo, int qtaDisponibile, String descrizione) {
 		ProdottoRecord prodottoRecord = context.newRecord(Prodotto.PRODOTTO);
@@ -55,28 +54,28 @@ public class DataService {
 	}
 
 	/*
-	 * Recupera dal database tutti i prodotti contenuti nella tabella Prodotto.
+	 * Recupera dal database tutti i prodotti contenuti nella rispettiva tabella.
 	 */
 	public List<ProdottoRecord> getProdotti() {
 		return context.selectFrom(Prodotto.PRODOTTO).fetch();
 	}
 
 	/*
-	 * Recupera dal database uno specifico prodotto selezionato dall'utente.
+	 * Recupera dal database un determinato prodotto sulla base della propria descrizione.
 	 */
 	public ProdottoRecord getProdotto(String descrizione) {
 		return context.selectFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.DESCRIZIONE.eq(descrizione)).fetchOne();
 	}
 
 	/*
-	 * Rimuove dal database un determinato prodotto, selezionato dall'utente indicandone la descrizione.
+	 * Rimuove dal database un determinato prodotto sulla base della propria descrizione.
 	 */
 	public int eliminaProdotto(String descrizione) {
 		return context.deleteFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.DESCRIZIONE.eq(descrizione)).execute();
 	}
 
 	/*
-	 * Modifica un certo prodotto già contenuto nel database, selezionato dall'utente indicandone la descrizione.
+	 * Modifica un certo prodotto già contenuto nel database sulla base della propria descrizione.
 	 */
 	public int modificaProdotto(String nuovoNomeProdotto, float nuovoPrezzoProdotto, int nuovaQtaProdotto,
 			String nuovaDescrizioneProdotto, String prodottoSelezionato) {
@@ -90,7 +89,7 @@ public class DataService {
 	}
 	
 	/*
-	 * Inserisce uno scontrino nella rispettiva tabella del database "Scontrino".
+	 * Inserisce uno scontrino nella rispettiva tabella del database.
 	 */
 	public ScontrinoRecord inserisciScontrino(float prezzoTotale) {
 		ScontrinoRecord scontrino = context.newRecord(Scontrino.SCONTRINO);
@@ -100,7 +99,7 @@ public class DataService {
 	}
 
 	/*
-	 * Recupera dal database tutti gli scontrini contenuti nella tabella Scontrino.
+	 * Recupera dal database tutti gli scontrini contenuti nella rispettiva tabella.
 	 */
 	public List<ScontrinoRecord> getScontrini() {
 		return context.selectFrom(Scontrino.SCONTRINO).fetch();

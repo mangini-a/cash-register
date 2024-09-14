@@ -11,7 +11,9 @@ import org.jooq.impl.DSL;
 
 import dbinit.CreateDatabase;
 import jooq.generated.tables.Prodotto;
+import jooq.generated.tables.Scontrino;
 import jooq.generated.tables.records.ProdottoRecord;
+import jooq.generated.tables.records.ScontrinoRecord;
 
 /*
  * Fornisce servizi per interfacciarsi con il database usando il linguaggio Java, evitando di scrivere codice SQL.
@@ -85,5 +87,22 @@ public class DataService {
                 .set(Prodotto.PRODOTTO.DESCRIZIONE, nuovaDescrizioneProdotto)
                 .where(Prodotto.PRODOTTO.DESCRIZIONE.eq(prodottoSelezionato))
                 .execute();
+	}
+	
+	/*
+	 * Inserisce uno scontrino nella rispettiva tabella del database "Scontrino".
+	 */
+	public ScontrinoRecord inserisciScontrino(float prezzoTotale) {
+		ScontrinoRecord scontrino = context.newRecord(Scontrino.SCONTRINO);
+		scontrino.setPrezzotot(prezzoTotale);
+		scontrino.store();
+		return scontrino;
+	}
+
+	/*
+	 * Recupera dal database tutti gli scontrini contenuti nella tabella Scontrino.
+	 */
+	public List<ScontrinoRecord> getScontrini() {
+		return context.selectFrom(Scontrino.SCONTRINO).fetch();
 	}
 }

@@ -18,7 +18,7 @@ public class ModificaProdottoPanel extends JPanel {
 	private JTextField descrizioneProdottoField;
 	private DataService dataService;
 
-	public ModificaProdottoPanel(GestisciInventarioPanel gestisciInventarioPanel) {
+	public ModificaProdottoPanel(GestioneInventarioPanel gestisciInventarioPanel) {
 		this.dataService = new DataService();
 		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();

@@ -12,7 +12,7 @@ public class EliminaProdottoPanel extends JPanel {
 	private JComboBox<String> prodottiComboBox;
 	private DataService dataService;
 
-	public EliminaProdottoPanel(GestisciInventarioPanel gestisciInventarioPanel) {
+	public EliminaProdottoPanel(GestioneInventarioPanel gestisciInventarioPanel) {
 		this.dataService = new DataService();
 		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();

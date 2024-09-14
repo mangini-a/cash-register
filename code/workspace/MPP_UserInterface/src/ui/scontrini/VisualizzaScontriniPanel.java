@@ -29,6 +29,9 @@ public class VisualizzaScontriniPanel extends JPanel {
 
 		// Carica gli scontrini dal database
 		caricaScontrini();
+
+		// Avvia un task in background per aggiornare periodicamente la tabella (scontriniTable)
+		avviaBackgroundTask();
 	}
 
 	private void caricaScontrini() {
@@ -42,5 +45,18 @@ public class VisualizzaScontriniPanel extends JPanel {
 		for (ScontrinoRecord scontrino : scontrini) {
 			tableModel.addRow(new Object[] { scontrino.getDataora(), scontrino.getPrezzotot() });
 		}
+	}
+
+	private void avviaBackgroundTask() {
+		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+			@Override
+			protected Void doInBackground() throws Exception {
+				while (true) {
+					Thread.sleep(5000); // Effettua l'operazione di polling ogni 5 secondi
+					caricaScontrini();
+				}
+			}
+		};
+		worker.execute();
 	}
 }

@@ -29,6 +29,9 @@ public class VisualizzaProdottiPanel extends JPanel {
 
 		// Carica i prodotti dal database
 		caricaProdotti();
+
+		// Avvia un task in background per aggiornare periodicamente la tabella (prodottiTable)
+		avviaBackgroundTask();
 	}
 
 	private void caricaProdotti() {
@@ -43,5 +46,18 @@ public class VisualizzaProdottiPanel extends JPanel {
 			tableModel.addRow(new Object[] { prodotto.getNome(), prodotto.getPrezzo(), prodotto.getQtadisponibile(),
 					prodotto.getDescrizione() });
 		}
+	}
+
+	private void avviaBackgroundTask() {
+		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+			@Override
+			protected Void doInBackground() throws Exception {
+				while (true) {
+					Thread.sleep(5000); // Effettua l'operazione di polling ogni 5 secondi
+					caricaProdotti();
+				}
+			}
+		};
+		worker.execute();
 	}
 }

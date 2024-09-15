@@ -8,27 +8,25 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import dto.ProdottoNelCarrelloDTO;
 import jooq.DataService;
 import jooq.generated.tables.records.ProdottoRecord;
-import jooq.generated.tables.records.ScontrinoRecord;
 
 @SuppressWarnings("serial")
 public class RegistraScontrinoPanel extends JPanel {
 
 	private JTextField prodottoField;
 	private JSpinner qtaProdottoSpinner;
-	private JTable cartTable;
+	private JTable carrelloTable;
 	private DefaultTableModel tableModel;
 	private JButton aggiungiAlCarrelloButton;
 	private JButton generaScontrinoButton;
 	private List<ProdottoRecord> prodotti;
-	private List<ProdottoNelCarrello> prodottiNelCarrello;
+	private List<ProdottoNelCarrelloDTO> prodottiNelCarrello;
 	private DataService dataService;
-	private InvoiceService invoiceService;
 
 	public RegistraScontrinoPanel() {
 		this.dataService = new DataService();
-		this.invoiceService = new InvoiceService();
 		setLayout(new BorderLayout());
 
 		// Carica i prodotti dal database
@@ -62,8 +60,8 @@ public class RegistraScontrinoPanel extends JPanel {
 
 		// Crea la tabella che rappresenta il carrello della spesa
 		tableModel = new DefaultTableModel(new Object[] { "Prodotto", "Quantità", "Prezzo" }, 0);
-		cartTable = new JTable(tableModel);
-		JScrollPane scrollPane = new JScrollPane(cartTable);
+		carrelloTable = new JTable(tableModel);
+		JScrollPane scrollPane = new JScrollPane(carrelloTable);
 
 		// Crea il pulsante "Genera scontrino"
 		generaScontrinoButton = new JButton("Genera scontrino");
@@ -96,16 +94,24 @@ public class RegistraScontrinoPanel extends JPanel {
 	}
 
 	private void aggiungiAlCarrello() {
+		// Estrae il nome del prodotto aggiunto al carrello, così come la quantità in cui è stato richiesto
 		String nomeProdotto = prodottoField.getText();
 		int qtaProdotto = (int) qtaProdottoSpinner.getValue();
 
 		ProdottoRecord prodotto = getProductByName(nomeProdotto);
 		if (prodotto != null) {
-			ProdottoNelCarrello prodottoNelCarrello = new ProdottoNelCarrello(prodotto, qtaProdotto);
-			prodottiNelCarrello.add(prodottoNelCarrello);
-			tableModel.addRow(new Object[] { prodotto.getNome(), qtaProdotto, prodotto.getPrezzo() * qtaProdotto });
-			prodottoField.setText("");
-			qtaProdottoSpinner.setValue(1);
+			// Se la quantità richiesta non eccede quella disponibile a stock
+			if (qtaProdotto <= prodotto.getQtadisponibile()) {
+				// Crea un'istanza di ProdottoNelCarrelloDTO, aggiungendola alla relativa lista (che rappresenta il carrello)
+				ProdottoNelCarrelloDTO prodottoNelCarrello = new ProdottoNelCarrelloDTO(prodotto.getIdprodotto(), nomeProdotto, prodotto.getPrezzo(), qtaProdotto);
+				prodottiNelCarrello.add(prodottoNelCarrello);
+				tableModel.addRow(new Object[] { prodotto.getNome(), qtaProdotto, prodotto.getPrezzo() * qtaProdotto });
+				// Resetta i campi di selezione
+				prodottoField.setText("");
+				qtaProdottoSpinner.setValue(1);
+			} else {
+				JOptionPane.showMessageDialog(this, "La quantità disponibile non è sufficiente.", "Errore", JOptionPane.ERROR_MESSAGE);
+			}
 		} else {
 			JOptionPane.showMessageDialog(this, "Prodotto non trovato.", "Errore", JOptionPane.ERROR_MESSAGE);
 		}
@@ -126,22 +132,25 @@ public class RegistraScontrinoPanel extends JPanel {
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-
-		// Calcola il prezzo complessivo dello scontrino
-		float prezzoTotale = 0;
-		for (ProdottoNelCarrello prodottoNelCarrello : prodottiNelCarrello) {
-			prezzoTotale += prodottoNelCarrello.getProdotto().getPrezzo() * prodottoNelCarrello.getQtaProdotto();
-		}
-
-		// Inserisci lo scontrino nella tabella Scontrino
-		ScontrinoRecord scontrino = dataService.inserisciScontrino(prezzoTotale);
-
-		// Delega l'inserimento delle voci dello scontrino nella tabella VoceScontrino ad un'istanza di InvoiceService
-		invoiceService.insertInvoiceItems(scontrino.getIdscontrino(), prodottiNelCarrello);
+		
+		// Delega la generazione dello scontrino all'istanza di DataService
+        float prezzoTotale = calcolaPrezzoTotale();
+        dataService.inserisciScontrino(prezzoTotale, prodottiNelCarrello);
 
 		JOptionPane.showMessageDialog(this, "Scontrino generato con successo!", "Operazione riuscita",
 				JOptionPane.INFORMATION_MESSAGE);
 		resettaCarrello();
+	}
+
+	/*
+	 * Calcola il prezzo complessivo di uno scontrino, recuperando quantità acquistata e prezzo dei prodotti che ne fanno parte.
+	 */
+	private float calcolaPrezzoTotale() {
+		float prezzoTotale = 0;
+        for (ProdottoNelCarrelloDTO prodottoNelCarrello : prodottiNelCarrello) {
+            prezzoTotale += prodottoNelCarrello.getPrezzo() * prodottoNelCarrello.getQta();
+        }
+        return prezzoTotale;
 	}
 
 	private void resettaCarrello() {

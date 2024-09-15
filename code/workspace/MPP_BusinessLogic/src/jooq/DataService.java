@@ -10,6 +10,7 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
 import dbinit.CreateDatabase;
+import dto.ProdottoNelCarrelloDTO;
 import jooq.generated.tables.Prodotto;
 import jooq.generated.tables.Scontrino;
 import jooq.generated.tables.records.ProdottoRecord;
@@ -36,7 +37,7 @@ public class DataService {
 	}
 
 	/*
-	 * Inserisce uno scontrino nella rispettiva tabella del database.
+	 * Inserisce un prodotto nella rispettiva tabella del database.
 	 */
 	public void aggiungiProdotto(String nome, float prezzo, int qtaDisponibile, String descrizione) {
 		ProdottoRecord prodottoRecord = context.newRecord(Prodotto.PRODOTTO);
@@ -91,11 +92,21 @@ public class DataService {
 	/*
 	 * Inserisce uno scontrino nella rispettiva tabella del database.
 	 */
-	public ScontrinoRecord inserisciScontrino(float prezzoTotale) {
+	public void inserisciScontrino(float prezzoTotale, List<ProdottoNelCarrelloDTO> prodottiNelCarrello) {
 		ScontrinoRecord scontrino = context.newRecord(Scontrino.SCONTRINO);
 		scontrino.setPrezzotot(prezzoTotale);
+		
+		// Serializza i prodotti nel carrello come una stringa JSON o un oggetto serializzato
+        String prodottiNelCarrelloJson = serializzaProdottiNelCarrello(prodottiNelCarrello);
+        scontrino.setDettagli(prodottiNelCarrelloJson);
+		
 		scontrino.store();
-		return scontrino;
+	}
+
+	private String serializzaProdottiNelCarrello(List<ProdottoNelCarrelloDTO> prodottiNelCarrello) {
+		// Implement the serialization logic here
+        // For example, you can use a JSON library like Jackson or Gson to serialize the cart items
+        return "serialized_cart_items";
 	}
 
 	/*

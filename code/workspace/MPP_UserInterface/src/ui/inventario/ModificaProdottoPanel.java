@@ -28,7 +28,7 @@ public class ModificaProdottoPanel extends JPanel {
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.EAST;
-		add(new JLabel("Seleziona prodotto da modificare:"), gbc);
+		add(new JLabel("Seleziona prodotto:"), gbc);
 
 		gbc.gridx = 1;
 		gbc.anchor = GridBagConstraints.WEST;

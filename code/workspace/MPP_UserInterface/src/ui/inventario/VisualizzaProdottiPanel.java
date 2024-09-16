@@ -20,7 +20,12 @@ public class VisualizzaProdottiPanel extends JPanel {
 		setLayout(new BorderLayout());
 
 		// Crea un template tabulare per visualizzare i dettagli di ciascun prodotto
-		tableModel = new DefaultTableModel(new Object[] { "Nome", "Prezzo (€)", "Quantità", "Descrizione" }, 0);
+		tableModel = new DefaultTableModel(new Object[] { "Nome", "Prezzo (€)", "Quantità disponibile", "Descrizione" }, 0) {
+			@Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make all cells non-editable
+            }
+		};
 		prodottiTable = new JTable(tableModel);
 
 		// Aggiungi la tabella ad un pannello che si possa scorrere verticalmente

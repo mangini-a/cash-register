@@ -22,7 +22,12 @@ public class DettagliScontrinoDialog extends JDialog {
         setLayout(new BorderLayout());
 
         // Crea la tabella per rappresentare le linee di dettaglio di uno scontrino
-        tableModel = new DefaultTableModel(new Object[]{"Prodotto", "Quantità", "Prezzo (€)"}, 0);
+        tableModel = new DefaultTableModel(new Object[]{"Prodotto", "Quantità", "Prezzo (€)"}, 0) {
+        	@Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make all cells non-editable
+            }
+        };
         dettagliTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(dettagliTable);
 

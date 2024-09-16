@@ -27,5 +27,11 @@
 			<artifactId>MPP_BusinessLogic</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<!-- Dipendenza da FlatLaf (L&F library) -->
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf</artifactId>
+			<version>3.5.1</version>
+		</dependency>
 	</dependencies>
 </project>

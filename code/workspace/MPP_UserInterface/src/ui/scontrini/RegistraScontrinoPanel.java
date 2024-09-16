@@ -64,7 +64,12 @@ public class RegistraScontrinoPanel extends JPanel {
 		aggiungiAlCarrelloButton.addActionListener(e -> aggiungiAlCarrello());
 
 		// Crea la tabella che rappresenta il carrello della spesa
-		tableModel = new DefaultTableModel(new Object[] { "Prodotto", "Quantità", "Prezzo (€)" }, 0);
+		tableModel = new DefaultTableModel(new Object[] { "Prodotto", "Quantità", "Prezzo (€)" }, 0) {
+			@Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make all cells non-editable
+            }
+		};
 		carrelloTable = new JTable(tableModel);
 		JScrollPane scrollPane = new JScrollPane(carrelloTable);
 

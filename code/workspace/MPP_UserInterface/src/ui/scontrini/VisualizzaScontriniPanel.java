@@ -27,7 +27,12 @@ public class VisualizzaScontriniPanel extends JPanel {
 		setLayout(new BorderLayout());
 
 		// Crea un template tabulare per visualizzare i dettagli di ciascuno scontrino
-		tableModel = new DefaultTableModel(new Object[] { "Data e ora di emissione", "Totale complessivo (€)" }, 0);
+		tableModel = new DefaultTableModel(new Object[] { "Data e ora di emissione", "Totale complessivo (€)" }, 0) {
+			@Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make all cells non-editable
+            }
+		};
 		scontriniTable = new JTable(tableModel);
 
 		// Aggiunge la tabella ad un pannello che si possa scorrere verticalmente

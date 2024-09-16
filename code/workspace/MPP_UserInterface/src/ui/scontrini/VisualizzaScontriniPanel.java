@@ -21,7 +21,7 @@ public class VisualizzaScontriniPanel extends JPanel {
 	private DataService dataService;
 	private InvoiceService invoiceService;
 
-	public VisualizzaScontriniPanel() {
+	public VisualizzaScontriniPanel(RegistrazioneScontriniPanel registrazioneScontriniPanel) {
 		this.dataService = new DataService();
 		this.invoiceService = new InvoiceServiceImpl(dataService);
 		setLayout(new BorderLayout());

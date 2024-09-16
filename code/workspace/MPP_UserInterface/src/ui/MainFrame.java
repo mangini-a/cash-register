@@ -20,6 +20,7 @@ public class MainFrame extends JFrame {
 	private JPanel gestioneInventarioPanel;
 
 	public MainFrame() {
+		// Imposta il titolo del frame principale e fai sì che l'app termini alla chiusura del frame
 		setTitle("Smart Cash Register");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -89,28 +90,33 @@ public class MainFrame extends JFrame {
 			}
 		});
 
+		// Aggiunge al menu "Registrazione scontrini" le relative voci
 		scontriniMenu.add(registraScontrinoItem);
 		scontriniMenu.add(visualizzaScontriniItem);
 
+		// Aggiunge al menu "Gestione inventario" le relative voci
 		inventarioMenu.add(aggiungiProdottoItem);
 		inventarioMenu.add(eliminaProdottoItem);
 		inventarioMenu.add(modificaProdottoItem);
 		inventarioMenu.add(visualizzaProdottiItem);
-
+		
+		// Aggiunge entrambi i menu alla menu bar
 		menuBar.add(scontriniMenu);
 		menuBar.add(inventarioMenu);
 		setJMenuBar(menuBar);
-
+		
+		// Definisce il layout del container principale
 		mainPanel = new JPanel();
 		cardLayout = new CardLayout();
 		mainPanel.setLayout(cardLayout);
 
+		// Crea i due sotto-container di primo livello ed aggiungili a quello top-level
 		registrazioneScontriniPanel = new RegistrazioneScontriniPanel(this);
 		gestioneInventarioPanel = new GestioneInventarioPanel(this);
-
 		mainPanel.add(registrazioneScontriniPanel, "Registra Scontrino");
 		mainPanel.add(gestioneInventarioPanel, "Gestisci Inventario");
 
+		// Aggiunge il container principale al layout
 		add(mainPanel, BorderLayout.CENTER);
 
 		// Sceglie automaticamente la dimensione del frame a seconda del suo contenuto
@@ -126,6 +132,7 @@ public class MainFrame extends JFrame {
 		ImageIcon icona = new ImageIcon("../img/euro-icon.png");
 		setIconImage(icona.getImage());
 
+		// Visualizza il frame principale a video
 		setVisible(true);
 	}
 

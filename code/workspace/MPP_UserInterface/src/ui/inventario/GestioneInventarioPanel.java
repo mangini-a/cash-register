@@ -15,23 +15,23 @@ public class GestioneInventarioPanel extends JPanel {
 	private JPanel visualizzaProdottiPanel;
 	
 	public GestioneInventarioPanel(MainFrame mainFrame) {
+		// Imposta il layout manager per questo container di primo livello
 		setLayout(new BorderLayout());
 
-		// Crea il pannello a schede
+		// Crea il sotto-container e le schede a cui consente l'accesso
 		tabbedPane = new JTabbedPane();
-
-		// Crea le schede a cui il pannello consente l'accesso
         aggiungiProdottoPanel = new AggiungiProdottoPanel(this);
         eliminaProdottoPanel = new EliminaProdottoPanel(this);
         modificaProdottoPanel = new ModificaProdottoPanel(this);
         visualizzaProdottiPanel = new VisualizzaProdottiPanel(this);
         
-        // Aggiungi le schede al pannello precedentemente creato
+        // Aggiunge le schede al sotto-container precedentemente creato
         tabbedPane.addTab("Aggiungi prodotto", aggiungiProdottoPanel);
         tabbedPane.addTab("Elimina prodotto", eliminaProdottoPanel);
         tabbedPane.addTab("Modifica prodotto", modificaProdottoPanel);
         tabbedPane.addTab("Visualizza prodotti", visualizzaProdottiPanel);
 
+        // Aggiunge il sotto-container al layout
         add(tabbedPane, BorderLayout.CENTER);
     }
 }

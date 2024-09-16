@@ -9,23 +9,23 @@ import ui.MainFrame;
 public class RegistrazioneScontriniPanel extends JPanel {
 
 	private JTabbedPane tabbedPane;
-	private RegistraScontrinoPanel registraScontrinoPanel;
-	private VisualizzaScontriniPanel visualizzaScontriniPanel;
+	private JPanel registraScontrinoPanel;
+	private JPanel visualizzaScontriniPanel;
 
 	public RegistrazioneScontriniPanel(MainFrame mainFrame) {
+		// Imposta il layout manager per questo container di primo livello
 		setLayout(new BorderLayout());
 
-		// Crea il pannello a schede
+		// Crea il sotto-container e le schede a cui consente l'accesso
 		tabbedPane = new JTabbedPane();
+		registraScontrinoPanel = new RegistraScontrinoPanel(this);
+		visualizzaScontriniPanel = new VisualizzaScontriniPanel(this);
 
-		// Crea le schede a cui il pannello consente l'accesso
-		registraScontrinoPanel = new RegistraScontrinoPanel();
-		visualizzaScontriniPanel = new VisualizzaScontriniPanel();
-
-		// Aggiungi le schede al pannello precedentemente creato
+		// Aggiunge le schede al sotto-container precedentemente creato
 		tabbedPane.addTab("Registra scontrino", registraScontrinoPanel);
 		tabbedPane.addTab("Visualizza scontrini", visualizzaScontriniPanel);
 
+		// Aggiunge il sotto-container al layout
 		add(tabbedPane, BorderLayout.CENTER);
 	}
 }

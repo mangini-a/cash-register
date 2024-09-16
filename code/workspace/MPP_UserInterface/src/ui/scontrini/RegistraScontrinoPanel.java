@@ -28,7 +28,7 @@ public class RegistraScontrinoPanel extends JPanel {
 	private DataService dataService;
 	private InvoiceService invoiceService;
 
-	public RegistraScontrinoPanel() {
+	public RegistraScontrinoPanel(RegistrazioneScontriniPanel registrazioneScontriniPanel) {
 		this.dataService = new DataService();
 		this.invoiceService = new InvoiceServiceImpl(dataService);
 		setLayout(new BorderLayout());
@@ -124,7 +124,7 @@ public class RegistraScontrinoPanel extends JPanel {
 				VocescontrinoRecord voceScontrino = createVoceScontrinoRecord(prodotto, qtaProdotto);
 				vociScontrino.add(voceScontrino);
 				tableModel.addRow(new Object[] { prodotto.getNome(), qtaProdotto, prodotto.getPrezzo() * qtaProdotto });
-				// Aggiorna la quantità disponibile ad inventario successivamente all'aggiunta al carrello
+				// Aggiorna la quantità disponibile del prodotto nel database
 				dataService.aggiornaQtaProdotto(prodotto.getIdprodotto(), prodotto.getQtadisponibile() - qtaProdotto);
 				// Resetta i campi di selezione
 				prodottoField.setText("");

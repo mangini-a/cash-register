@@ -123,7 +123,7 @@ public class ModificaProdottoPanel extends JPanel {
 
 	private void caricaDettagliProdotto(String prodottoSelezionato) {
 		// Recupera i dettagli del prodotto selezionato dal database usando jOOQ
-		ProdottoRecord prodotto = dataService.getProdotto(prodottoSelezionato);
+		ProdottoRecord prodotto = dataService.getProdottoByDescrizione(prodottoSelezionato);
 
 		if (prodotto != null) {
 			// Popola i campi di testo con i dettagli correnti del prodotto (pre-modifica)

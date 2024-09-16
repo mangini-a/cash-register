@@ -4,38 +4,40 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
-import dto.ProdottoNelCarrelloDTO;
+
+import jooq.DataService;
+import jooq.generated.tables.records.ProdottoRecord;
+import jooq.generated.tables.records.VocescontrinoRecord;
 
 @SuppressWarnings("serial")
 public class DettagliScontrinoDialog extends JDialog {
 	
 	private JTable dettagliTable;
-	private DefaultTableModel tableModel;
+    private DefaultTableModel tableModel;
+    private DataService dataService;
 
-	public DettagliScontrinoDialog(Frame owner, List<ProdottoNelCarrelloDTO> prodottiNelCarrello, float prezzoTotale) {
-		
-        super(owner, "Dettagli scontrino", true);
+	public DettagliScontrinoDialog(Frame owner, List<VocescontrinoRecord> dettagliScontrino) {
+		super(owner, "Dettagli scontrino", true);
+		this.dataService = new DataService();
         setLayout(new BorderLayout());
 
-        // Crea la tabella raffigurante i dettagli di uno scontrino
+        // Crea la tabella per rappresentare le linee di dettaglio di uno scontrino
         tableModel = new DefaultTableModel(new Object[]{"Prodotto", "Quantità", "Prezzo (€)"}, 0);
         dettagliTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(dettagliTable);
 
-        // Popola la tabella con i prodotti aggiunti al carrello
-        for (ProdottoNelCarrelloDTO prodottoNelCarrello : prodottiNelCarrello) {
-            tableModel.addRow(new Object[]{prodottoNelCarrello.getNome(), prodottoNelCarrello.getQta(), prodottoNelCarrello.getPrezzo()});
+        // Popola la tabella con le linee di dettaglio dello scontrino
+        for (VocescontrinoRecord dettaglio : dettagliScontrino) {
+            ProdottoRecord prodotto = dataService.getProdottoById(dettaglio.getIdprodotto());
+            if (prodotto != null) {
+            	tableModel.addRow(new Object[]{prodotto.getNome(), dettaglio.getQtaprodotto(), prodotto.getPrezzo()});
+            }
         }
 
-        // Aggiunge un'etichetta per visualizzare il prezzo totale dello scontrino
-        JLabel prezzoTotaleLabel = new JLabel("Totale complessivo: " + prezzoTotale);
-
-        // Aggiunge i componenti alla finestra (dialog)
         add(scrollPane, BorderLayout.CENTER);
-        add(prezzoTotaleLabel, BorderLayout.SOUTH);
 
         pack();
         setLocationRelativeTo(owner);
         setVisible(true);
-    }
+	}
 }

@@ -10,15 +10,29 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
 import dbinit.CreateDatabase;
-import dto.ProdottoNelCarrelloDTO;
 import jooq.generated.tables.Prodotto;
 import jooq.generated.tables.Scontrino;
+import jooq.generated.tables.Vocescontrino;
 import jooq.generated.tables.records.ProdottoRecord;
 import jooq.generated.tables.records.ScontrinoRecord;
+import jooq.generated.tables.records.VocescontrinoRecord;
 
 /*
  * Fornisce servizi per interfacciarsi con il database usando il linguaggio Java, evitando di scrivere codice SQL.
- * Per usare questa classe bisogna creare un oggetto con new DataService(), per poi invocare i metodi di interesse.
+ * Per usare questa classe bisogna crearne un'istanza, così da poterne poi invocare i metodi di interesse.
+ * 
+ * aggiungiProdotto: Inserisce un nuovo prodotto nella tabella Prodotto.
+ * eliminaProdotto: Elimina un determinato prodotto sulla base della sua descrizione.
+ * modificaProdotto: Modifica un determinato prodotto sulla base della sua descrizione.
+ * getProdottoByDescrizione: Recupera dal database un determinato prodotto sulla base della propria descrizione.
+ * getProdottoById: Recupera dal database un determinato prodotto sulla base del proprio ID.
+ * getProdotti: Recupera tutti i prodotti contenuti nella tabella Prodotto.
+ * 
+ * aggiornaQtaProdotto: Aggiorna la quantità disponibile di un prodotto in seguito al suo inserimento nel carrello.
+ * inserisciScontrino: Inserisce un nuovo scontrino nella tabella Scontrino.
+ * inserisciVoceScontrino: Inserisce una nuova linea di scontrino nella tabella VoceScontrino.
+ * getScontrini: Recupera tutti gli scontrini contenuti nella tabella Scontrino.
+ * getDettagliScontrino: Recupera i dettagli di un determinato scontrino sulla base del suo ID.
  */
 public class DataService {
 
@@ -37,7 +51,7 @@ public class DataService {
 	}
 
 	/*
-	 * Inserisce un prodotto nella rispettiva tabella del database.
+	 * Inserisce un nuovo prodotto nella tabella Prodotto.
 	 */
 	public void aggiungiProdotto(String nome, float prezzo, int qtaDisponibile, String descrizione) {
 		ProdottoRecord prodottoRecord = context.newRecord(Prodotto.PRODOTTO);
@@ -55,64 +69,83 @@ public class DataService {
 	}
 
 	/*
-	 * Recupera dal database tutti i prodotti contenuti nella rispettiva tabella.
-	 */
-	public List<ProdottoRecord> getProdotti() {
-		return context.selectFrom(Prodotto.PRODOTTO).fetch();
-	}
-
-	/*
-	 * Recupera dal database un determinato prodotto sulla base della propria descrizione.
-	 */
-	public ProdottoRecord getProdotto(String descrizione) {
-		return context.selectFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.DESCRIZIONE.eq(descrizione)).fetchOne();
-	}
-
-	/*
-	 * Rimuove dal database un determinato prodotto sulla base della propria descrizione.
+	 * Elimina un determinato prodotto sulla base della sua descrizione.
 	 */
 	public int eliminaProdotto(String descrizione) {
 		return context.deleteFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.DESCRIZIONE.eq(descrizione)).execute();
 	}
 
 	/*
-	 * Modifica un certo prodotto già contenuto nel database sulla base della propria descrizione.
+	 * Modifica un determinato prodotto sulla base della sua descrizione.
 	 */
 	public int modificaProdotto(String nuovoNomeProdotto, float nuovoPrezzoProdotto, int nuovaQtaProdotto,
 			String nuovaDescrizioneProdotto, String prodottoSelezionato) {
-		return context.update(Prodotto.PRODOTTO)
-                .set(Prodotto.PRODOTTO.NOME, nuovoNomeProdotto)
-                .set(Prodotto.PRODOTTO.PREZZO, nuovoPrezzoProdotto)
-                .set(Prodotto.PRODOTTO.QTADISPONIBILE, nuovaQtaProdotto)
-                .set(Prodotto.PRODOTTO.DESCRIZIONE, nuovaDescrizioneProdotto)
-                .where(Prodotto.PRODOTTO.DESCRIZIONE.eq(prodottoSelezionato))
-                .execute();
+		return context.update(Prodotto.PRODOTTO).set(Prodotto.PRODOTTO.NOME, nuovoNomeProdotto)
+				.set(Prodotto.PRODOTTO.PREZZO, nuovoPrezzoProdotto)
+				.set(Prodotto.PRODOTTO.QTADISPONIBILE, nuovaQtaProdotto)
+				.set(Prodotto.PRODOTTO.DESCRIZIONE, nuovaDescrizioneProdotto)
+				.where(Prodotto.PRODOTTO.DESCRIZIONE.eq(prodottoSelezionato)).execute();
 	}
-	
+
 	/*
-	 * Inserisce uno scontrino nella rispettiva tabella del database.
+	 * Recupera dal database un determinato prodotto sulla base della propria
+	 * descrizione.
 	 */
-	public void inserisciScontrino(float prezzoTotale, List<ProdottoNelCarrelloDTO> prodottiNelCarrello) {
+	public ProdottoRecord getProdottoByDescrizione(String descrizione) {
+		return context.selectFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.DESCRIZIONE.eq(descrizione)).fetchOne();
+	}
+
+	/*
+	 * Recupera dal database un determinato prodotto sulla base del proprio ID.
+	 */
+	public ProdottoRecord getProdottoById(int idProdotto) {
+		return context.selectFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.IDPRODOTTO.eq(idProdotto)).fetchOne();
+	}
+
+	/*
+	 * Recupera tutti i prodotti contenuti nella tabella Prodotto.
+	 */
+	public List<ProdottoRecord> getProdotti() {
+		return context.selectFrom(Prodotto.PRODOTTO).fetch();
+	}
+
+	/*
+	 * Aggiorna la quantità disponibile di un prodotto in seguito al suo inserimento nel carrello.
+	 */
+	public void aggiornaQtaProdotto(Integer idProdotto, int nuovaQta) {
+		context.update(Prodotto.PRODOTTO).set(Prodotto.PRODOTTO.QTADISPONIBILE, nuovaQta)
+				.where(Prodotto.PRODOTTO.IDPRODOTTO.eq(idProdotto)).execute();
+	}
+
+	/*
+	 * Inserisce un nuovo scontrino nella tabella Scontrino.
+	 */
+	public ScontrinoRecord inserisciScontrino(float prezzoTotale) {
 		ScontrinoRecord scontrino = context.newRecord(Scontrino.SCONTRINO);
 		scontrino.setPrezzotot(prezzoTotale);
-		
-		// Serializza i prodotti nel carrello come una stringa JSON o un oggetto serializzato
-        String prodottiNelCarrelloJson = serializzaProdottiNelCarrello(prodottiNelCarrello);
-        scontrino.setDettagli(prodottiNelCarrelloJson);
-		
 		scontrino.store();
-	}
-
-	private String serializzaProdottiNelCarrello(List<ProdottoNelCarrelloDTO> prodottiNelCarrello) {
-		// Implement the serialization logic here
-        // For example, you can use a JSON library like Jackson or Gson to serialize the cart items
-        return "serialized_cart_items";
+		return scontrino;
 	}
 
 	/*
-	 * Recupera dal database tutti gli scontrini contenuti nella rispettiva tabella.
+	 * Inserisce una nuova linea di scontrino nella tabella VoceScontrino.
+	 */
+	public void inserisciVoceScontrino(VocescontrinoRecord voceScontrino) {
+		voceScontrino.store();
+	}
+
+	/*
+	 * Recupera tutti gli scontrini contenuti nella tabella Scontrino.
 	 */
 	public List<ScontrinoRecord> getScontrini() {
 		return context.selectFrom(Scontrino.SCONTRINO).fetch();
+	}
+
+	/*
+	 * Recupera i dettagli di un determinato scontrino sulla base del suo ID.
+	 */
+	public List<VocescontrinoRecord> getDettagliScontrino(int idScontrino) {
+		return context.selectFrom(Vocescontrino.VOCESCONTRINO)
+				.where(Vocescontrino.VOCESCONTRINO.IDSCONTRINO.eq(idScontrino)).fetch();
 	}
 }

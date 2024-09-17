@@ -22,8 +22,8 @@ import jooq.generated.tables.records.VocescontrinoRecord;
  * Per usare questa classe bisogna crearne un'istanza, così da poterne poi invocare i metodi di interesse.
  * 
  * aggiungiProdotto: Inserisce un nuovo prodotto nella tabella Prodotto.
- * eliminaProdotto: Elimina un determinato prodotto sulla base della sua descrizione.
- * modificaProdotto: Modifica un determinato prodotto sulla base della sua descrizione.
+ * eliminaProdotto: Elimina un determinato prodotto sulla base del proprio nome. (V)
+ * modificaProdotto: Modifica un determinato prodotto sulla base del proprio nome. (V)
  * getProdottoByDescrizione: Recupera dal database un determinato prodotto sulla base della propria descrizione.
  * getProdottoById: Recupera dal database un determinato prodotto sulla base del proprio ID.
  * getProdotti: Recupera tutti i prodotti contenuti nella tabella Prodotto.
@@ -69,22 +69,10 @@ public class DataService {
 	}
 
 	/*
-	 * Elimina un determinato prodotto sulla base della sua descrizione.
+	 * Elimina un determinato prodotto sulla base del proprio nome.
 	 */
-	public int eliminaProdotto(String descrizione) {
-		return context.deleteFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.DESCRIZIONE.eq(descrizione)).execute();
-	}
-
-	/*
-	 * Modifica un determinato prodotto sulla base della sua descrizione.
-	 */
-	public int modificaProdotto(String nuovoNomeProdotto, float nuovoPrezzoProdotto, int nuovaQtaProdotto,
-			String nuovaDescrizioneProdotto, String prodottoSelezionato) {
-		return context.update(Prodotto.PRODOTTO).set(Prodotto.PRODOTTO.NOME, nuovoNomeProdotto)
-				.set(Prodotto.PRODOTTO.PREZZO, nuovoPrezzoProdotto)
-				.set(Prodotto.PRODOTTO.QTADISPONIBILE, nuovaQtaProdotto)
-				.set(Prodotto.PRODOTTO.DESCRIZIONE, nuovaDescrizioneProdotto)
-				.where(Prodotto.PRODOTTO.DESCRIZIONE.eq(prodottoSelezionato)).execute();
+	public int eliminaProdotto(String nome) {
+		return context.deleteFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.NOME.eq(nome)).execute();
 	}
 
 	/*
@@ -147,5 +135,16 @@ public class DataService {
 	public List<VocescontrinoRecord> getDettagliScontrino(int idScontrino) {
 		return context.selectFrom(Vocescontrino.VOCESCONTRINO)
 				.where(Vocescontrino.VOCESCONTRINO.IDSCONTRINO.eq(idScontrino)).fetch();
+	}
+
+	/*
+	 * Modifica un determinato prodotto sulla base del proprio nome.
+	 */
+	public int modificaProdotto(String nome, String nuovoNome, float nuovoPrezzo, int nuovaQta, String nuovaDescrizione) {
+		return context.update(Prodotto.PRODOTTO).set(Prodotto.PRODOTTO.NOME, nuovoNome)
+		.set(Prodotto.PRODOTTO.PREZZO, nuovoPrezzo)
+		.set(Prodotto.PRODOTTO.QTADISPONIBILE, nuovaQta)
+		.set(Prodotto.PRODOTTO.DESCRIZIONE, nuovaDescrizione)
+		.where(Prodotto.PRODOTTO.NOME.eq(nome)).execute();
 	}
 }

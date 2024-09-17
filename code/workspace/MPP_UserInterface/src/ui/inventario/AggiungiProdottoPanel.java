@@ -1,18 +1,18 @@
 package ui.inventario;
 
+import java.awt.*;
 import javax.swing.*;
 
 import jooq.DataService;
 
-import java.awt.*;
-
 @SuppressWarnings("serial")
 public class AggiungiProdottoPanel extends JPanel {
 
-	private JTextField nomeProdottoField;
-	private JTextField prezzoProdottoField;
-	private JTextField qtaProdottoField;
-	private JTextField descrizioneProdottoField;
+	private JTextField nomeField;
+	private JTextField prezzoField;
+	private JTextField qtaField;
+	private JTextField descrizioneField;
+	private JButton aggiungiButton;
 	private DataService dataService;
 
 	public AggiungiProdottoPanel(GestioneInventarioPanel gestisciInventarioPanel) {
@@ -30,8 +30,8 @@ public class AggiungiProdottoPanel extends JPanel {
 		gbc.gridx = 1;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		nomeProdottoField = new JTextField(20);
-		add(nomeProdottoField, gbc);
+		nomeField = new JTextField(20);
+		add(nomeField, gbc);
 
 		// Prezzo del prodotto
 		gbc.gridx = 0;
@@ -43,8 +43,8 @@ public class AggiungiProdottoPanel extends JPanel {
 		gbc.gridx = 1;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		prezzoProdottoField = new JTextField(20);
-		add(prezzoProdottoField, gbc);
+		prezzoField = new JTextField(20);
+		add(prezzoField, gbc);
 
 		// Quantità del prodotto
 		gbc.gridx = 0;
@@ -56,9 +56,9 @@ public class AggiungiProdottoPanel extends JPanel {
 		gbc.gridx = 1;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		qtaProdottoField = new JTextField(20);
-		add(qtaProdottoField, gbc);
-		
+		qtaField = new JTextField(20);
+		add(qtaField, gbc);
+
 		// Descrizione del prodotto
 		gbc.gridx = 0;
 		gbc.gridy = 3;
@@ -69,73 +69,75 @@ public class AggiungiProdottoPanel extends JPanel {
 		gbc.gridx = 1;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		descrizioneProdottoField = new JTextField(20);
-		add(descrizioneProdottoField, gbc);
-		
-		// Pulsante "Aggiungi prodotto"
-		gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-		JButton btnAggiungiProdotto = new JButton("Aggiungi prodotto", new ImageIcon("../img/create-icon.png"));
-		add(btnAggiungiProdotto, gbc);
+		descrizioneField = new JTextField(20);
+		add(descrizioneField, gbc);
 
-		btnAggiungiProdotto.addActionListener(e -> aggiungiProdotto());
+		// Pulsante "Aggiungi"
+		gbc.gridx = 0;
+		gbc.gridy = 4;
+		gbc.gridwidth = 2;
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		aggiungiButton = new JButton("Aggiungi", new ImageIcon("../img/create-icon.png"));
+		aggiungiButton.addActionListener(e -> aggiungiProdotto());
+		add(aggiungiButton, gbc);
 	}
 
 	private void aggiungiProdotto() {
-		String nomeProdotto = nomeProdottoField.getText();
-		String prezzoProdottoText = prezzoProdottoField.getText();
-		String qtaProdottoText = qtaProdottoField.getText();
-		String descrizioneProdotto = descrizioneProdottoField.getText();
+		String nome = nomeField.getText();
+		String prezzoText = prezzoField.getText();
+		String qtaText = qtaField.getText();
+		String descrizione = descrizioneField.getText();
 
 		// Replace commas with periods to handle both decimal separators
-		prezzoProdottoText = prezzoProdottoText.replace(",", ".");
+		prezzoText = prezzoText.replace(",", ".");
 
 		// Parse product price as float
-		float prezzoProdotto = 0.0f;
+		float prezzo = 0.0f;
 
 		try {
-			prezzoProdotto = Float.parseFloat(prezzoProdottoText);
-			if (prezzoProdotto <= 0) {
-				JOptionPane.showMessageDialog(this, "Prezzo del prodotto non valido. Inserisci un numero positivo.",
-						"Errore", JOptionPane.ERROR_MESSAGE);
+			prezzo = Float.parseFloat(prezzoText);
+			if (prezzo <= 0) {
+				JOptionPane.showMessageDialog(this, "Prezzo non valido. Inserisci un numero positivo.", "Errore",
+						JOptionPane.ERROR_MESSAGE);
 				return; // Exit the method if the price is not positive
 			}
 		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(this, "Prezzo del prodotto non valido. Inserisci un numero reale.", "Errore",
+			JOptionPane.showMessageDialog(this, "Prezzo non valido. Inserisci un numero reale.", "Errore",
 					JOptionPane.ERROR_MESSAGE);
 			return; // Exit the method if the price is invalid
 		}
 
 		// Parse product quantity as integer
-		int qtaProdotto = 0;
+		int qta = 0;
 
 		try {
-			qtaProdotto = Integer.parseInt(qtaProdottoText);
-			if (qtaProdotto <= 0) {
-				JOptionPane.showMessageDialog(this, "Quantità del prodotto non valida. Inserisci un numero positivo.",
-						"Errore", JOptionPane.ERROR_MESSAGE);
+			qta = Integer.parseInt(qtaText);
+			if (qta <= 0) {
+				JOptionPane.showMessageDialog(this, "Quantità non valida. Inserisci un numero positivo.", "Errore",
+						JOptionPane.ERROR_MESSAGE);
 				return; // Exit the method if the quantity is not positive
 			}
 		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(this, "Quantità del prodotto non valida. Inserisci un numero intero.",
-					"Errore", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Quantità non valida. Inserisci un numero intero.", "Errore",
+					JOptionPane.ERROR_MESSAGE);
 			return; // Exit the method if the quantity is invalid
 		}
 
-		// Handle the product addition using the underlying business logic
-		dataService.aggiungiProdotto(nomeProdotto, prezzoProdotto, qtaProdotto, descrizioneProdotto);
-
-		// Show a confirmation message
-		JOptionPane.showMessageDialog(this, "Prodotto aggiunto con successo!", "Operazione riuscita",
-				JOptionPane.INFORMATION_MESSAGE);
+		try {
+			// Handle the product addition using the underlying business logic
+			dataService.aggiungiProdotto(nome, prezzo, qta, descrizione);
+			JOptionPane.showMessageDialog(this, "Prodotto aggiunto con successo!", "Operazione riuscita",
+					JOptionPane.INFORMATION_MESSAGE);
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Non è stato possibile aggiungere il prodotto.", "Errore",
+					JOptionPane.ERROR_MESSAGE);
+		}
 
 		// Clear the fields after adding the product
-		nomeProdottoField.setText("");
-		prezzoProdottoField.setText("");
-		qtaProdottoField.setText("");
-		descrizioneProdottoField.setText("");
+		nomeField.setText("");
+		prezzoField.setText("");
+		qtaField.setText("");
+		descrizioneField.setText("");
 	}
 }

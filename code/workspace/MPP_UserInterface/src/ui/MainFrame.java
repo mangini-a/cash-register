@@ -13,6 +13,7 @@ import ui.vspanel.VisualizzaScontriniPanel;
 public class MainFrame extends JFrame {
 
 	private JPanel mainPanel;
+	private CardLayout cardLayout; // CardLayout per gestire le tre schermate operative
 	private RegistraScontrinoPanel registraScontrinoPanel;
 	private GestisciInventarioPanel gestisciInventarioPanel;
 	private VisualizzaScontriniPanel visualizzaScontriniPanel;
@@ -33,20 +34,10 @@ public class MainFrame extends JFrame {
         JButton gestisciInventarioButton = new JButton("Gestisci l'inventario", new ImageIcon("../img/inventory-icon.png"));
         JButton visualizzaScontriniButton = new JButton("Visualizza gli scontrini emessi", new ImageIcon("../img/viewinvoices-icon.png"));
 
-        // Alla pressione del pulsante "Registra un nuovo scontrino", mostra il relativo pannello
-        registraScontrinoButton.addActionListener(e -> {
-            showPanel(registraScontrinoPanel);
-        });
-
-        // Alla pressione del pulsante "Gestisci l'inventario", mostra il relativo pannello
-        gestisciInventarioButton.addActionListener(e -> {
-            showPanel(gestisciInventarioPanel);
-        });
-
-        // Alla pressione del pulsante "Visualizza gli scontrini emessi", mostra il relativo pannello
-        visualizzaScontriniButton.addActionListener(e -> {
-            showPanel(visualizzaScontriniPanel);
-        });
+        // Alla pressione di un pulsante, mostra il relativo pannello
+        registraScontrinoButton.addActionListener(e -> showPanel("Registra"));
+        gestisciInventarioButton.addActionListener(e -> showPanel("Gestisci"));
+        visualizzaScontriniButton.addActionListener(e -> showPanel("Visualizza"));
         
         // Crea il pannello che ospita i pulsanti con un FlowLayout
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
@@ -56,36 +47,40 @@ public class MainFrame extends JFrame {
         
         // Aggiunge il pannello che ospita i pulsanti a quello principale, posizionandolo in alto
         mainPanel.add(buttonPanel, BorderLayout.NORTH);
+        
+        // Crea un CardLayout per le schermate operative
+        cardLayout = new CardLayout();
+        JPanel cardPanel = new JPanel(cardLayout); // Pannello per le card (schede)
 
-        // Crea le tre schermate operative, a cui si può accedere tramite un click sul relativo pulsante
+        // Inizializza le tre schermate operative, a cui si può accedere tramite un click sul relativo pulsante
         registraScontrinoPanel = new RegistraScontrinoPanel(this);
         gestisciInventarioPanel = new GestisciInventarioPanel(this);
         visualizzaScontriniPanel = new VisualizzaScontriniPanel(this);
         
-        // Aggiunge la schermata iniziale (home page) al pannello principale
-        showPanel(registraScontrinoPanel);
+        // Aggiunge le schermate operative (a cui sono associati nomi univoci) al pannello per le card
+        cardPanel.add(registraScontrinoPanel, "Registra");
+        cardPanel.add(gestisciInventarioPanel, "Gestisci");
+        cardPanel.add(visualizzaScontriniPanel, "Visualizza");
+        
+        // Aggiunge il pannello per le card a quello principale
+        mainPanel.add(cardPanel, BorderLayout.CENTER);
+        
+        // Mostra la schermata iniziale
+        showPanel("Registra");
 
-        // Posiziona il pannello principale al centro della schermata
-        add(mainPanel, BorderLayout.CENTER);
-		
-		// Imposta una dimensione minima per garantire che il frame non risulti troppo piccolo
+        // Imposta le proprietà del frame
+        add(mainPanel);
+		pack();
 		setMinimumSize(new Dimension(800, 600));
-		
-		// Centra il frame sullo schermo
 		setLocationRelativeTo(null);
-		
-		// Mostra il frame
 		setVisible(true);
 	}
 
 	/*
 	 * Gestisce la transizione tra una schermata e l'altra.
 	 */
-	private void showPanel(JPanel panel) {
-		mainPanel.removeAll(); // Rimuove tutti i componenti dal pannello principale
-        mainPanel.add(panel); // Aggiunge il pannello selezionato al pannello principale
-        revalidate();
-        repaint();
+	private void showPanel(String panelName) {
+		cardLayout.show((Container) mainPanel.getComponent(1), panelName); // Mostra la schermata selezionata mediante il proprio nome
 	}
 
 	public static void main(String[] args) {

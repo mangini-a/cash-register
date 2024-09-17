@@ -38,7 +38,7 @@ public class AggiungiProdottoPanel extends JPanel {
 		gbc.gridy = 1;
 		gbc.anchor = GridBagConstraints.EAST;
 		gbc.fill = GridBagConstraints.NONE;
-		add(new JLabel("Prezzo:"), gbc);
+		add(new JLabel("Prezzo (€):"), gbc);
 
 		gbc.gridx = 1;
 		gbc.anchor = GridBagConstraints.WEST;

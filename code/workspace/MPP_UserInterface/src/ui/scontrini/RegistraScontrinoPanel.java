@@ -27,7 +27,8 @@ public class RegistraScontrinoPanel extends JPanel {
 	private List<VocescontrinoRecord> vociScontrino;
 	private DataService dataService;
 	private InvoiceService invoiceService;
-
+	private JPopupMenu suggestionPopup;
+	
 	public RegistraScontrinoPanel(RegistrazioneScontriniPanel registrazioneScontriniPanel) {
 		this.dataService = new DataService();
 		this.invoiceService = new InvoiceServiceImpl(dataService);
@@ -39,24 +40,31 @@ public class RegistraScontrinoPanel extends JPanel {
 
 		// Crea il campo di testo per la selezione dei prodotti (con auto-completamento)
 		prodottoField = new JTextField(20);
-		prodottoField.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				String text = prodottoField.getText();
-				if (!text.isEmpty()) {
-					List<String> suggestions = getProductSuggestions(text);
-					if (!suggestions.isEmpty()) {
-						prodottoField.setText(suggestions.get(0));
-						prodottoField.setSelectionStart(text.length());
-						prodottoField.setSelectionEnd(suggestions.get(0).length());
+		
+		// Inizializza il JPopupMenu per i suggerimenti 
+			suggestionPopup = new JPopupMenu();
+
+			// Ascoltatore per gestire l'input e mostrare il menu a discesa 
+			prodottoField.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyReleased(KeyEvent e) {
+					String text = prodottoField.getText();
+					if (!text.isEmpty()) {
+						List<String> suggestions = getProductSuggestions(text);
+						if (!suggestions.isEmpty()) {
+							showSuggestionPopup(suggestions); 	//Mostra il popup con i suggerimenti
+						} else {
+							suggestionPopup.setVisible(false);	//Nascosto se non ci sono suggerimenti
+						}
+					} else {
+						suggestionPopup.setVisible(false); 		//Nascosto se il campo è vuoto
 					}
 				}
-			}
+			});
+		
+		
 
-		});
-
-		// Crea lo spinner per selezionare la quantità di prodotto desiderata dal
-		// cliente
+		// Crea lo spinner per selezionare la quantità di prodotto desiderata dal cliente
 		qtaProdottoSpinner = new JSpinner(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
 
 		// Crea il pulsante "Aggiungi al carrello"
@@ -91,7 +99,7 @@ public class RegistraScontrinoPanel extends JPanel {
 		add(topPanel, BorderLayout.NORTH);
 		add(scrollPane, BorderLayout.CENTER);
 		add(bottomPanel, BorderLayout.SOUTH);
-	}
+	}   
 
 	/*
 	 * Restituisce una lista di nomi di prodotti che matchano con il testo in input
@@ -106,6 +114,41 @@ public class RegistraScontrinoPanel extends JPanel {
 		}
 		return suggestions;
 	}
+	 
+	
+	private void showSuggestionPopup(List<String> suggestions) {
+	    //Rimuovi tutti i vecchi suggerimenti prima di aggiornare il popup
+	    suggestionPopup.setVisible(false);
+	    suggestionPopup.removeAll(); 
+
+	    //Aggiungi i suggerimenti filtrati
+	    boolean hasSuggestions = false; 
+	    String inputText = prodottoField.getText().toLowerCase(); //Ottieni il testo inserito
+
+	    for (String suggestion : suggestions) {
+	        if (suggestion.toLowerCase().startsWith(inputText)) { //Filtra i suggerimenti
+	            JMenuItem item = new JMenuItem(suggestion);
+	            item.addActionListener(e -> {
+	                prodottoField.setText(suggestion); 
+	                suggestionPopup.setVisible(false); //Nascondi il popup dopo la selezione dopo averla aggiunta al testo
+	            });
+	            suggestionPopup.add(item); //Aggiorna il popup
+	            hasSuggestions = true;
+	        }
+	    }
+
+	    //Mostra il popup solo se ci sono suggerimenti e il testo inserito non è vuoto
+	    if (hasSuggestions && !inputText.isEmpty()) {
+	        suggestionPopup.show(prodottoField, 0, prodottoField.getHeight());
+	        prodottoField.requestFocusInWindow(); //Mantieni il focus nel campo di testo
+	    } else {
+	        suggestionPopup.setVisible(false); //Nascondi se non ci sono suggerimenti
+	    }
+	}
+
+
+	
+	
 
 	/*
 	 * Aggiunge un prodotto al carrello qualora la quantità a disposizione dello

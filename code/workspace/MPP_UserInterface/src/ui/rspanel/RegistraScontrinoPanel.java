@@ -44,15 +44,16 @@ public class RegistraScontrinoPanel extends JPanel {
 	private JPopupMenu suggestionPopup;
 
 	public RegistraScontrinoPanel(MainFrame mainFrame) {
+		// Crea un'istanza di DataService
 		this.dataService = new DataService();
+		
+		// Crea un'istanza di InvoiceServiceImpl (classe che implementa l'interfaccia InvoiceService)
 		this.invoiceService = new InvoiceServiceImpl(dataService);
+		
 		setLayout(new BorderLayout());
 
 	    // Aggiunge questa schermata al pannello dei contenuti del frame principale
 	    mainFrame.getContentPane().add(this, BorderLayout.CENTER);
-
-	    // Add your components to the panel
-	    // ...
 
 		// Carica i prodotti dal database
 		prodotti = dataService.getProdotti();
@@ -93,24 +94,30 @@ public class RegistraScontrinoPanel extends JPanel {
 		tableModel = new DefaultTableModel(new Object[] { "Prodotto", "Quantità", "Prezzo (€)" }, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return false; // Rende tutte le celle della tabella non modificabili
+				return false; // Impedisce di modificare le celle della tabella
 			}
 		};
 		carrelloTable = new JTable(tableModel);
+		
+		// Posiziona la tabella che rappresenta i prodotti nel carrello della spesa su un pannello scorrevole
 		JScrollPane scrollPane = new JScrollPane(carrelloTable);
 
 		// Crea il pulsante "Genera scontrino"
-		generaScontrinoButton = new JButton("Genera scontrino", new ImageIcon("../img/invoicegen-icon.png"));
+		generaScontrinoButton = new JButton("Genera scontrino", new ImageIcon("../img/ok-icon.png"));
 		generaScontrinoButton.addActionListener(e -> generaScontrino());
 
-		// Aggiungi i componenti sopra definiti al pannello
+		/*
+		 * Aggiunge alla sezione superiore il campo di testo per selezionare il prodotto (con etichetta),
+		 * lo spinner per indicarne la quantità (con etichetta) ed il pulsante "Aggiungi al carrello".
+		 */
 		JPanel topPanel = new JPanel(new FlowLayout());
-		topPanel.add(new JLabel("Nome prodotto:"));
+		topPanel.add(new JLabel("Prodotto:"));
 		topPanel.add(prodottoField);
 		topPanel.add(new JLabel("Quantità:"));
 		topPanel.add(qtaProdottoSpinner);
 		topPanel.add(aggiungiAlCarrelloButton);
 
+		// Aggiunge alla sezione inferiore il pulsante "Genera scontrino"
 		JPanel bottomPanel = new JPanel(new FlowLayout());
 		bottomPanel.add(generaScontrinoButton);
 
@@ -147,8 +154,7 @@ public class RegistraScontrinoPanel extends JPanel {
 				JMenuItem item = new JMenuItem(suggestion);
 				item.addActionListener(e -> {
 					prodottoField.setText(suggestion);
-					suggestionPopup.setVisible(false); // Nascondi il popup dopo la selezione dopo averla aggiunta al
-														// testo
+					suggestionPopup.setVisible(false); // Nascondi il popup dopo la selezione dopo averla aggiunta al testo
 				});
 				suggestionPopup.add(item); // Aggiorna il popup
 				hasSuggestions = true;
@@ -165,25 +171,29 @@ public class RegistraScontrinoPanel extends JPanel {
 	}
 
 	/*
-	 * Aggiunge un prodotto al carrello qualora la quantità a disposizione dello
-	 * stock sia sufficiente: in tal caso, ne aggiorna la quantità disponibile ad
-	 * inventario.
+	 * Aggiunge un prodotto al carrello qualora la sua disponibilità sia sufficiente: 
+	 * in tal caso, ne aggiorna la quantità disponibile ad inventario, decrementandola.
 	 */
 	private void aggiungiAlCarrello() {
-		// Estrae il nome del prodotto aggiunto al carrello, così come la quantità in
-		// cui è stato richiesto
+		// Estrae il nome del prodotto aggiunto al carrello
 		String nomeProdotto = prodottoField.getText();
+		
+		// Estrae la quantità in cui lo stesso è stato richiesto
 		int qtaProdotto = (int) qtaProdottoSpinner.getValue();
-
+		
+		// Recupera il record del prodotto selezionato, partendo dal suo nome
 		ProdottoRecord prodotto = getProductByName(nomeProdotto);
 		if (prodotto != null) {
+			
 			// Se la quantità richiesta non eccede quella disponibile a stock
 			if (qtaProdotto <= prodotto.getQtadisponibile()) {
 				VocescontrinoRecord voceScontrino = createVoceScontrinoRecord(prodotto, qtaProdotto);
 				vociScontrino.add(voceScontrino);
 				tableModel.addRow(new Object[] { prodotto.getNome(), qtaProdotto, prodotto.getPrezzo() * qtaProdotto });
+				
 				// Aggiorna la quantità disponibile del prodotto nel database
 				dataService.aggiornaQtaProdotto(prodotto.getIdprodotto(), prodotto.getQtadisponibile() - qtaProdotto);
+				
 				// Resetta i campi di selezione
 				prodottoField.setText("");
 				qtaProdottoSpinner.setValue(1);
@@ -198,8 +208,7 @@ public class RegistraScontrinoPanel extends JPanel {
 	}
 
 	/*
-	 * Recupera una entry della tabella Prodotto sulla base del nome del prodotto in
-	 * questione.
+	 * Recupera una entry della tabella Prodotto sulla base del nome del prodotto in questione.
 	 */
 	private ProdottoRecord getProductByName(String nomeProdotto) {
 		for (ProdottoRecord prodotto : prodotti) {
@@ -226,24 +235,53 @@ public class RegistraScontrinoPanel extends JPanel {
 	 * implementa InvoiceService.
 	 */
 	private void generaScontrino() {
+		// Controlla se il carrello risulti vuoto
 		if (vociScontrino.isEmpty()) {
 			JOptionPane.showMessageDialog(this, "Il carrello della spesa è vuoto.", "Errore",
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+		
+		// Validate the data in the cart
+	    if (!validateCartData()) {
+	        JOptionPane.showMessageDialog(this, "I dati nel carrello non sono validi.", "Errore", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	    
+	    try {
+	    	// Delega l'effettiva generazione dello scontrino all'istanza della classe che implementa InvoiceService.
+	    	float prezzoTotale = calcolaPrezzoTotale();
+	    	invoiceService.generaScontrino(vociScontrino, prezzoTotale);
+	    	
+	    	// Mostra un messaggio di conferma
+	    	JOptionPane.showMessageDialog(this, "Scontrino generato con successo!", "Operazione riuscita",
+	    			JOptionPane.INFORMATION_MESSAGE);
+	    	
+	    	// Resetta sia il carrello (rimuovendo le voci scontrino dalla lista) che la relativa rappresentazione tabulare
+	    	resettaCarrello();
+	    } catch (Exception e) {
+	    	// Gestisce qualunque eccezione si sollevi durante la generazione dello scontrino
+	        JOptionPane.showMessageDialog(this, "Errore durante la generazione dello scontrino: " + e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+	
+	private boolean validateCartData() {
+	    for (VocescontrinoRecord voceScontrino : vociScontrino) {
+	        // Controlla se l'ID del prodotto sia valido
+	        if (getProductById(voceScontrino.getIdprodotto()) == null) {
+	            return false;
+	        }
 
-		// Delega la generazione dello scontrino all'istanza della classe che implementa
-		// InvoiceService.
-		float prezzoTotale = calcolaPrezzoTotale();
-		invoiceService.generaScontrino(vociScontrino, prezzoTotale);
-
-		JOptionPane.showMessageDialog(this, "Scontrino generato con successo!", "Operazione riuscita",
-				JOptionPane.INFORMATION_MESSAGE);
-		resettaCarrello();
+	        // Controlla se la quantità selezionata al momento dell'inserimento nel carrello sia valida
+	        if (voceScontrino.getQtaprodotto() <= 0) {
+	            return false;
+	        }
+	    }
+	    return true;
 	}
 
 	/*
-	 * Calcola il prezzo complessivo di uno scontrino, recuperando quantità
+	 * Calcola il totale complessivo di uno scontrino, recuperando quantità
 	 * acquistata e prezzo dei prodotti che ne fanno parte.
 	 */
 	private float calcolaPrezzoTotale() {

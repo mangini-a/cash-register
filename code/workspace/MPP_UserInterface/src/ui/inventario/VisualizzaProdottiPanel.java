@@ -7,7 +7,7 @@ import java.util.List;
 
 import jooq.DataService;
 import jooq.generated.tables.records.ProdottoRecord;
-
+/*
 @SuppressWarnings("serial")
 public class VisualizzaProdottiPanel extends JPanel {
 
@@ -217,3 +217,4 @@ public class VisualizzaProdottiPanel extends JPanel {
 		}
 	}
 }
+*/

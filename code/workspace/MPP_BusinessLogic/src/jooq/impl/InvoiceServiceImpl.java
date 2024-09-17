@@ -11,20 +11,29 @@ public class InvoiceServiceImpl implements InvoiceService {
 	
 	private DataService dataService;
 
+	// Ogni istanza di InvoiceServiceImpl dev'essere inizializzata con un'istanza di DataService valida
 	public InvoiceServiceImpl(DataService dataService) {
 		this.dataService = dataService;
 	}
 
+	/*
+	 * Metodo utilizzato nella classe RegistraScontrinoPanel.java (contenuta nel package ui.rspanel).
+	 */
 	@Override
 	public void generaScontrino(List<VocescontrinoRecord> vociScontrino, float prezzoTotale) {
-		// Inserisci lo scontrino nella tabella Scontrino
-        ScontrinoRecord scontrino = dataService.inserisciScontrino(prezzoTotale);
-
-        // Inserisci le voci dello scontrino nella tabella VoceScontrino
-        for (VocescontrinoRecord voceScontrino : vociScontrino) {
-            voceScontrino.setIdscontrino(scontrino.getIdscontrino());
-            dataService.inserisciVoceScontrino(voceScontrino);
-        }
+		try {
+			// Inserisce lo scontrino di cui viene passato il totale complessivo nella tabella Scontrino
+			ScontrinoRecord scontrino = dataService.inserisciScontrino(prezzoTotale);
+			
+			// Inserisci le voci dello scontrino (passate come parametro) nella tabella VoceScontrino
+			for (VocescontrinoRecord voceScontrino : vociScontrino) {
+				voceScontrino.setIdscontrino(scontrino.getIdscontrino());
+				dataService.inserisciVoceScontrino(voceScontrino);
+			}
+		} catch (Exception e) {
+			// Gestisce qualunque eccezione si sollevi durante la generazione dello scontrino
+	        throw new RuntimeException("Errore durante la generazione dello scontrino: " + e.getMessage(), e);
+	    }
 	}
 
 	@Override

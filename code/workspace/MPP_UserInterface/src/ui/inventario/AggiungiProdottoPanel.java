@@ -4,7 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import jooq.DataService;
-
+/*
 @SuppressWarnings("serial")
 public class AggiungiProdottoPanel extends JPanel {
 
@@ -141,3 +141,4 @@ public class AggiungiProdottoPanel extends JPanel {
 		descrizioneField.setText("");
 	}
 }
+*/

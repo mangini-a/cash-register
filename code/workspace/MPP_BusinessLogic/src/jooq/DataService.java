@@ -22,34 +22,32 @@ import jooq.generated.tables.records.VocescontrinoRecord;
  * Per usare questa classe bisogna crearne un'istanza, così da poterne poi invocare i metodi di interesse.
  * 
  * aggiungiProdotto: Inserisce un nuovo prodotto nella tabella Prodotto.
- * eliminaProdotto: Elimina un determinato prodotto sulla base del proprio nome. (V)
- * modificaProdotto: Modifica un determinato prodotto sulla base del proprio nome. (V)
+ * eliminaProdotto: Elimina un determinato prodotto sulla base del proprio nome. 
+ * modificaProdotto: Modifica un determinato prodotto sulla base del proprio nome. 
  * getProdottoByDescrizione: Recupera dal database un determinato prodotto sulla base della propria descrizione.
  * getProdottoById: Recupera dal database un determinato prodotto sulla base del proprio ID.
- * getProdotti: Recupera tutti i prodotti contenuti nella tabella Prodotto.
+ * getProdotti: Recupera tutti i prodotti contenuti nella tabella Prodotto. 
  * 
- * aggiornaQtaProdotto: Aggiorna la quantità disponibile di un prodotto in seguito al suo inserimento nel carrello.
- * inserisciScontrino: Inserisce un nuovo scontrino nella tabella Scontrino.
+ * aggiornaQtaProdotto: Aggiorna la quantità disponibile di un prodotto in seguito al suo inserimento nel carrello. 
+ * inserisciScontrino: Inserisce un nuovo scontrino nella tabella Scontrino. 
  * inserisciVoceScontrino: Inserisce una nuova linea di scontrino nella tabella VoceScontrino.
  * getScontrini: Recupera tutti gli scontrini contenuti nella tabella Scontrino.
  * getDettagliScontrino: Recupera i dettagli di un determinato scontrino sulla base del suo ID.
  */
 public class DataService {
-
+	
 	private Connection conn;
-	private DSLContext context;
-
-	public DataService() {
-		try {
-			conn = DriverManager.getConnection(CreateDatabase.DB_URL);
-			context = DSL.using(conn, SQLDialect.SQLITE);
-		} catch (SQLException e) {
-			System.out.println("ERROR: Failed to connect!");
-			System.out.println("ERROR: " + e.getErrorCode());
-			e.printStackTrace();
-		}
-	}
-
+    private DSLContext context;
+    
+    public DataService() {
+    	try {
+    		conn = DriverManager.getConnection(CreateDatabase.DB_URL);
+    		context = DSL.using(conn, SQLDialect.SQLITE);
+    	} catch (SQLException e) {
+    		throw new DataServiceException("Failed to connect to database", e);
+    	}
+    }
+    
 	/*
 	 * Inserisce un nuovo prodotto nella tabella Prodotto.
 	 */
@@ -111,7 +109,7 @@ public class DataService {
 	public ScontrinoRecord inserisciScontrino(float prezzoTotale) {
 		ScontrinoRecord scontrino = context.newRecord(Scontrino.SCONTRINO);
 		scontrino.setPrezzotot(prezzoTotale);
-		scontrino.store();
+		scontrino.insert();
 		return scontrino;
 	}
 
@@ -119,7 +117,7 @@ public class DataService {
 	 * Inserisce una nuova linea di scontrino nella tabella VoceScontrino.
 	 */
 	public void inserisciVoceScontrino(VocescontrinoRecord voceScontrino) {
-		voceScontrino.store();
+		voceScontrino.insert();
 	}
 
 	/*

@@ -24,10 +24,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 
 import jooq.DataService;
-import jooq.InvoiceService;
 import jooq.generated.tables.records.ProdottoRecord;
 import jooq.generated.tables.records.VocescontrinoRecord;
-import jooq.impl.InvoiceServiceImpl;
 import ui.MainFrame;
 
 @SuppressWarnings("serial")
@@ -43,24 +41,18 @@ public class RegistraScontrinoPanel extends JPanel {
     private JButton generaScontrinoButton;
     private List<ProdottoRecord> prodotti;
     private List<VocescontrinoRecord> vociScontrino;
-    private DataService dataService;
-    private InvoiceService invoiceService;
     private JPopupMenu suggestionPopup;
 
-    public RegistraScontrinoPanel(MainFrame mainFrame, DataService dataService) {
-        // Usa il DataService passato dal MainFrame
-        this.dataService = dataService;
-
-        // Crea un'istanza di InvoiceServiceImpl
-        this.invoiceService = new InvoiceServiceImpl(dataService);
-
+    public RegistraScontrinoPanel(MainFrame mainFrame) {
         setLayout(new BorderLayout());
 
         // Aggiunge questa schermata al pannello dei contenuti del frame principale
         mainFrame.getContentPane().add(this, BorderLayout.CENTER);
 
-        // Carica i prodotti dal database
-        prodotti = dataService.getProdotti();
+        // Carica i prodotti dal database, chiudendo automaticamente la connessione al termine
+        try (DataService dataService = new DataService()) {
+        	prodotti = dataService.getProdotti();
+        } // La connessione viene chiusa qui
         vociScontrino = new ArrayList<>();
 
         // Crea il campo di testo per la selezione dei prodotti (con auto-completamento)
@@ -193,8 +185,10 @@ public class RegistraScontrinoPanel extends JPanel {
                 vociScontrino.add(voceScontrino);
                 tableModel.addRow(new Object[] { prodotto.getNome(), qtaProdotto, prodotto.getPrezzo() * qtaProdotto });
 
-                // Aggiorna la quantità disponibile del prodotto nel database
-                dataService.aggiornaQtaProdotto(prodotto.getIdprodotto(), prodotto.getQtadisponibile() - qtaProdotto);
+                // Aggiorna la quantità disponibile del prodotto nel database, chiudendo automaticamente la connessione al termine
+                try (DataService dataService = new DataService()) {
+                	dataService.aggiornaQtaProdotto(prodotto.getIdprodotto(), prodotto.getQtadisponibile() - qtaProdotto);
+                } // La connessione viene chiusa qui
 
                 // Resetta i campi di selezione
                 prodottoField.setText("");
@@ -251,10 +245,11 @@ public class RegistraScontrinoPanel extends JPanel {
         }
 
         try {
-            // Delega l'effettiva generazione dello scontrino all'istanza della classe che implementa InvoiceService.
-            float prezzoTotale = calcolaPrezzoTotale();
-            invoiceService.generaScontrino(vociScontrino, prezzoTotale);
-
+        	try (DataService dataService = new DataService()) {
+        		float prezzoTotale = calcolaPrezzoTotale();
+        		dataService.generaScontrino(vociScontrino, prezzoTotale);
+        	} // La connessione viene chiusa qui
+            
             // Mostra un messaggio di conferma
             JOptionPane.showMessageDialog(this, "Scontrino generato con successo!", "Operazione riuscita",
                     JOptionPane.INFORMATION_MESSAGE);

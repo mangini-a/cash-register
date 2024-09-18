@@ -1,8 +1,6 @@
 package jooq;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 import org.jooq.DSLContext;
@@ -17,12 +15,13 @@ import jooq.generated.tables.records.ProdottoRecord;
 import jooq.generated.tables.records.ScontrinoRecord;
 import jooq.generated.tables.records.VocescontrinoRecord;
 
-public class DataService {
+public class DataService implements AutoCloseable {
 
     private Connection conn;
     private DSLContext context;
 
     public DataService() {
+    	// Connection is the only JDBC resource that we need
         try {
             conn = DriverManager.getConnection(CreateDatabase.DB_URL);
             context = DSL.using(conn, SQLDialect.SQLITE);
@@ -30,6 +29,17 @@ public class DataService {
             throw new DataServiceException("Failed to connect to database", e);
         }
     }
+    
+    @Override
+	public void close() {
+		if (conn != null) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				throw new DataServiceException("Failed to close connection", e);
+			}
+		}
+	}
 
     // Metodo per garantire che la connessione al database sia sempre attiva
     private void ensureConnection() {
@@ -118,6 +128,18 @@ public class DataService {
         ensureConnection();
         return context.selectFrom(Vocescontrino.VOCESCONTRINO)
                       .where(Vocescontrino.VOCESCONTRINO.IDSCONTRINO.eq(idScontrino)).fetch();
+    }
+    
+    // Genera uno scontrino
+    public void generaScontrino(List<VocescontrinoRecord> vociScontrino, float prezzoTotale) {
+    	// Inserisce lo scontrino nella tabella Scontrino
+        ScontrinoRecord scontrino = inserisciScontrino(prezzoTotale);
+        
+        // Inserisce le voci dello scontrino nella tabella VoceScontrino
+        for (VocescontrinoRecord voceScontrino : vociScontrino) {
+            voceScontrino.setIdscontrino(scontrino.getIdscontrino());
+            inserisciVoceScontrino(voceScontrino);
+        }
     }
 
     // Modifica un determinato prodotto sulla base del proprio nome

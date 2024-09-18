@@ -11,28 +11,22 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 
 import jooq.DataService;
-import jooq.InvoiceService;
 import jooq.generated.tables.records.ScontrinoRecord;
 import jooq.generated.tables.records.VocescontrinoRecord;
-import jooq.impl.InvoiceServiceImpl;
 import ui.MainFrame;
-import ui.scontrini.DettagliScontrinoDialog;
 
 @SuppressWarnings("serial")
 public class VisualizzaScontriniPanel extends JPanel {
 
 	private JTable scontriniTable;
 	private DefaultTableModel tableModel;
-	private DataService dataService;
-	private InvoiceService invoiceService;
+	private List<ScontrinoRecord> scontrini;
+	private List<VocescontrinoRecord> dettagliScontrino;
 
 	public VisualizzaScontriniPanel(MainFrame mainFrame) {
-		this.dataService = new DataService();
-		this.invoiceService = new InvoiceServiceImpl(dataService);
 		setLayout(new BorderLayout());
 
 		// Aggiunge questa schermata al pannello dei contenuti del frame principale
@@ -70,10 +64,6 @@ public class VisualizzaScontriniPanel extends JPanel {
 			}
 		});
 
-		// Avvia un task in background per aggiornare periodicamente la tabella
-		// (scontriniTable)
-		avviaBackgroundTask();
-
 		add(scrollPane, BorderLayout.CENTER);
 	}
 
@@ -82,10 +72,11 @@ public class VisualizzaScontriniPanel extends JPanel {
 	 * rispettivi dati.
 	 */
 	private void caricaScontrini() {
-
-		// Recupera gli scontrini dal database per mezzo di jOOQ
-		List<ScontrinoRecord> scontrini = dataService.getScontrini();
-
+		// Recupera gli scontrini dal database, chiudendo automaticamente la connessione al termine
+        try (DataService dataService = new DataService()) {
+        	scontrini = dataService.getScontrini();
+        } // La connessione viene chiusa qui
+		
 		// Popola il template tabulare con gli scontrini
 		tableModel.setRowCount(0);
 		for (ScontrinoRecord scontrino : scontrini) {
@@ -94,11 +85,15 @@ public class VisualizzaScontriniPanel extends JPanel {
 	}
 
 	/*
-	 * Visualizza i dettagli (ossia, le voci) dello scontrino selezionato in una
-	 * finestra di dialogo.
+	 * Visualizza le linee di dettaglio dello scontrino selezionato in una finestra di dialogo.
 	 */
 	private void mostraDettagliScontrino(int idScontrino) {
-		List<VocescontrinoRecord> dettagliScontrino = invoiceService.getDettagliScontrino(idScontrino);
+		// Recupera le linee di dettaglio dello scontrino dal database, chiudendo automaticamente la connessione al termine
+		try (DataService dataService = new DataService()) {
+			dettagliScontrino = dataService.getDettagliScontrino(idScontrino);
+		} // La connessione viene chiusa qui
+		
+		// Controlla che ci siano linee di dettaglio da mostrare
 		if (dettagliScontrino != null && !dettagliScontrino.isEmpty()) {
 			Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
 			new DettagliScontrinoDialog(parentFrame, dettagliScontrino);
@@ -107,18 +102,5 @@ public class VisualizzaScontriniPanel extends JPanel {
 					"Non sono state trovate linee di dettaglio per lo scontrino selezionato.", "Errore",
 					JOptionPane.ERROR_MESSAGE);
 		}
-	}
-
-	private void avviaBackgroundTask() {
-		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-			@Override
-			protected Void doInBackground() throws Exception {
-				while (true) {
-					Thread.sleep(5000); // Effettua l'operazione di polling ogni 5 secondi
-					caricaScontrini();
-				}
-			}
-		};
-		worker.execute();
 	}
 }

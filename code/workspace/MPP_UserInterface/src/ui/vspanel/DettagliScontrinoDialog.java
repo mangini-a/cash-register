@@ -15,7 +15,6 @@ import javax.swing.table.DefaultTableModel;
 import jooq.DataService;
 import jooq.generated.tables.records.ProdottoRecord;
 import jooq.generated.tables.records.VocescontrinoRecord;
-import ui.gipanel.GestisciInventarioPanel.AlternatingRowRenderer;
 
 @SuppressWarnings("serial")
 public class DettagliScontrinoDialog extends JDialog {

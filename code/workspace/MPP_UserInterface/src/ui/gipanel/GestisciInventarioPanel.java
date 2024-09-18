@@ -7,6 +7,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import java.util.List;
+
+import jooq.DataService;
+import jooq.generated.tables.records.ProdottoRecord;
+import ui.vspanel.DettagliScontrinoDialog;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +21,7 @@ public class GestisciInventarioPanel extends JPanel {
 
     private JTable prodottiTable;
     private DefaultTableModel tableModel;
+    private List<ProdottoRecord> prodotti;
 
     public GestisciInventarioPanel(JFrame mainFrame) {
         setLayout(new BorderLayout());
@@ -35,35 +41,25 @@ public class GestisciInventarioPanel extends JPanel {
         // Mostra le righe della tabella colorate in modo alternato
         prodottiTable.setDefaultRenderer(Object.class, new AlternatingRowRenderer());
 
-        // Aggiungi un renderer e un editor per la colonna "Modifica"
+        // Aggiunge un renderer e un editor per la colonna "Modifica"
         TableColumn modificaColonna = prodottiTable.getColumnModel().getColumn(4);
         modificaColonna.setCellRenderer(new IconRenderer("../img/edit.png"));
         modificaColonna.setCellEditor(new IconEditor(new JButton(new ImageIcon("../img/edit.png"))));
         modificaColonna.setMaxWidth(40);  // Imposta una larghezza fissa per la colonna dell'icona
         modificaColonna.setMinWidth(40);
 
-        // Aggiungi un renderer e un editor per la colonna "Elimina"
+        // Aggiunge un renderer e un editor per la colonna "Elimina"
         TableColumn eliminaColonna = prodottiTable.getColumnModel().getColumn(5);
         eliminaColonna.setCellRenderer(new IconRenderer("../img/bin.png"));
         eliminaColonna.setCellEditor(new IconEditor(new JButton(new ImageIcon("../img/bin.png"))));
         eliminaColonna.setMaxWidth(40);  // Imposta una larghezza fissa per la colonna dell'icona
         eliminaColonna.setMinWidth(40);
 
-        // Aggiunta di una riga di esempio
-        tableModel.addRow(new Object[]{
-                "Royal Queen Seeds 2g",
-                "Semi high quality ...",
-                20,
-                "240€",
-                new JButton(new ImageIcon("../img/edit.png")),
-                new JButton(new ImageIcon("../img/bin.png"))
-        });
-
-        // Aggiunge la tabella in un pannello scorrevole
+        // Aggiunge la tabella ad un pannello scorrevole
         JScrollPane scrollPane = new JScrollPane(prodottiTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Aggiungi il pulsante verde arrotondato nella parte superiore
+        // Aggiunge il pulsante verde arrotondato nella parte superiore
         JPanel topPanel = new JPanel(new GridBagLayout()); // Usa GridBagLayout per centrare il pulsante
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -72,7 +68,7 @@ public class GestisciInventarioPanel extends JPanel {
         gbc.anchor = GridBagConstraints.CENTER;  // Centra il pulsante
 
         // Crea il pulsante verde arrotondato
-        JButton greenButton = new JButton("Aggiungi un prodotto");
+        JButton greenButton = new JButton("Aggiungi un nuovo prodotto");
         greenButton.setIcon(new ImageIcon("../img/add.png"));  // Imposta l'icona del "+"
 
         // Imposta il colore di sfondo verde
@@ -81,14 +77,12 @@ public class GestisciInventarioPanel extends JPanel {
         // Imposta il colore del testo bianco
         greenButton.setForeground(Color.WHITE);
 
-        // Rendi il pulsante arrotondato utilizzando un UI personalizzato
+        // Rende il pulsante arrotondato utilizzando un UI personalizzato
         greenButton.setUI(new RoundedButtonUI());  // Applica l'interfaccia personalizzata per rendere il pulsante arrotondato
         greenButton.setFocusPainted(false);
 
-        // Aggiungi un ActionListener per gestire i clic
-        greenButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Aggiungi un nuovo prodotto cliccato!");
-        });
+        // Aggiunge un ActionListener per gestire i click sul pulsante "Aggiungi un nuovo prodotto"
+        greenButton.addActionListener(e -> aggiungiProdotto());
 
         // Imposta l'icona a sinistra e il testo a destra
         greenButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -97,11 +91,48 @@ public class GestisciInventarioPanel extends JPanel {
         // Aggiunge il pulsante al pannello superiore
         topPanel.add(greenButton, gbc);
 
-        // Aggiungi il pannello superiore al layout
+        // Aggiunge il pannello superiore al layout
         add(topPanel, BorderLayout.NORTH);
+        
+        // Carica i prodotti dal database
+     	caricaProdotti();
     }
 
-    // Renderer personalizzato per visualizzare le icone
+    /*
+     * Mostra la finestra di dialogo preposta all'inserimento di un nuovo prodotto nel database.
+     */
+    private void aggiungiProdotto() {
+    	JFrame parentFrame = (JFrame) SwingUtilities.windowForComponent(this);
+        AggiungiProdottoDialog dialog = new AggiungiProdottoDialog(parentFrame);
+        dialog.setVisible(true);
+	}
+
+	/*
+     * Recupera i prodotti dal database e li aggiunge alla tabella.
+     * Per ciascuna riga di quest'ultima prevede anche due pulsanti: uno per la modifica ed uno per la rimozione.
+     */
+    private void caricaProdotti() {
+    	try {
+			tableModel.setRowCount(0);
+
+			// Recupera i prodotti dal database, chiudendo automaticamente la connessione al termine
+            try (DataService dataService = new DataService()) {
+            	prodotti = dataService.getProdotti();
+            } // La connessione viene chiusa qui
+			
+			// Aggiungi ciascuno dei prodotti alla tabella, corredato da due pulsanti per la modifica e la rimozione
+			for (ProdottoRecord prodotto : prodotti) {
+				tableModel.addRow(new Object[] { prodotto.getNome(), prodotto.getDescrizione(), prodotto.getQtadisponibile(),
+						prodotto.getPrezzo(), new JButton(new ImageIcon("../img/edit.png")),
+		                new JButton(new ImageIcon("../img/bin.png")) });
+			}
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Caricamento dei prodotti non riuscito.", "Errore",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	// Renderer personalizzato per visualizzare le icone
     class IconRenderer extends JButton implements TableCellRenderer {
 
         public IconRenderer(String iconPath) {

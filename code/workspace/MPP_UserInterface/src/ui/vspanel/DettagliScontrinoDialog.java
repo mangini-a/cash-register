@@ -18,9 +18,11 @@ public class DettagliScontrinoDialog extends JDialog {
 	
 	private JTable dettagliTable;
     private DefaultTableModel tableModel;
+    private DataService dataService;
 
 	public DettagliScontrinoDialog(Frame owner, List<VocescontrinoRecord> dettagliScontrino) {
 		super(owner, "Dettagli scontrino", true);
+		this.dataService = new DataService();
         setLayout(new BorderLayout());
 
         // Crea la tabella per rappresentare le linee di dettaglio di uno scontrino
@@ -34,7 +36,6 @@ public class DettagliScontrinoDialog extends JDialog {
         JScrollPane scrollPane = new JScrollPane(dettagliTable);
 
         // Popola la tabella con le linee di dettaglio dello scontrino, connettendosi al database
-        DataService dataService = new DataService();
         for (VocescontrinoRecord dettaglio : dettagliScontrino) {
             ProdottoRecord prodotto = dataService.getProdottoById(dettaglio.getIdprodotto());
             if (prodotto != null) {

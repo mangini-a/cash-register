@@ -11,59 +11,13 @@ import jooq.generated.tables.records.ProdottoRecord;
 @SuppressWarnings("serial")
 public class VisualizzaProdottiPanel extends JPanel {
 
-	private JTable prodottiTable;
-	private DefaultTableModel tableModel;
-	private DataService dataService;
-
 	public VisualizzaProdottiPanel(GestioneInventarioPanel gestisciInventarioPanel) {
-		this.dataService = new DataService();
-		setLayout(new BorderLayout());
-
-		// Crea un template tabulare per visualizzare i dettagli di ciascun prodotto ed
-		// i pulsanti per modifica e rimozione
-		tableModel = new DefaultTableModel(
-				new Object[] { "Nome", "Prezzo (€)", "Quantità disponibile", "Descrizione", "", "" }, 0) {
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return column > 3; // Rende modificabili esclusivamente le ultime due colonne
-			}
-		};
-		prodottiTable = new JTable(tableModel);
-
-		// Aggiunge la tabella ad un pannello che si possa scorrere verticalmente
-		JScrollPane scrollPane = new JScrollPane(prodottiTable);
-		add(scrollPane, BorderLayout.CENTER);
-
 		// Crea un pannello per il pulsante di refresh
 		JPanel refreshPanel = new JPanel();
 		JButton refreshButton = new JButton(new ImageIcon("../img/refresh-icon.png"));
 		refreshButton.addActionListener(e -> caricaProdotti());
 		refreshPanel.add(refreshButton);
 		add(refreshPanel, BorderLayout.NORTH);
-
-		// Carica i prodotti dal database
-		caricaProdotti();
-
-		// Aggiunge azioni ai pulsanti di modifica e rimozione
-		aggiungiAzioniAiPulsanti();
-	}
-
-	private void caricaProdotti() {
-		try {
-			tableModel.setRowCount(0);
-
-			// Recupera i prodotti dal database
-			List<ProdottoRecord> prodotti = dataService.getProdotti();
-
-			// Aggiungi ciascuno dei prodotti alla tabella
-			for (ProdottoRecord prodotto : prodotti) {
-				tableModel.addRow(new Object[] { prodotto.getNome(), prodotto.getPrezzo(), prodotto.getQtadisponibile(),
-						prodotto.getDescrizione() });
-			}
-		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Caricamento dei prodotti non riuscito.", "Errore",
-					JOptionPane.ERROR_MESSAGE);
-		}
 	}
 
 	private void aggiungiAzioniAiPulsanti() {
@@ -188,33 +142,6 @@ public class VisualizzaProdottiPanel extends JPanel {
 		updateDialog.pack();
 		updateDialog.setLocationRelativeTo(this);
 		updateDialog.setVisible(true);
-	}
-
-	private void eliminaProdotto(int row) {
-		// Recupera il nome del prodotto selezionato dall'utente
-		String nomeProdotto = (String) tableModel.getValueAt(row, 0);
-
-		// Richiede conferma all'utente prima di procedere all'eliminazione
-		int confirm = JOptionPane.showConfirmDialog(this, "Sei sicuro di voler rimuovere " + nomeProdotto + "?",
-				"Conferma eliminazione", JOptionPane.YES_NO_OPTION);
-
-		if (confirm == JOptionPane.YES_OPTION) {
-			try {
-				int rowsAffected = dataService.eliminaProdotto(nomeProdotto);
-				if (rowsAffected > 0) {
-					// Mostra a video un messaggio di conferma
-					JOptionPane.showMessageDialog(this, "Prodotto rimosso con successo!", "Operazione riuscita",
-							JOptionPane.INFORMATION_MESSAGE);
-				} else {
-					JOptionPane.showMessageDialog(this, "Non è stato possibile rimuovere il prodotto.", "Errore",
-							JOptionPane.ERROR_MESSAGE);
-				}
-				caricaProdotti();
-			} catch (Exception ex) {
-				JOptionPane.showMessageDialog(this, "Non è stato possibile rimuovere il prodotto.", "Errore",
-						JOptionPane.ERROR_MESSAGE);
-			}
-		}
 	}
 }
 */

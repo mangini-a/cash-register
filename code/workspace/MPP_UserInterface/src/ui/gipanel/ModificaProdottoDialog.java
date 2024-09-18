@@ -6,7 +6,7 @@ import javax.swing.*;
 import jooq.DataService;
 
 @SuppressWarnings("serial")
-public class AggiungiProdottoDialog extends JDialog {
+public class ModificaProdottoDialog extends JDialog {
 
 	private JTextField nomeField;
 	private JTextField descrizioneField;
@@ -15,66 +15,74 @@ public class AggiungiProdottoDialog extends JDialog {
 	private JButton confermaButton;
 	private JButton annullaButton;
 
-	public AggiungiProdottoDialog(JFrame parentFrame) {
-		super(parentFrame, "Aggiungi un nuovo prodotto", true);
+	public ModificaProdottoDialog(JFrame parentFrame, int row, String nomeAttuale, String descrizioneAttuale,
+			int qtaAttuale, float prezzoAttuale) {
+		super(parentFrame, "Modifica un prodotto esistente", true);
+
+		// Recupera i dati correnti del prodotto selezionato dall'utente (pre-modifica)
+		String nome = nomeAttuale;
+		String descrizione = descrizioneAttuale;
+		int qta = qtaAttuale;
+		float prezzo = prezzoAttuale;
+
 		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(5, 5, 5, 5);
 
-		// Crea il campo per l'inserimento del nome del prodotto
+		// Crea il campo per l'inserimento del nuovo nome del prodotto
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.EAST;
-		add(new JLabel("Nome:"), gbc);
+		add(new JLabel("Nuovo nome:"), gbc);
 		gbc.gridx = 1;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		nomeField = new JTextField(20);
+		nomeField = new JTextField(nome);
 		add(nomeField, gbc);
 
-		// Crea il campo per l'inserimento della descrizione del prodotto
+		// Crea il campo per l'inserimento della nuova descrizione del prodotto
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 		gbc.anchor = GridBagConstraints.EAST;
 		gbc.fill = GridBagConstraints.NONE;
-		add(new JLabel("Descrizione:"), gbc);
+		add(new JLabel("Nuova descrizione:"), gbc);
 		gbc.gridx = 1;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		descrizioneField = new JTextField(20);
+		descrizioneField = new JTextField(descrizione);
 		add(descrizioneField, gbc);
 
-		// Crea il campo per l'inserimento della quantità del prodotto
+		// Crea il campo per l'inserimento della nuova quantità del prodotto
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		gbc.anchor = GridBagConstraints.EAST;
 		gbc.fill = GridBagConstraints.NONE;
-		add(new JLabel("Quantità:"), gbc);
+		add(new JLabel("Nuova quantità:"), gbc);
 		gbc.gridx = 1;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		qtaField = new JTextField(20);
+		qtaField = new JTextField(String.valueOf(qta));
 		add(qtaField, gbc);
-		
-		// Crea il campo per l'inserimento del prezzo del prodotto
+
+		// Crea il campo per l'inserimento del nuovo prezzo del prodotto
 		gbc.gridx = 0;
 		gbc.gridy = 3;
 		gbc.anchor = GridBagConstraints.EAST;
 		gbc.fill = GridBagConstraints.NONE;
-		add(new JLabel("Prezzo (€):"), gbc);
+		add(new JLabel("Nuovo prezzo (€):"), gbc);
 		gbc.gridx = 1;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		prezzoField = new JTextField(20);
+		prezzoField = new JTextField(String.valueOf(prezzo));
 		add(prezzoField, gbc);
-		
+
 		// Crea un pannello separato per i pulsanti "Conferma" ed "Annulla"
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		// Crea il pulsante "Conferma" e lo aggiunge al pannello inferiore
 		confermaButton = new JButton("Conferma", new ImageIcon("../img/yes.png"));
-		confermaButton.addActionListener(e -> aggiungiProdotto());
+		confermaButton.addActionListener(e -> modificaProdotto(nomeAttuale));
 		buttonPanel.add(confermaButton);
 
 		// Crea il pulsante "Annulla" e lo aggiunge al pannello inferiore
@@ -105,64 +113,60 @@ public class AggiungiProdottoDialog extends JDialog {
 		setLocation(x, y);
 	}
 
-	private void aggiungiProdotto() {
-		// Get form data
-		String nome = nomeField.getText();
-		String prezzoText = prezzoField.getText();
-		String qtaText = qtaField.getText();
-		String descrizione = descrizioneField.getText();
+	private void modificaProdotto(String nomeAttuale) {
+		// Acquisisce i nuovi parametri inseriti dall'utente
+		String nuovoNome = nomeField.getText();
+		String nuovoPrezzoText = prezzoField.getText();
+		String nuovaQtaText = qtaField.getText();
+		String nuovaDescrizione = descrizioneField.getText();
 
 		// Replace commas with periods to handle both decimal separators
-		prezzoText = prezzoText.replace(",", ".");
+		nuovoPrezzoText = nuovoPrezzoText.replace(",", ".");
 
 		// Parse product price as float
-		float prezzo = 0.0f;
+		float nuovoPrezzo = 0.0f;
 
 		try {
-			prezzo = Float.parseFloat(prezzoText);
-			if (prezzo <= 0) {
+			nuovoPrezzo = Float.parseFloat(nuovoPrezzoText);
+			if (nuovoPrezzo <= 0) {
 				JOptionPane.showMessageDialog(this, "Prezzo non valido. Inserisci un numero positivo.", "Errore",
 						JOptionPane.ERROR_MESSAGE);
 				return; // Exit the method if the price is not positive
 			}
-		} catch (NumberFormatException ex) {
+		} catch (NumberFormatException nfe) {
 			JOptionPane.showMessageDialog(this, "Prezzo non valido. Inserisci un numero reale.", "Errore",
 					JOptionPane.ERROR_MESSAGE);
 			return; // Exit the method if the price is invalid
 		}
 
 		// Parse product quantity as integer
-		int qta = 0;
+		int nuovaQta = 0;
 
 		try {
-			qta = Integer.parseInt(qtaText);
-			if (qta <= 0) {
+			nuovaQta = Integer.parseInt(nuovaQtaText);
+			if (nuovaQta <= 0) {
 				JOptionPane.showMessageDialog(this, "Quantità non valida. Inserisci un numero positivo.", "Errore",
 						JOptionPane.ERROR_MESSAGE);
 				return; // Exit the method if the quantity is not positive
 			}
-		} catch (NumberFormatException ex) {
+		} catch (NumberFormatException nfe) {
 			JOptionPane.showMessageDialog(this, "Quantità non valida. Inserisci un numero intero.", "Errore",
 					JOptionPane.ERROR_MESSAGE);
 			return; // Exit the method if the quantity is invalid
 		}
 
-		// Aggiunge il prodotto alla relativa tabella nel database, chiudendo
-		// automaticamente la connessione al termine
-		try {
-			try (DataService dataService = new DataService()) {
-				dataService.aggiungiProdotto(nome, prezzo, qta, descrizione);
-			} // La connessione viene chiusa qui
-
-			// Mostra un messaggio di conferma
-			JOptionPane.showMessageDialog(this, "Prodotto aggiunto con successo!", "Operazione riuscita",
+		int rowsAffected = 0;
+		try (DataService dataService = new DataService()) {
+			rowsAffected = dataService.modificaProdotto(nomeAttuale, nuovoNome, nuovoPrezzo, nuovaQta, nuovaDescrizione);
+		} // La connessione viene chiusa qui
+		
+		if (rowsAffected > 0) {
+			// Mostra a video un messaggio di conferma
+			JOptionPane.showMessageDialog(this, "Prodotto modificato con successo!", "Operazione riuscita",
 					JOptionPane.INFORMATION_MESSAGE);
-		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Non è stato possibile aggiungere il prodotto.", "Errore",
+		} else {
+			JOptionPane.showMessageDialog(this, "Non è stato possibile modificare il prodotto.", "Errore",
 					JOptionPane.ERROR_MESSAGE);
 		}
-
-		// Close dialog
-		dispose();
 	}
 }

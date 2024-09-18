@@ -1,6 +1,8 @@
 package ui.rspanel;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -22,6 +24,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import jooq.DataService;
 import jooq.generated.tables.records.ProdottoRecord;
@@ -98,6 +101,9 @@ public class RegistraScontrinoPanel extends JPanel {
             }
         };
         carrelloTable = new JTable(tableModel);
+        
+        // Mostra le righe della tabella colorate in modo alternato
+        carrelloTable.setDefaultRenderer(Object.class, new AlternatingRowRenderer());
 
         // Posiziona la tabella che rappresenta i prodotti nel carrello della spesa su un pannello scorrevole
         JScrollPane scrollPane = new JScrollPane(carrelloTable);
@@ -320,5 +326,21 @@ public class RegistraScontrinoPanel extends JPanel {
     private void resettaCarrello() {
         vociScontrino.clear();
         tableModel.setRowCount(0);
+    }
+    
+    /*
+     *  Controlla l'indice di ogni riga della tabella ed impostane il colore a seconda dello stesso.
+     */
+    private class AlternatingRowRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (row % 2 == 0) {
+                cell.setBackground(Color.decode("#F1F1F1")); // Righe pari
+            } else {
+                cell.setBackground(Color.decode("#FFFFFF")); // Righe dispari
+            }
+            return cell;
+        }
     }
 }

@@ -1,6 +1,8 @@
 package ui.vspanel;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -11,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import jooq.DataService;
@@ -42,6 +45,9 @@ public class VisualizzaScontriniPanel extends JPanel {
 			}
 		};
 		scontriniTable = new JTable(tableModel);
+		
+		// Mostra le righe della tabella colorate in modo alternato
+        scontriniTable.setDefaultRenderer(Object.class, new AlternatingRowRenderer());
 
 		// Aggiunge la tabella ad un pannello che si possa scorrere verticalmente
 		JScrollPane scrollPane = new JScrollPane(scontriniTable);
@@ -109,4 +115,20 @@ public class VisualizzaScontriniPanel extends JPanel {
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}
+	
+	/*
+     *  Controlla l'indice di ogni riga della tabella ed impostane il colore a seconda dello stesso.
+     */
+    private class AlternatingRowRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (row % 2 == 0) {
+                cell.setBackground(Color.decode("#F1F1F1")); // Righe pari
+            } else {
+                cell.setBackground(Color.decode("#FFFFFF")); // Righe dispari
+            }
+            return cell;
+        }
+    }
 }

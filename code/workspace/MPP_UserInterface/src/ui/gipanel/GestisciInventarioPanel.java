@@ -3,10 +3,11 @@ package ui.gipanel;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -30,6 +31,9 @@ public class GestisciInventarioPanel extends JPanel {
 
         // Crea la JTable con il modello
         prodottiTable = new JTable(tableModel);
+        
+        // Mostra le righe della tabella colorate in modo alternato
+        prodottiTable.setDefaultRenderer(Object.class, new AlternatingRowRenderer());
 
         // Aggiungi un renderer e un editor per la colonna "Modifica"
         TableColumn modificaColonna = prodottiTable.getColumnModel().getColumn(4);
@@ -180,6 +184,22 @@ public class GestisciInventarioPanel extends JPanel {
 
             // Disegna il testo e l'icona normalmente
             super.paint(g, c);
+        }
+    }
+    
+    /*
+     *  Controlla l'indice di ogni riga della tabella ed impostane il colore a seconda dello stesso.
+     */
+    private class AlternatingRowRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (row % 2 == 0) {
+                cell.setBackground(Color.decode("#F1F1F1")); // Righe pari
+            } else {
+                cell.setBackground(Color.decode("#FFFFFF")); // Righe dispari
+            }
+            return cell;
         }
     }
 }

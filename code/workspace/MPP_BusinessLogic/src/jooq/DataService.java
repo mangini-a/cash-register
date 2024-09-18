@@ -54,6 +54,7 @@ public class DataService implements AutoCloseable {
             throw new DataServiceException("Failed to reconnect to database", e);
         }
     }
+    
 
     // Inserisce un nuovo prodotto nella tabella Prodotto
     public void aggiungiProdotto(String nome, float prezzo, int qtaDisponibile, String descrizione) {
@@ -132,15 +133,24 @@ public class DataService implements AutoCloseable {
     
     // Genera uno scontrino
     public void generaScontrino(List<VocescontrinoRecord> vociScontrino, float prezzoTotale) {
-    	// Inserisce lo scontrino nella tabella Scontrino
-        ScontrinoRecord scontrino = inserisciScontrino(prezzoTotale);
-        
-        // Inserisce le voci dello scontrino nella tabella VoceScontrino
-        for (VocescontrinoRecord voceScontrino : vociScontrino) {
-            voceScontrino.setIdscontrino(scontrino.getIdscontrino());
-            inserisciVoceScontrino(voceScontrino);
-        }
+        ensureConnection();
+
+        context.transaction(configuration -> {
+            DSLContext transactionalContext = DSL.using(configuration);
+
+            // Inserisci lo scontrino
+            ScontrinoRecord scontrino = transactionalContext.newRecord(Scontrino.SCONTRINO);
+            scontrino.setPrezzotot(prezzoTotale);
+            scontrino.insert();
+
+            // Inserisci ogni voce scontrino
+            for (VocescontrinoRecord voceScontrino : vociScontrino) {
+                voceScontrino.setIdscontrino(scontrino.getIdscontrino()); // Associa la voce allo scontrino
+                transactionalContext.newRecord(Vocescontrino.VOCESCONTRINO, voceScontrino).insert();
+            }
+        });
     }
+
 
     // Modifica un determinato prodotto sulla base del proprio nome
     public int modificaProdotto(String nome, String nuovoNome, float nuovoPrezzo, int nuovaQta, String nuovaDescrizione) {

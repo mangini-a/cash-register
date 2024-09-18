@@ -67,6 +67,12 @@ public class VisualizzaScontriniPanel extends JPanel {
 		add(scrollPane, BorderLayout.CENTER);
 	}
 
+	
+	public void aggiornaScontrini() {
+	    caricaScontrini(); // Questo ricarica la tabella con i dati aggiornati
+	}
+
+	
 	/*
 	 * Recupera tutti gli scontrini dal database e popola il template tabulare con i
 	 * rispettivi dati.

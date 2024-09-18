@@ -82,6 +82,11 @@ public class MainFrame extends JFrame {
 	private void showPanel(String panelName) {
 		cardLayout.show((Container) mainPanel.getComponent(1), panelName); // Mostra la schermata selezionata mediante il proprio nome
 	}
+	
+	
+	public VisualizzaScontriniPanel getVisualizzaScontriniPanel() {
+        return visualizzaScontriniPanel;
+    }
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(MainFrame::new);

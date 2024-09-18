@@ -27,9 +27,12 @@ import jooq.DataService;
 import jooq.generated.tables.records.ProdottoRecord;
 import jooq.generated.tables.records.VocescontrinoRecord;
 import ui.MainFrame;
+import ui.vspanel.VisualizzaScontriniPanel;
 
 @SuppressWarnings("serial")
 public class RegistraScontrinoPanel extends JPanel {
+	 
+	private MainFrame mainFrame;
 
     private static final Logger logger = Logger.getLogger(RegistraScontrinoPanel.class.getName());
 
@@ -44,6 +47,7 @@ public class RegistraScontrinoPanel extends JPanel {
     private JPopupMenu suggestionPopup;
 
     public RegistraScontrinoPanel(MainFrame mainFrame) {
+    	this.mainFrame = mainFrame;
         setLayout(new BorderLayout());
 
         // Aggiunge questa schermata al pannello dei contenuti del frame principale
@@ -253,7 +257,10 @@ public class RegistraScontrinoPanel extends JPanel {
             // Mostra un messaggio di conferma
             JOptionPane.showMessageDialog(this, "Scontrino generato con successo!", "Operazione riuscita",
                     JOptionPane.INFORMATION_MESSAGE);
-
+            //Aggiorna la tabella degli scontrini
+            VisualizzaScontriniPanel visualizzaScontriniPanel = mainFrame.getVisualizzaScontriniPanel();
+            visualizzaScontriniPanel.aggiornaScontrini();  //Aggiorna gli scontrini
+            
             // Resetta sia il carrello (rimuovendo le voci scontrino dalla lista) che la relativa rappresentazione tabulare
             resettaCarrello();
         } catch (Exception e) {

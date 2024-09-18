@@ -8,6 +8,7 @@ import com.formdev.flatlaf.FlatIntelliJLaf;
 import ui.gipanel.GestisciInventarioPanel;
 import ui.rspanel.RegistraScontrinoPanel;
 import ui.vspanel.VisualizzaScontriniPanel;
+import jooq.DataService; // Importa il servizio dati
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
@@ -17,6 +18,7 @@ public class MainFrame extends JFrame {
 	private RegistraScontrinoPanel registraScontrinoPanel;
 	private GestisciInventarioPanel gestisciInventarioPanel;
 	private VisualizzaScontriniPanel visualizzaScontriniPanel;
+	private DataService dataService; // Istanza di DataService
 
 	public MainFrame() {
 		setTitle("Store manager");
@@ -25,6 +27,9 @@ public class MainFrame extends JFrame {
         
         // Imposta il tema IntelliJ di FlatLaf
         FlatIntelliJLaf.setup();
+        
+        // Inizializza il servizio dati
+        dataService = new DataService();
         
         // Crea il pannello principale con un BorderLayout
         mainPanel = new JPanel(new BorderLayout());
@@ -53,7 +58,7 @@ public class MainFrame extends JFrame {
         JPanel cardPanel = new JPanel(cardLayout); // Pannello per le card (schede)
 
         // Inizializza le tre schermate operative, a cui si può accedere tramite un click sul relativo pulsante
-        registraScontrinoPanel = new RegistraScontrinoPanel(this);
+        registraScontrinoPanel = new RegistraScontrinoPanel(this, dataService);
         gestisciInventarioPanel = new GestisciInventarioPanel(this);
         visualizzaScontriniPanel = new VisualizzaScontriniPanel(this);
         

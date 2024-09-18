@@ -17,132 +17,137 @@ import jooq.generated.tables.records.ProdottoRecord;
 import jooq.generated.tables.records.ScontrinoRecord;
 import jooq.generated.tables.records.VocescontrinoRecord;
 
-/*
- * Fornisce servizi per interfacciarsi con il database usando il linguaggio Java, evitando di scrivere codice SQL.
- * Per usare questa classe bisogna crearne un'istanza, così da poterne poi invocare i metodi di interesse.
- * 
- * aggiungiProdotto: Inserisce un nuovo prodotto nella tabella Prodotto.
- * eliminaProdotto: Elimina un determinato prodotto sulla base del proprio nome. 
- * modificaProdotto: Modifica un determinato prodotto sulla base del proprio nome. 
- * getProdottoByDescrizione: Recupera dal database un determinato prodotto sulla base della propria descrizione.
- * getProdottoById: Recupera dal database un determinato prodotto sulla base del proprio ID.
- * getProdotti: Recupera tutti i prodotti contenuti nella tabella Prodotto. 
- * 
- * aggiornaQtaProdotto: Aggiorna la quantità disponibile di un prodotto in seguito al suo inserimento nel carrello. 
- * inserisciScontrino: Inserisce un nuovo scontrino nella tabella Scontrino. 
- * inserisciVoceScontrino: Inserisce una nuova linea di scontrino nella tabella VoceScontrino.
- * getScontrini: Recupera tutti gli scontrini contenuti nella tabella Scontrino.
- * getDettagliScontrino: Recupera i dettagli di un determinato scontrino sulla base del suo ID.
- */
 public class DataService {
-	
-	private Connection conn;
+
+    private Connection conn;
     private DSLContext context;
-    
+
     public DataService() {
-    	try {
-    		conn = DriverManager.getConnection(CreateDatabase.DB_URL);
-    		context = DSL.using(conn, SQLDialect.SQLITE);
-    	} catch (SQLException e) {
-    		throw new DataServiceException("Failed to connect to database", e);
-    	}
+        try {
+            conn = DriverManager.getConnection(CreateDatabase.DB_URL);
+            context = DSL.using(conn, SQLDialect.SQLITE);
+        } catch (SQLException e) {
+            throw new DataServiceException("Failed to connect to database", e);
+        }
     }
-    
-	/*
-	 * Inserisce un nuovo prodotto nella tabella Prodotto.
-	 */
-	public void aggiungiProdotto(String nome, float prezzo, int qtaDisponibile, String descrizione) {
-		ProdottoRecord prodottoRecord = context.newRecord(Prodotto.PRODOTTO);
-		prodottoRecord.setNome(nome);
-		prodottoRecord.setPrezzo(prezzo);
-		prodottoRecord.setQtadisponibile(qtaDisponibile);
-		prodottoRecord.setDescrizione(descrizione);
 
-		// Inserisce il record, omettendo la colonna IdProdotto
-		prodottoRecord.insert();
+    // Metodo per garantire che la connessione al database sia sempre attiva
+    private void ensureConnection() {
+        try {
+            if (conn == null || conn.isClosed()) {
+                System.out.println("Connessione assente o chiusa. Riconnessione al database...");
+                conn = DriverManager.getConnection(CreateDatabase.DB_URL);
+                context = DSL.using(conn, SQLDialect.SQLITE);
+                System.out.println("Connessione ristabilita.");
+            }
+        } catch (SQLException e) {
+            throw new DataServiceException("Failed to reconnect to database", e);
+        }
+    }
 
-		// Recupera l'ID generato automaticamente dal database
-		int idGenerato = prodottoRecord.getIdprodotto();
-		System.out.println("IdProdotto generato: " + idGenerato);
-	}
+    // Inserisce un nuovo prodotto nella tabella Prodotto
+    public void aggiungiProdotto(String nome, float prezzo, int qtaDisponibile, String descrizione) {
+        ensureConnection();
+        ProdottoRecord prodottoRecord = context.newRecord(Prodotto.PRODOTTO);
+        prodottoRecord.setNome(nome);
+        prodottoRecord.setPrezzo(prezzo);
+        prodottoRecord.setQtadisponibile(qtaDisponibile);
+        prodottoRecord.setDescrizione(descrizione);
 
-	/*
-	 * Elimina un determinato prodotto sulla base del proprio nome.
-	 */
-	public int eliminaProdotto(String nome) {
-		return context.deleteFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.NOME.eq(nome)).execute();
-	}
+        prodottoRecord.insert();
 
-	/*
-	 * Recupera dal database un determinato prodotto sulla base della propria
-	 * descrizione.
-	 */
-	public ProdottoRecord getProdottoByDescrizione(String descrizione) {
-		return context.selectFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.DESCRIZIONE.eq(descrizione)).fetchOne();
-	}
+        int idGenerato = prodottoRecord.getIdprodotto();
+        System.out.println("IdProdotto generato: " + idGenerato);
+    }
 
-	/*
-	 * Recupera dal database un determinato prodotto sulla base del proprio ID.
-	 */
-	public ProdottoRecord getProdottoById(int idProdotto) {
-		return context.selectFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.IDPRODOTTO.eq(idProdotto)).fetchOne();
-	}
+    // Elimina un determinato prodotto sulla base del proprio nome
+    public int eliminaProdotto(String nome) {
+        ensureConnection();
+        return context.deleteFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.NOME.eq(nome)).execute();
+    }
 
-	/*
-	 * Recupera tutti i prodotti contenuti nella tabella Prodotto.
-	 */
-	public List<ProdottoRecord> getProdotti() {
-		return context.selectFrom(Prodotto.PRODOTTO).fetch();
-	}
+    // Recupera un determinato prodotto sulla base della propria descrizione
+    public ProdottoRecord getProdottoByDescrizione(String descrizione) {
+        ensureConnection();
+        return context.selectFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.DESCRIZIONE.eq(descrizione)).fetchOne();
+    }
 
-	/*
-	 * Aggiorna la quantità disponibile di un prodotto in seguito al suo inserimento nel carrello.
-	 */
-	public void aggiornaQtaProdotto(Integer idProdotto, int nuovaQta) {
-		context.update(Prodotto.PRODOTTO).set(Prodotto.PRODOTTO.QTADISPONIBILE, nuovaQta)
-				.where(Prodotto.PRODOTTO.IDPRODOTTO.eq(idProdotto)).execute();
-	}
+    // Recupera un determinato prodotto sulla base del proprio ID
+    public ProdottoRecord getProdottoById(int idProdotto) {
+        ensureConnection();
+        return context.selectFrom(Prodotto.PRODOTTO).where(Prodotto.PRODOTTO.IDPRODOTTO.eq(idProdotto)).fetchOne();
+    }
 
-	/*
-	 * Inserisce un nuovo scontrino nella tabella Scontrino.
-	 */
-	public ScontrinoRecord inserisciScontrino(float prezzoTotale) {
-		ScontrinoRecord scontrino = context.newRecord(Scontrino.SCONTRINO);
-		scontrino.setPrezzotot(prezzoTotale);
-		scontrino.insert();
-		return scontrino;
-	}
+    // Recupera tutti i prodotti contenuti nella tabella Prodotto
+    public List<ProdottoRecord> getProdotti() {
+        ensureConnection();
+        return context.selectFrom(Prodotto.PRODOTTO).fetch();
+    }
 
-	/*
-	 * Inserisce una nuova linea di scontrino nella tabella VoceScontrino.
-	 */
-	public void inserisciVoceScontrino(VocescontrinoRecord voceScontrino) {
-		voceScontrino.insert();
-	}
+    // Aggiorna la quantità disponibile di un prodotto in seguito al suo inserimento nel carrello
+    public void aggiornaQtaProdotto(Integer idProdotto, int nuovaQta) {
+        ensureConnection();
+        context.update(Prodotto.PRODOTTO)
+               .set(Prodotto.PRODOTTO.QTADISPONIBILE, nuovaQta)
+               .where(Prodotto.PRODOTTO.IDPRODOTTO.eq(idProdotto)).execute();
+    }
 
-	/*
-	 * Recupera tutti gli scontrini contenuti nella tabella Scontrino.
-	 */
-	public List<ScontrinoRecord> getScontrini() {
-		return context.selectFrom(Scontrino.SCONTRINO).fetch();
-	}
+    // Inserisce un nuovo scontrino nella tabella Scontrino
+    public ScontrinoRecord inserisciScontrino(float prezzoTotale) {
+        ensureConnection();
+        ScontrinoRecord scontrino = context.newRecord(Scontrino.SCONTRINO);
+        scontrino.setPrezzotot(prezzoTotale);
+        scontrino.insert();
+        return scontrino;
+    }
 
-	/*
-	 * Recupera i dettagli di un determinato scontrino sulla base del suo ID.
-	 */
-	public List<VocescontrinoRecord> getDettagliScontrino(int idScontrino) {
-		return context.selectFrom(Vocescontrino.VOCESCONTRINO)
-				.where(Vocescontrino.VOCESCONTRINO.IDSCONTRINO.eq(idScontrino)).fetch();
-	}
+    // Inserisce una nuova linea di scontrino nella tabella VoceScontrino
+    public void inserisciVoceScontrino(VocescontrinoRecord voceScontrino) {
+        ensureConnection();
+        voceScontrino.insert();
+    }
 
-	/*
-	 * Modifica un determinato prodotto sulla base del proprio nome.
-	 */
-	public int modificaProdotto(String nome, String nuovoNome, float nuovoPrezzo, int nuovaQta, String nuovaDescrizione) {
-		return context.update(Prodotto.PRODOTTO).set(Prodotto.PRODOTTO.NOME, nuovoNome)
-		.set(Prodotto.PRODOTTO.PREZZO, nuovoPrezzo)
-		.set(Prodotto.PRODOTTO.QTADISPONIBILE, nuovaQta)
-		.set(Prodotto.PRODOTTO.DESCRIZIONE, nuovaDescrizione)
-		.where(Prodotto.PRODOTTO.NOME.eq(nome)).execute();
-	}
+    // Recupera tutti gli scontrini contenuti nella tabella Scontrino
+    public List<ScontrinoRecord> getScontrini() {
+        ensureConnection();
+        return context.selectFrom(Scontrino.SCONTRINO).fetch();
+    }
+
+    // Recupera i dettagli di un determinato scontrino sulla base del suo ID
+    public List<VocescontrinoRecord> getDettagliScontrino(int idScontrino) {
+        ensureConnection();
+        return context.selectFrom(Vocescontrino.VOCESCONTRINO)
+                      .where(Vocescontrino.VOCESCONTRINO.IDSCONTRINO.eq(idScontrino)).fetch();
+    }
+
+    // Modifica un determinato prodotto sulla base del proprio nome
+    public int modificaProdotto(String nome, String nuovoNome, float nuovoPrezzo, int nuovaQta, String nuovaDescrizione) {
+        ensureConnection();
+        return context.update(Prodotto.PRODOTTO)
+                      .set(Prodotto.PRODOTTO.NOME, nuovoNome)
+                      .set(Prodotto.PRODOTTO.PREZZO, nuovoPrezzo)
+                      .set(Prodotto.PRODOTTO.QTADISPONIBILE, nuovaQta)
+                      .set(Prodotto.PRODOTTO.DESCRIZIONE, nuovaDescrizione)
+                      .where(Prodotto.PRODOTTO.NOME.eq(nome)).execute();
+    }
+
+    // Esempio di metodo per la generazione di uno scontrino completo con transazione
+    public void generaScontrinoCompleto(List<VocescontrinoRecord> vociScontrino, float prezzoTotale) {
+        ensureConnection();
+
+        context.transaction(configuration -> {
+            DSLContext transactionalContext = DSL.using(configuration);
+
+            // Inserisci lo scontrino
+            ScontrinoRecord scontrino = transactionalContext.newRecord(Scontrino.SCONTRINO);
+            scontrino.setPrezzotot(prezzoTotale);
+            scontrino.insert();
+
+            // Inserisci ogni voce scontrino
+            for (VocescontrinoRecord voce : vociScontrino) {
+                voce.setIdscontrino(scontrino.getIdscontrino()); // Associa la voce allo scontrino
+                transactionalContext.newRecord(Vocescontrino.VOCESCONTRINO, voce).insert();
+            }
+        });
+    }
 }

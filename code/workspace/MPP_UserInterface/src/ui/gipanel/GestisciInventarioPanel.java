@@ -3,6 +3,7 @@ package ui.gipanel;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -34,6 +35,13 @@ public class GestisciInventarioPanel extends JPanel {
 
 		// Crea la JTable con il modello
 		prodottiTable = new JTable(tableModel);
+		
+		/* Centra il contenuto di ogni riga della tabella
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(JLabel.CENTER);
+		for (int i = 0; i < prodottiTable.getColumnCount(); i++) {
+		    prodottiTable.getColumnModel().getColumn(i).setCellRenderer(renderer);
+		} */
 
 		// Aggiunge un renderer e un editor per la colonna "Modifica"
 		TableColumn modificaColonna = prodottiTable.getColumnModel().getColumn(4);

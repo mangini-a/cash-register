@@ -8,6 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -128,6 +129,7 @@ public class VisualizzaScontriniPanel extends JPanel {
             } else {
                 cell.setBackground(Color.decode("#FFFFFF")); // Righe dispari
             }
+            setHorizontalAlignment(JLabel.CENTER); // Centra il contenuto della tabella
             return cell;
         }
     }

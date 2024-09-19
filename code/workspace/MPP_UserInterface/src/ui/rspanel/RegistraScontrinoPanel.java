@@ -340,6 +340,7 @@ public class RegistraScontrinoPanel extends JPanel {
             } else {
                 cell.setBackground(Color.decode("#FFFFFF")); // Righe dispari
             }
+            setHorizontalAlignment(JLabel.CENTER); // Centra il contenuto della tabella
             return cell;
         }
     }

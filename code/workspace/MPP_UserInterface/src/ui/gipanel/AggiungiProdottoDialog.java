@@ -106,8 +106,19 @@ public class AggiungiProdottoDialog extends JDialog {
 	}
 
 	private void aggiungiProdotto() {
-		// Acquisisce i dati inseriti dall'utente nel form
+		// Acquisisce il nome del nuovo prodotto inserito dall'utente nel form
 		String nome = nomeField.getText();
+		
+		// Controlla se il database contenga già un prodotto con lo stesso nome, chiudendo automaticamente la connessione al termine
+		try (DataService dataService = new DataService()) {
+			if (dataService.isProductAlreadyExisting(nome)) {	
+				JOptionPane.showMessageDialog(this, "Un prodotto con il nome '" + nome + "' è già presente a magazzino.", 
+						"Errore", JOptionPane.ERROR_MESSAGE);
+				return; // Esce dal metodo se il nome inserito è già presente ad inventario
+			}
+		} // La connessione viene chiusa qui
+		
+		// Acquisisce le altre informazioni inserite dall'utente nel form
 		String prezzoText = prezzoField.getText();
 		String qtaText = qtaField.getText();
 		String descrizione = descrizioneField.getText();

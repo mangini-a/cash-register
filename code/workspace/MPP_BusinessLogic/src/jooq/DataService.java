@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.List;
 
 import org.jooq.DSLContext;
+import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
@@ -55,7 +56,6 @@ public class DataService implements AutoCloseable {
         }
     }
     
-
     // Inserisce un nuovo prodotto nella tabella Prodotto
     public void aggiungiProdotto(String nome, float prezzo, int qtaDisponibile, String descrizione) {
         ensureConnection();
@@ -181,5 +181,20 @@ public class DataService implements AutoCloseable {
                 transactionalContext.newRecord(Vocescontrino.VOCESCONTRINO, voce).insert();
             }
         });
+    }
+    
+    public boolean isProductAlreadyExisting(String nomeProdotto) {
+    	// Fetch all ProdottoRecord objects from the database
+        Result<ProdottoRecord> result = context.selectFrom(Prodotto.PRODOTTO).fetch();
+
+        // Iterate over the records and check if any of them have the same name
+        for (ProdottoRecord record : result) {
+            if (record.getNome().equals(nomeProdotto)) {
+                return true; // Found a product with the same name
+            }
+        }
+
+        // If no product with the same name was found, return false
+        return false;
     }
 }

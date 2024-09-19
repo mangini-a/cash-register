@@ -89,33 +89,33 @@ public class AggiungiProdottoDialog extends JDialog {
 		gbc.anchor = GridBagConstraints.CENTER;
 		add(buttonPanel, gbc);
 
-		// Set preferred and minimum sizes for the dialog
+		// Imposta una dimensione fissa per la finestra di dialogo
 		setPreferredSize(new Dimension(400, 250));
 		setResizable(false);
 
-		// Pack the dialog to ensure all components are laid out properly
+		// Assicura che tutti i componenti vengano disposti in modo appropriato
 		pack();
 
-		// Get the location of the parent frame
+		// Acquisisce la posizione del frame padre
 		Point parentLocation = parentFrame.getLocationOnScreen();
 
-		// Set the location of the dialog to be centered relative to the parent frame
+		// Centra la posizione della finestra di dialogo rispetto al frame padre
 		int x = parentLocation.x + (parentFrame.getWidth() - getWidth()) / 2;
 		int y = parentLocation.y + (parentFrame.getHeight() - getHeight()) / 2;
 		setLocation(x, y);
 	}
 
 	private void aggiungiProdotto() {
-		// Get form data
+		// Acquisisce i dati inseriti dall'utente nel form
 		String nome = nomeField.getText();
 		String prezzoText = prezzoField.getText();
 		String qtaText = qtaField.getText();
 		String descrizione = descrizioneField.getText();
 
-		// Replace commas with periods to handle both decimal separators
+		// Sostituisce eventuali virgole con dei punti per gestire entrambi i separatori decimali
 		prezzoText = prezzoText.replace(",", ".");
 
-		// Parse product price as float
+		// Ottiene il prezzo del prodotto sotto forma di numero reale
 		float prezzo = 0.0f;
 
 		try {
@@ -123,15 +123,15 @@ public class AggiungiProdottoDialog extends JDialog {
 			if (prezzo <= 0) {
 				JOptionPane.showMessageDialog(this, "Prezzo non valido. Inserisci un numero positivo.", "Errore",
 						JOptionPane.ERROR_MESSAGE);
-				return; // Exit the method if the price is not positive
+				return; // Esce dal metodo se il prezzo risulta negativo o nullo
 			}
 		} catch (NumberFormatException ex) {
 			JOptionPane.showMessageDialog(this, "Prezzo non valido. Inserisci un numero reale.", "Errore",
 					JOptionPane.ERROR_MESSAGE);
-			return; // Exit the method if the price is invalid
+			return; // Esce dal metodo se il prezzo è costituito da un valore non valido
 		}
 
-		// Parse product quantity as integer
+		// Ottiene la quantità del prodotto sotto forma di numero intero
 		int qta = 0;
 
 		try {
@@ -139,22 +139,20 @@ public class AggiungiProdottoDialog extends JDialog {
 			if (qta <= 0) {
 				JOptionPane.showMessageDialog(this, "Quantità non valida. Inserisci un numero positivo.", "Errore",
 						JOptionPane.ERROR_MESSAGE);
-				return; // Exit the method if the quantity is not positive
+				return; // Esce dal metodo se la quantità non risulta positiva
 			}
 		} catch (NumberFormatException ex) {
 			JOptionPane.showMessageDialog(this, "Quantità non valida. Inserisci un numero intero.", "Errore",
 					JOptionPane.ERROR_MESSAGE);
-			return; // Exit the method if the quantity is invalid
+			return; // Esce dal metodo se la quantità è costituita da un valore non valido
 		}
 
-		// Aggiunge il prodotto alla relativa tabella nel database, chiudendo
-		// automaticamente la connessione al termine
 		try {
+			// Aggiunge il prodotto alla relativa tabella nel database, chiudendo automaticamente la connessione al termine
 			try (DataService dataService = new DataService()) {
 				dataService.aggiungiProdotto(nome, prezzo, qta, descrizione);
 			} // La connessione viene chiusa qui
 
-			// Mostra un messaggio di conferma
 			JOptionPane.showMessageDialog(this, "Prodotto aggiunto con successo!", "Operazione riuscita",
 					JOptionPane.INFORMATION_MESSAGE);
 		} catch (Exception ex) {
@@ -162,7 +160,7 @@ public class AggiungiProdottoDialog extends JDialog {
 					JOptionPane.ERROR_MESSAGE);
 		}
 
-		// Close dialog
+		// Chiude la finestra di dialogo deputata all'inserimento di un nuovo prodotto
 		dispose();
 	}
 }

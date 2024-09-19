@@ -15,16 +15,9 @@ public class ModificaProdottoDialog extends JDialog {
 	private JButton confermaButton;
 	private JButton annullaButton;
 
-	public ModificaProdottoDialog(JFrame parentFrame, int row, String nomeAttuale, String descrizioneAttuale,
+	public ModificaProdottoDialog(JFrame parentFrame, String nomeAttuale, String descrizioneAttuale,
 			int qtaAttuale, float prezzoAttuale) {
-		super(parentFrame, "Modifica un prodotto esistente", true);
-
-		// Recupera i dati correnti del prodotto selezionato dall'utente (pre-modifica)
-		String nome = nomeAttuale;
-		String descrizione = descrizioneAttuale;
-		int qta = qtaAttuale;
-		float prezzo = prezzoAttuale;
-
+		super(parentFrame, "Modifica le informazioni relative a: " + nomeAttuale, true);
 		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(5, 5, 5, 5);
@@ -37,7 +30,7 @@ public class ModificaProdottoDialog extends JDialog {
 		gbc.gridx = 1;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		nomeField = new JTextField(nome);
+		nomeField = new JTextField(nomeAttuale);
 		add(nomeField, gbc);
 
 		// Crea il campo per l'inserimento della nuova descrizione del prodotto
@@ -49,7 +42,7 @@ public class ModificaProdottoDialog extends JDialog {
 		gbc.gridx = 1;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		descrizioneField = new JTextField(descrizione);
+		descrizioneField = new JTextField(descrizioneAttuale);
 		add(descrizioneField, gbc);
 
 		// Crea il campo per l'inserimento della nuova quantità del prodotto
@@ -61,7 +54,7 @@ public class ModificaProdottoDialog extends JDialog {
 		gbc.gridx = 1;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		qtaField = new JTextField(String.valueOf(qta));
+		qtaField = new JTextField(String.valueOf(qtaAttuale));
 		add(qtaField, gbc);
 
 		// Crea il campo per l'inserimento del nuovo prezzo del prodotto
@@ -73,7 +66,7 @@ public class ModificaProdottoDialog extends JDialog {
 		gbc.gridx = 1;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		prezzoField = new JTextField(String.valueOf(prezzo));
+		prezzoField = new JTextField(String.valueOf(prezzoAttuale));
 		add(prezzoField, gbc);
 
 		// Crea un pannello separato per i pulsanti "Conferma" ed "Annulla"
@@ -82,7 +75,13 @@ public class ModificaProdottoDialog extends JDialog {
 
 		// Crea il pulsante "Conferma" e lo aggiunge al pannello inferiore
 		confermaButton = new JButton("Conferma", new ImageIcon("../img/yes.png"));
-		confermaButton.addActionListener(e -> modificaProdotto(nomeAttuale));
+		confermaButton.addActionListener(e -> {
+			String nuovoNome = nomeField.getText();
+		    String nuovoPrezzoText = prezzoField.getText();
+		    String nuovaQtaText = qtaField.getText();
+		    String nuovaDescrizione = descrizioneField.getText();
+		    modificaProdotto(nomeAttuale, nuovoNome, nuovoPrezzoText, nuovaQtaText, nuovaDescrizione);
+		});
 		buttonPanel.add(confermaButton);
 
 		// Crea il pulsante "Annulla" e lo aggiunge al pannello inferiore
@@ -113,55 +112,50 @@ public class ModificaProdottoDialog extends JDialog {
 		setLocation(x, y);
 	}
 
-	private void modificaProdotto(String nomeAttuale) {
-		// Acquisisce i nuovi parametri inseriti dall'utente
-		String nuovoNome = nomeField.getText();
-		String nuovoPrezzoText = prezzoField.getText();
-		String nuovaQtaText = qtaField.getText();
-		String nuovaDescrizione = descrizioneField.getText();
-
-		// Replace commas with periods to handle both decimal separators
+	private void modificaProdotto(String nomeAttuale, String nuovoNome, String nuovoPrezzoText, String nuovaQtaText, String nuovaDescrizione) {
+		// Sostituisce eventuali virgole con dei punti per gestire entrambi i separatori decimali
 		nuovoPrezzoText = nuovoPrezzoText.replace(",", ".");
 
-		// Parse product price as float
+		// Ottiene il nuovo prezzo del prodotto sotto forma di numero reale
 		float nuovoPrezzo = 0.0f;
 
 		try {
 			nuovoPrezzo = Float.parseFloat(nuovoPrezzoText);
 			if (nuovoPrezzo <= 0) {
-				JOptionPane.showMessageDialog(this, "Prezzo non valido. Inserisci un numero positivo.", "Errore",
+				JOptionPane.showMessageDialog(this, "Nuovo prezzo non valido. Inserisci un numero positivo.", "Errore",
 						JOptionPane.ERROR_MESSAGE);
-				return; // Exit the method if the price is not positive
+				return; // Esce dal metodo se il nuovo prezzo risulta negativo o nullo
 			}
 		} catch (NumberFormatException nfe) {
-			JOptionPane.showMessageDialog(this, "Prezzo non valido. Inserisci un numero reale.", "Errore",
+			JOptionPane.showMessageDialog(this, "Nuovo prezzo non valido. Inserisci un numero reale.", "Errore",
 					JOptionPane.ERROR_MESSAGE);
-			return; // Exit the method if the price is invalid
+			return; // Esce dal metodo se il nuovo prezzo è costituito da un valore non valido
 		}
 
-		// Parse product quantity as integer
+		// Ottiene la nuova quantità del prodotto sotto forma di numero intero
 		int nuovaQta = 0;
 
 		try {
 			nuovaQta = Integer.parseInt(nuovaQtaText);
 			if (nuovaQta <= 0) {
-				JOptionPane.showMessageDialog(this, "Quantità non valida. Inserisci un numero positivo.", "Errore",
+				JOptionPane.showMessageDialog(this, "Nuova quantità non valida. Inserisci un numero positivo.", "Errore",
 						JOptionPane.ERROR_MESSAGE);
-				return; // Exit the method if the quantity is not positive
+				return; // Esce dal metodo se la nuova quantità non risulta positiva
 			}
 		} catch (NumberFormatException nfe) {
-			JOptionPane.showMessageDialog(this, "Quantità non valida. Inserisci un numero intero.", "Errore",
+			JOptionPane.showMessageDialog(this, "Nuova quantità non valida. Inserisci un numero intero.", "Errore",
 					JOptionPane.ERROR_MESSAGE);
-			return; // Exit the method if the quantity is invalid
+			return; // Esce dal metodo se la nuova quantità è costituita da un valore non valido
 		}
 
 		int rowsAffected = 0;
+		
+		// Modifica il prodotto agendo sulla relativa tabella nel database, chiudendo automaticamente la connessione al termine
 		try (DataService dataService = new DataService()) {
 			rowsAffected = dataService.modificaProdotto(nomeAttuale, nuovoNome, nuovoPrezzo, nuovaQta, nuovaDescrizione);
 		} // La connessione viene chiusa qui
 		
 		if (rowsAffected > 0) {
-			// Mostra a video un messaggio di conferma
 			JOptionPane.showMessageDialog(this, "Prodotto modificato con successo!", "Operazione riuscita",
 					JOptionPane.INFORMATION_MESSAGE);
 		} else {

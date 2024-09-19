@@ -3,7 +3,6 @@ package ui.gipanel;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -24,8 +23,7 @@ public class GestisciInventarioPanel extends JPanel {
 	public GestisciInventarioPanel(JFrame mainFrame) {
 		setLayout(new BorderLayout());
 
-		// Modello della tabella con le colonne specificate (modifica ed elimina hanno
-		// colonne vuote per il titolo)
+		// Modello della tabella con le colonne specificate ("Modifica" ed "Elimina" hanno colonne vuote per il titolo)
 		tableModel = new DefaultTableModel(
 				new Object[] { "Nome", "Descrizione", "Quantità disponibile", "Prezzo (€)", "", "" }, 0) {
 			@Override
@@ -36,9 +34,6 @@ public class GestisciInventarioPanel extends JPanel {
 
 		// Crea la JTable con il modello
 		prodottiTable = new JTable(tableModel);
-
-		// Mostra le righe della tabella colorate in modo alternato
-		prodottiTable.setDefaultRenderer(Object.class, new AlternatingRowRenderer());
 
 		// Aggiunge un renderer e un editor per la colonna "Modifica"
 		TableColumn modificaColonna = prodottiTable.getColumnModel().getColumn(4);
@@ -71,7 +66,7 @@ public class GestisciInventarioPanel extends JPanel {
 		greenButton.setIcon(new ImageIcon("../img/add.png")); // Imposta l'icona del "+"
 
 		// Imposta il colore di sfondo verde
-		greenButton.setBackground(new Color(76, 175, 80)); // Verde simile a quello dell'immagine
+		greenButton.setBackground(new Color(76, 175, 80));
 
 		// Imposta il colore del testo bianco
 		greenButton.setForeground(Color.WHITE);
@@ -81,8 +76,11 @@ public class GestisciInventarioPanel extends JPanel {
 													// arrotondato
 		greenButton.setFocusPainted(false);
 
-		// Aggiunge un ActionListener per gestire i click sul pulsante "Aggiungi un
-		// nuovo prodotto"
+		// Imposta l'icona a sinistra e il testo a destra
+		greenButton.setHorizontalAlignment(SwingConstants.LEFT);
+		greenButton.setHorizontalTextPosition(SwingConstants.RIGHT); // Testo a destra dell'icona
+		
+		// Aggiunge un ActionListener per gestire i click sul pulsante "Aggiungi un nuovo prodotto"
 		greenButton.addActionListener(new ActionListener() {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
@@ -90,10 +88,6 @@ public class GestisciInventarioPanel extends JPanel {
 				caricaProdotti();
 		    }
 		});
-
-		// Imposta l'icona a sinistra e il testo a destra
-		greenButton.setHorizontalAlignment(SwingConstants.LEFT);
-		greenButton.setHorizontalTextPosition(SwingConstants.RIGHT); // Testo a destra dell'icona
 
 		// Aggiunge il pulsante al pannello superiore
 		topPanel.add(greenButton, gbc);
@@ -106,22 +100,20 @@ public class GestisciInventarioPanel extends JPanel {
 	}
 
 	/*
-	 * Recupera i prodotti dal database e li aggiunge alla tabella. Per ciascuna
-	 * riga di quest'ultima prevede anche due pulsanti: uno per la modifica ed uno
-	 * per la rimozione.
+	 * Recupera i prodotti dal database e li aggiunge alla tabella. 
+	 * Per ciascuna riga di quest'ultima prevede anche un pulsante per la modifica ed uno per la rimozione.
 	 */
 	private void caricaProdotti() {
 		try {
+			// Resetta le righe della tabella
 			tableModel.setRowCount(0);
 
-			// Recupera i prodotti dal database, chiudendo automaticamente la connessione al
-			// termine
+			// Recupera i prodotti dal database, chiudendo automaticamente la connessione al termine
 			try (DataService dataService = new DataService()) {
 				prodotti = dataService.getProdotti();
 			} // La connessione viene chiusa qui
 
-			// Aggiungi ciascuno dei prodotti alla tabella, corredato da due pulsanti per la
-			// modifica e la rimozione
+			// Aggiungi ciascuno dei prodotti alla tabella, corredato da due pulsanti per la modifica e la rimozione
 			for (ProdottoRecord prodotto : prodotti) {
 				tableModel.addRow(new Object[] { prodotto.getNome(), prodotto.getDescrizione(),
 						prodotto.getQtadisponibile(), prodotto.getPrezzo(),
@@ -133,8 +125,10 @@ public class GestisciInventarioPanel extends JPanel {
 		}
 	}
 
-	// Renderer personalizzato per visualizzare le icone
-	class IconRenderer extends JButton implements TableCellRenderer {
+	/*
+	 * Inner class: renderer personalizzato per visualizzare le icone nella quinta e nella sesta colonna.
+	 */
+	private class IconRenderer extends JButton implements TableCellRenderer {
 
 		public IconRenderer(String iconPath) {
 			setIcon(new ImageIcon(iconPath));
@@ -150,10 +144,11 @@ public class GestisciInventarioPanel extends JPanel {
 		}
 	}
 
-	// Editor personalizzato per gestire i click sulle icone
-	class IconEditor extends DefaultCellEditor {
+	/*
+	 * Inner class: editor personalizzato per gestire i click sulle icone.
+	 */
+	private class IconEditor extends DefaultCellEditor {
 		private JButton button;
-		private boolean isPushed;
 
 		public IconEditor(JButton button) {
 			super(new JCheckBox());
@@ -171,25 +166,20 @@ public class GestisciInventarioPanel extends JPanel {
 		}
 
 		@Override
-		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row,
-				int column) {
+		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 			if (column == 4) { // Al click della colonna "Modifica"
 				// Recupera gli attuali dettagli del prodotto selezionato dall'utente
 				String nomeAttuale = (String) tableModel.getValueAt(row, 0);
 				String descrizioneAttuale = (String) tableModel.getValueAt(row, 1);
-				int qtaAttuale = Integer.parseInt((String) tableModel.getValueAt(row, 2));
-				float prezzoAttuale = Float.parseFloat((String) tableModel.getValueAt(row, 3));
+				int qtaAttuale = (Integer) tableModel.getValueAt(row, 2);
+				float prezzoAttuale = (Float) tableModel.getValueAt(row, 3);
 				
-				// Passa la riga di appartenenza ed i dettagli attuali del prodotto al metodo modificaProdotto
-		        modificaProdotto(row, nomeAttuale, descrizioneAttuale, qtaAttuale, prezzoAttuale);
-				
-				// Aggiorna la tabella dei prodotti recuperandoli dal database
+				// Passa i dati attuali del prodotto al metodo modificaProdotto
+		        modificaProdotto(nomeAttuale, descrizioneAttuale, qtaAttuale, prezzoAttuale);
 				caricaProdotti();
 			} else if (column == 5) { // Al click della colonna "Elimina"
 				// Procede alla rimozione del prodotto dal database previa conferma dell'utente
 				eliminaProdotto(row);
-				
-				// Aggiorna la tabella dei prodotti recuperandoli dal database
 				caricaProdotti();
 			}
 			return button;
@@ -207,8 +197,7 @@ public class GestisciInventarioPanel extends JPanel {
 	}
 
 	/*
-	 * Mostra la finestra di dialogo preposta all'inserimento di un nuovo prodotto
-	 * nel database.
+	 * Mostra la finestra di dialogo preposta all'inserimento di un nuovo prodotto nel database.
 	 */
 	private void aggiungiProdotto() {
 		JFrame parentFrame = (JFrame) SwingUtilities.windowForComponent(this);
@@ -217,27 +206,25 @@ public class GestisciInventarioPanel extends JPanel {
 	}
 
 	/*
-	 * Mostra la finestra di dialogo preposta alla modifica di un prodotto nel
-	 * database.
+	 * Mostra la finestra di dialogo preposta alla modifica di un prodotto già contenuto nel database.
 	 */
-	private void modificaProdotto(int row, String nomeAttuale, String descrizioneAttuale, int qtaAttuale,
+	private void modificaProdotto(String nomeAttuale, String descrizioneAttuale, int qtaAttuale,
 			float prezzoAttuale) {
 		JFrame parentFrame = (JFrame) SwingUtilities.windowForComponent(this);
-		ModificaProdottoDialog dialog = new ModificaProdottoDialog(parentFrame, row, nomeAttuale, descrizioneAttuale,
+		ModificaProdottoDialog dialog = new ModificaProdottoDialog(parentFrame, nomeAttuale, descrizioneAttuale,
 				qtaAttuale, prezzoAttuale);
 		dialog.setVisible(true);
 	}
 
 	/*
-	 * Elimina dalla relativa tabella del database il prodotto selezionato
-	 * dall'utente.
+	 * Elimina dalla relativa tabella del database il prodotto selezionato dall'utente.
 	 */
 	private void eliminaProdotto(int row) {
 		// Recupera il nome del prodotto selezionato dall'utente
 		String nomeProdotto = (String) tableModel.getValueAt(row, 0);
 
 		// Richiede conferma all'utente prima di procedere all'eliminazione
-		int confirm = JOptionPane.showConfirmDialog(this, "Sei sicuro di voler rimuovere " + nomeProdotto + "?",
+		int confirm = JOptionPane.showConfirmDialog(this, "Sei sicuro di voler rimuovere: " + nomeProdotto + "?",
 				"Conferma eliminazione", JOptionPane.YES_NO_OPTION);
 
 		if (confirm == JOptionPane.YES_OPTION) {
@@ -265,8 +252,10 @@ public class GestisciInventarioPanel extends JPanel {
 		}
 	}
 
-	// Interfaccia utente personalizzata per rendere il pulsante arrotondato
-	class RoundedButtonUI extends BasicButtonUI {
+	/*
+	 * Inner class: interfaccia utente personalizzata per rendere il pulsante "Aggiungi un nuovo prodotto" arrotondato.
+	 */
+	private class RoundedButtonUI extends BasicButtonUI {
 		@Override
 		public void installUI(JComponent c) {
 			super.installUI(c);
@@ -287,24 +276,6 @@ public class GestisciInventarioPanel extends JPanel {
 
 			// Disegna il testo e l'icona normalmente
 			super.paint(g, c);
-		}
-	}
-
-	/*
-	 * Controlla l'indice di ogni riga della tabella ed impostane il colore a
-	 * seconda dello stesso.
-	 */
-	private class AlternatingRowRenderer extends DefaultTableCellRenderer {
-		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-				int row, int column) {
-			Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-			if (row % 2 == 0) {
-				cell.setBackground(Color.decode("#F1F1F1")); // Righe pari
-			} else {
-				cell.setBackground(Color.decode("#FFFFFF")); // Righe dispari
-			}
-			return cell;
 		}
 	}
 }

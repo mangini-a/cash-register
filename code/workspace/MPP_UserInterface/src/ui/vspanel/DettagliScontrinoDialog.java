@@ -7,12 +7,14 @@ import java.awt.Frame;
 import java.util.List;
 
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import jooq.DataService;
+import jooq.generated.tables.Scontrino;
 import jooq.generated.tables.records.ProdottoRecord;
 import jooq.generated.tables.records.VocescontrinoRecord;
 
@@ -41,14 +43,16 @@ public class DettagliScontrinoDialog extends JDialog {
         dettagliTable.setDefaultRenderer(Object.class, new AlternatingRowRenderer());
         
         JScrollPane scrollPane = new JScrollPane(dettagliTable);
-
+        float totale=0;
         // Popola la tabella con le linee di dettaglio dello scontrino, connettendosi al database
         for (VocescontrinoRecord dettaglio : dettagliScontrino) {
             ProdottoRecord prodotto = dataService.getProdottoById(dettaglio.getIdprodotto());
             if (prodotto != null) {
             	tableModel.addRow(new Object[]{prodotto.getNome(), dettaglio.getQtaprodotto(), prodotto.getPrezzo()});
+            	totale += prodotto.getPrezzo()*dettaglio.getQtaprodotto();
             }
         }
+        tableModel.addRow(new Object[]{"TOTALE", "", totale});
         
         // Chiude la connessione al database
         dataService.close();
@@ -72,6 +76,7 @@ public class DettagliScontrinoDialog extends JDialog {
             } else {
                 cell.setBackground(Color.decode("#FFFFFF")); // Righe dispari
             }
+            setHorizontalAlignment(JLabel.CENTER);
             return cell;
         }
     }

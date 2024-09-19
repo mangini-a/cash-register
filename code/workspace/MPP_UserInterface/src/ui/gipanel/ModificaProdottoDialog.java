@@ -158,6 +158,7 @@ public class ModificaProdottoDialog extends JDialog {
 		if (rowsAffected > 0) {
 			JOptionPane.showMessageDialog(this, "Prodotto modificato con successo!", "Operazione riuscita",
 					JOptionPane.INFORMATION_MESSAGE);
+			dispose();
 		} else {
 			JOptionPane.showMessageDialog(this, "Non è stato possibile modificare il prodotto.", "Errore",
 					JOptionPane.ERROR_MESSAGE);

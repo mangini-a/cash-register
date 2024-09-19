@@ -263,9 +263,10 @@ public class RegistraScontrinoPanel extends JPanel {
             // Mostra un messaggio di conferma
             JOptionPane.showMessageDialog(this, "Scontrino generato con successo!", "Operazione riuscita",
                     JOptionPane.INFORMATION_MESSAGE);
+            
             //Aggiorna la tabella degli scontrini
             VisualizzaScontriniPanel visualizzaScontriniPanel = mainFrame.getVisualizzaScontriniPanel();
-            visualizzaScontriniPanel.aggiornaScontrini();  //Aggiorna gli scontrini
+            visualizzaScontriniPanel.caricaScontrini();  //Aggiorna gli scontrini
             
             // Resetta sia il carrello (rimuovendo le voci scontrino dalla lista) che la relativa rappresentazione tabulare
             resettaCarrello();

@@ -39,13 +39,12 @@ public class VisualizzaScontriniPanel extends JPanel {
 		// Aggiunge questa schermata al pannello dei contenuti del frame principale
 		mainFrame.getContentPane().add(this, BorderLayout.CENTER);
 
-		// Add your components to the panel
-		// ...
-		// Crea un template tabulare per visualizzare i dettagli di ciascun scontrino (la colonna Id è nascosta e serve per mantenere il valore)
-		tableModel = new DefaultTableModel(new Object[] { "Data e ora di emissione", "Totale complessivo (€)","ID"}, 0) {
+		// Crea un template tabulare per visualizzare i dettagli di ciascun scontrino
+		// La colonna ID è nascosta e serve per mantenere il valore
+		tableModel = new DefaultTableModel(new Object[] { "Data e ora di emissione", "Totale complessivo (€)", "ID" }, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return false; // Make all cells non-editable
+				return false; // Impedisce di modificare le celle della tabella
 			}
 		};
 		scontriniTable = new JTable(tableModel);
@@ -57,19 +56,17 @@ public class VisualizzaScontriniPanel extends JPanel {
         scontriniTable.getColumnModel().getColumn(2).setMaxWidth(0);
         scontriniTable.getColumnModel().getColumn(2).setWidth(0);
 
-
 		// Aggiunge la tabella ad un pannello che si possa scorrere verticalmente
 		JScrollPane scrollPane = new JScrollPane(scontriniTable);
 
 		// Carica gli scontrini dal database
 		caricaScontrini();
 
-		// Aggiunge un mouse listener per gestire la selezione di una entry della
-		// tabella
+		// Aggiunge un mouse listener per gestire la selezione di una entry della tabella
 		scontriniTable.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) { // Double-click
+				if (e.getClickCount() == 2) { // Se viene rilevato un doppio click
 					int selectedRow = scontriniTable.getSelectedRow();
 					if (selectedRow != -1) {
 						int idScontrino = (int) scontriniTable.getValueAt(selectedRow, 2);
@@ -79,26 +76,18 @@ public class VisualizzaScontriniPanel extends JPanel {
 			}
 		});
 
-
+		// Aggiunge il pannello scorrevole su cui è innestata la tabella al centro del frame
 		add(scrollPane, BorderLayout.CENTER);
 	}
 	
-
-
-	
-	public void aggiornaScontrini() {
-	    caricaScontrini(); // Questo ricarica la tabella con i dati aggiornati
-	}
-
-	
 	/*
-	 * Recupera tutti gli scontrini dal database e popola il template tabulare con i
-	 * rispettivi dati.
+	 * Recupera tutti gli scontrini dal database e popola il template tabulare con i rispettivi dati.
+	 * Pubblico in quanto utilizzato anche dalla classe RegistraScontrinoPanel, che si trova in un altro package.
 	 */
-	private void caricaScontrini() {
-		
-		SimpleDateFormat dbDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //formato del db
-		SimpleDateFormat displayDateFormat  = new SimpleDateFormat("dd/MM/yyyy HH:mm"); //formato da stampare
+	public void caricaScontrini() {
+		// Converte il formato del timestamp utilizzato da SQLite con quello in uso nel nostro standard
+		SimpleDateFormat dbDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // Formato del database
+		SimpleDateFormat displayDateFormat  = new SimpleDateFormat("dd/MM/yyyy HH:mm"); // Formato da stampare
 		
 		// Recupera gli scontrini dal database, chiudendo automaticamente la connessione al termine
         try (DataService dataService = new DataService()) {
@@ -109,16 +98,15 @@ public class VisualizzaScontriniPanel extends JPanel {
 		tableModel.setRowCount(0);
 		for (ScontrinoRecord scontrino : scontrini) {
 			try {
-				Date dataOra = dbDateFormat.parse(scontrino.getDataora());		//converto a data e cambio il formato
-				String DesiredFormatData = displayDateFormat.format(dataOra); 	//converto nuovamente a string
+				Date dataOra = dbDateFormat.parse(scontrino.getDataora()); // Converte a data e cambia il formato
+				String DesiredFormatData = displayDateFormat.format(dataOra); // Converte nuovamente a String
 				
 				tableModel.addRow(new Object[] { DesiredFormatData, scontrino.getPrezzotot(), scontrino.getIdscontrino() });
 			} catch (ParseException e) {
-				e.printStackTrace(); //In caso di errore nella conversione della data
+				e.printStackTrace(); // In caso di errore nella conversione della data
 	            JOptionPane.showMessageDialog(this, "Errore nel formato della data: " + scontrino.getDataora(),
 	                                          "Errore di parsing", JOptionPane.ERROR_MESSAGE);
 			}
-			
 		}
 	}
 
@@ -141,7 +129,6 @@ public class VisualizzaScontriniPanel extends JPanel {
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}
-
 	
 	/*
      *  Controlla l'indice di ogni riga della tabella ed impostane il colore a seconda dello stesso.

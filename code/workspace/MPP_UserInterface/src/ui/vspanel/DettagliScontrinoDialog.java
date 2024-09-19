@@ -14,7 +14,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import jooq.DataService;
-import jooq.generated.tables.Scontrino;
 import jooq.generated.tables.records.ProdottoRecord;
 import jooq.generated.tables.records.VocescontrinoRecord;
 
@@ -31,10 +30,10 @@ public class DettagliScontrinoDialog extends JDialog {
         setLayout(new BorderLayout());
 
         // Crea la tabella per rappresentare le linee di dettaglio di uno scontrino
-        tableModel = new DefaultTableModel(new Object[]{"Prodotto", "Quantità", "Prezzo (€)"}, 0) {
+        tableModel = new DefaultTableModel(new Object[]{ "Prodotto", "Quantità", "Prezzo (€)" }, 0) {
         	@Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Make all cells non-editable
+                return false; // Impedisce di modificare le celle della tabella
             }
         };
         dettagliTable = new JTable(tableModel);
@@ -43,16 +42,16 @@ public class DettagliScontrinoDialog extends JDialog {
         dettagliTable.setDefaultRenderer(Object.class, new AlternatingRowRenderer());
         
         JScrollPane scrollPane = new JScrollPane(dettagliTable);
-        float totale=0;
+        float totale = 0;
         // Popola la tabella con le linee di dettaglio dello scontrino, connettendosi al database
         for (VocescontrinoRecord dettaglio : dettagliScontrino) {
             ProdottoRecord prodotto = dataService.getProdottoById(dettaglio.getIdprodotto());
             if (prodotto != null) {
-            	tableModel.addRow(new Object[]{prodotto.getNome(), dettaglio.getQtaprodotto(), prodotto.getPrezzo()});
-            	totale += prodotto.getPrezzo()*dettaglio.getQtaprodotto();
+            	tableModel.addRow(new Object[]{ prodotto.getNome(), dettaglio.getQtaprodotto(), prodotto.getPrezzo() });
+            	totale += prodotto.getPrezzo() * dettaglio.getQtaprodotto();
             }
         }
-        tableModel.addRow(new Object[]{"TOTALE", "", totale});
+        tableModel.addRow(new Object[]{ "Totale", "", totale });
         
         // Chiude la connessione al database
         dataService.close();

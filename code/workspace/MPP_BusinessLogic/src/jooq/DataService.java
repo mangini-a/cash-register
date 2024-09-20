@@ -99,7 +99,7 @@ public class DataService implements AutoCloseable {
     }
 
     // Aggiorna la quantità disponibile di un prodotto in seguito al suo inserimento nel carrello
-    public void aggiornaQtaProdotto(Integer idProdotto, int nuovaQta) {
+    public void aggiornaQtaProdotto(int idProdotto, int nuovaQta) {
         ensureConnection();
         context.update(Prodotto.PRODOTTO)
                .set(Prodotto.PRODOTTO.QTADISPONIBILE, nuovaQta)
@@ -141,19 +141,18 @@ public class DataService implements AutoCloseable {
         context.transaction(configuration -> {
             DSLContext transactionalContext = DSL.using(configuration);
 
-            // Inserisci lo scontrino
+            // Inserisce lo scontrino nella rispettiva tabella del database
             ScontrinoRecord scontrino = transactionalContext.newRecord(Scontrino.SCONTRINO);
             scontrino.setPrezzotot(prezzoTotale);
             scontrino.insert();
 
-            // Inserisci ogni voce scontrino
+            // Inserisce ogni voce relativa allo scontrino appena creato
             for (VocescontrinoRecord voceScontrino : vociScontrino) {
                 voceScontrino.setIdscontrino(scontrino.getIdscontrino()); // Associa la voce allo scontrino
                 transactionalContext.newRecord(Vocescontrino.VOCESCONTRINO, voceScontrino).insert();
             }
         });
     }
-
 
     // Modifica un determinato prodotto sulla base del proprio nome
     public int modificaProdotto(String nome, String nuovoNome, float nuovoPrezzo, int nuovaQta, String nuovaDescrizione) {

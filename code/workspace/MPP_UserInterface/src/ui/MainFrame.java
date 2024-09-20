@@ -1,6 +1,8 @@
 package ui;
 
 import java.awt.*;
+import java.sql.SQLException;
+
 import javax.swing.*;
 
 import com.formdev.flatlaf.FlatIntelliJLaf;
@@ -19,7 +21,7 @@ public class MainFrame extends JFrame {
 	private GestisciInventarioPanel gestisciInventarioPanel;
 	private VisualizzaScontriniPanel visualizzaScontriniPanel;
 
-	public MainFrame() {
+	public MainFrame() throws SQLException {
 		setTitle("Store manager");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setIconImage(new ImageIcon("../img/euro-icon.png").getImage());
@@ -57,9 +59,9 @@ public class MainFrame extends JFrame {
         DataService dataService = new DataService();
 
         // Inizializza le tre schermate operative, a cui si può accedere tramite un click sul relativo pulsante
-        registraScontrinoPanel = new RegistraScontrinoPanel(this);
+		registraScontrinoPanel = new RegistraScontrinoPanel(this, dataService);
         gestisciInventarioPanel = new GestisciInventarioPanel(this, dataService);
-        visualizzaScontriniPanel = new VisualizzaScontriniPanel(this);
+        visualizzaScontriniPanel = new VisualizzaScontriniPanel(this, dataService);
         
         // Aggiunge le schermate operative (a cui sono associati nomi univoci) al pannello per le card
         cardPanel.add(registraScontrinoPanel, "Registra");
@@ -93,6 +95,12 @@ public class MainFrame extends JFrame {
     }
 
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(MainFrame::new);
+		SwingUtilities.invokeLater(() -> {
+			try {
+				new MainFrame();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 }

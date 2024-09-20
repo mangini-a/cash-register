@@ -89,6 +89,36 @@ public class ProductService {
         }
 	}
 	
+	// Recupera il record relativo ad un prodotto a partire dal suo ID
+	public ProdottoRecord findById(int id, List<ProdottoRecord> prodotti) {
+		for (ProdottoRecord prodotto : prodotti) {
+            if (prodotto.getIdprodotto() == id) {
+                return prodotto;
+            }
+        }
+        return null;
+	}
+	
+	// Recupera il record relativo ad un prodotto a partire dal suo nome
+	public ProdottoRecord findByName(String nome, List<ProdottoRecord> prodotti) {
+		for (ProdottoRecord prodotto : prodotti) {
+            if (prodotto.getNome().equalsIgnoreCase(nome)) {
+                return prodotto;
+            }
+        }
+        return null;
+	}
+	
+	// Aggiorna la quantità disponibile del prodotto nel database, chiudendo automaticamente la connessione al termine
+	public void updateQuantity(int idProdotto, int nuovaQta) {
+		try {
+			dataService.aggiornaQtaProdotto(idProdotto, nuovaQta);
+		} catch (Exception e) {
+            // Handle general exception
+            logError("Error updating product's quantity: " + e.getMessage());
+        }
+	}
+	
 	private void logError(String message) {
         logger.error(message);
     }

@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.util.List;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,6 +21,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import invoices.InvoiceService;
 import jooq.DataService;
 import jooq.generated.tables.records.ScontrinoRecord;
 import jooq.generated.tables.records.VocescontrinoRecord;
@@ -32,14 +34,19 @@ public class VisualizzaScontriniPanel extends JPanel {
 	private DefaultTableModel tableModel;
 	private List<ScontrinoRecord> scontrini;
 	private List<VocescontrinoRecord> dettagliScontrino;
+	private DataService dataService;
+    private InvoiceService invoiceService;
 
-	public VisualizzaScontriniPanel(MainFrame mainFrame) {
+	public VisualizzaScontriniPanel(MainFrame mainFrame, DataService dataService) {
+		this.dataService = dataService;
+    	this.invoiceService = InvoiceService.getInstance(dataService);
+		
 		setLayout(new BorderLayout());
 
 		// Aggiunge questa schermata al pannello dei contenuti del frame principale
 		mainFrame.getContentPane().add(this, BorderLayout.CENTER);
 
-		// Crea un template tabulare per visualizzare i dettagli di ciascun scontrino
+		// Crea un template tabulare per visualizzare i dettagli di ciascuno scontrino
 		// La colonna ID è nascosta e serve per mantenere il valore
 		tableModel = new DefaultTableModel(new Object[] { "Data e ora di emissione", "Totale complessivo (€)", "ID" }, 0) {
 			@Override
@@ -52,6 +59,7 @@ public class VisualizzaScontriniPanel extends JPanel {
 		// Mostra le righe della tabella colorate in modo alternato
         scontriniTable.setDefaultRenderer(Object.class, new AlternatingRowRenderer());
         
+        // Nasconde la terza colonna (ID)
         scontriniTable.getColumnModel().getColumn(2).setMinWidth(0);
         scontriniTable.getColumnModel().getColumn(2).setMaxWidth(0);
         scontriniTable.getColumnModel().getColumn(2).setWidth(0);
@@ -60,7 +68,11 @@ public class VisualizzaScontriniPanel extends JPanel {
 		JScrollPane scrollPane = new JScrollPane(scontriniTable);
 
 		// Carica gli scontrini dal database
-		caricaScontrini();
+		try {
+			caricaScontrini();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 		// Aggiunge un mouse listener per gestire la selezione di una entry della tabella
 		scontriniTable.addMouseListener(new MouseAdapter() {
@@ -84,24 +96,21 @@ public class VisualizzaScontriniPanel extends JPanel {
 	 * Recupera tutti gli scontrini dal database e popola il template tabulare con i rispettivi dati.
 	 * Pubblico in quanto utilizzato anche dalla classe RegistraScontrinoPanel, che si trova in un altro package.
 	 */
-	public void caricaScontrini() {
+	public void caricaScontrini() throws SQLException {
 		// Converte il formato del timestamp utilizzato da SQLite con quello in uso nel nostro standard
 		SimpleDateFormat dbDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // Formato del database
 		SimpleDateFormat displayDateFormat  = new SimpleDateFormat("dd/MM/yyyy HH:mm"); // Formato da stampare
+        
+        // Recupera tutti gli scontrini dal database
+        scontrini = invoiceService.findAll();
 		
-		// Recupera gli scontrini dal database, chiudendo automaticamente la connessione al termine
-        try (DataService dataService = new DataService()) {
-        	scontrini = dataService.getScontrini();
-        } // La connessione viene chiusa qui
-		
-		// Popola il template tabulare con gli scontrini
+		// Popola il template tabulare con gli scontrini recuperati
 		tableModel.setRowCount(0);
 		for (ScontrinoRecord scontrino : scontrini) {
 			try {
 				Date dataOra = dbDateFormat.parse(scontrino.getDataora()); // Converte a data e cambia il formato
-				String DesiredFormatData = displayDateFormat.format(dataOra); // Converte nuovamente a String
-				
-				tableModel.addRow(new Object[] { DesiredFormatData, scontrino.getPrezzotot(), scontrino.getIdscontrino() });
+				String desiredFormatData = displayDateFormat.format(dataOra); // Converte nuovamente a stringa
+				tableModel.addRow(new Object[] { desiredFormatData, scontrino.getPrezzotot(), scontrino.getIdscontrino() });
 			} catch (ParseException e) {
 				e.printStackTrace(); // In caso di errore nella conversione della data
 	            JOptionPane.showMessageDialog(this, "Errore nel formato della data: " + scontrino.getDataora(),
@@ -110,19 +119,15 @@ public class VisualizzaScontriniPanel extends JPanel {
 		}
 	}
 
-	/*
-	 * Visualizza le linee di dettaglio dello scontrino selezionato in una finestra di dialogo.
-	 */
+	// Visualizza le linee di dettaglio dello scontrino selezionato in una finestra di dialogo
 	private void mostraDettagliScontrino(int idScontrino) {
-		// Recupera le linee di dettaglio dello scontrino dal database, chiudendo automaticamente la connessione al termine
-		try (DataService dataService = new DataService()) {
-			dettagliScontrino = dataService.getDettagliScontrino(idScontrino);
-		} // La connessione viene chiusa qui
+		// Recupera le linee di dettaglio dello scontrino dal database
+		dettagliScontrino = invoiceService.findLinesByInvoiceId(idScontrino);
 		
 		// Controlla che ci siano linee di dettaglio da mostrare
 		if (dettagliScontrino != null && !dettagliScontrino.isEmpty()) {
 			Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(this);
-			new DettagliScontrinoDialog(parentFrame, dettagliScontrino);
+			new DettagliScontrinoDialog(parentFrame, dataService, dettagliScontrino);
 		} else {
 			JOptionPane.showMessageDialog(this,
 					"Non sono state trovate linee di dettaglio per lo scontrino selezionato.", "Errore",
@@ -130,9 +135,7 @@ public class VisualizzaScontriniPanel extends JPanel {
 		}
 	}
 	
-	/*
-     *  Controlla l'indice di ogni riga della tabella ed impostane il colore a seconda dello stesso.
-     */
+    // Controlla l'indice di ogni riga della tabella ed impostane il colore a seconda dello stesso
     private class AlternatingRowRenderer extends DefaultTableCellRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {

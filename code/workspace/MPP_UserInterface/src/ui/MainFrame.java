@@ -82,14 +82,15 @@ public class MainFrame extends JFrame {
 		setVisible(true);
 	}
 
-	/*
-	 * Gestisce la transizione tra una schermata e l'altra.
-	 */
+	// Gestisce le transizioni tra una schermata e l'altra
 	private void showPanel(String panelName) {
 		cardLayout.show((Container) mainPanel.getComponent(1), panelName); // Mostra la schermata selezionata mediante il proprio nome
 	}
 	
-	
+	public GestisciInventarioPanel getGestisciInventarioPanel() {
+		return gestisciInventarioPanel;
+	}
+
 	public VisualizzaScontriniPanel getVisualizzaScontriniPanel() {
         return visualizzaScontriniPanel;
     }

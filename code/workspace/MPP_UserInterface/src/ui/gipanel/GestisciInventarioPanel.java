@@ -117,8 +117,9 @@ public class GestisciInventarioPanel extends JPanel {
 	/*
 	 * Recupera i prodotti dal database e li aggiunge alla tabella. 
 	 * Per ciascuna riga di quest'ultima prevede anche un pulsante per la modifica ed uno per la rimozione.
+	 * Pubblico in quanto utilizzato anche dalla classe RegistraScontrinoPanel, che si trova in un altro package.
 	 */
-	private void caricaProdotti() {
+	public void caricaProdotti() {
 		try {
 			// Resetta le righe della tabella
 			tableModel.setRowCount(0);

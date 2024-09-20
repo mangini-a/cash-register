@@ -1,17 +1,13 @@
 package ui.vspanel;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -56,8 +52,12 @@ public class VisualizzaScontriniPanel extends JPanel {
 		};
 		scontriniTable = new JTable(tableModel);
 		
-		// Mostra le righe della tabella colorate in modo alternato
-        scontriniTable.setDefaultRenderer(Object.class, new AlternatingRowRenderer());
+		// Centra il testo in tutte le colonne della tabella
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+		scontriniTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+		scontriniTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+		scontriniTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
         
         // Nasconde la terza colonna (ID)
         scontriniTable.getColumnModel().getColumn(2).setMinWidth(0);
@@ -97,21 +97,21 @@ public class VisualizzaScontriniPanel extends JPanel {
 	 * Pubblico in quanto utilizzato anche dalla classe RegistraScontrinoPanel, che si trova in un altro package.
 	 */
 	public void caricaScontrini() throws SQLException {
-		// Converte il formato del timestamp utilizzato da SQLite con quello in uso nel nostro standard
-		SimpleDateFormat dbDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // Formato del database
-		SimpleDateFormat displayDateFormat  = new SimpleDateFormat("dd/MM/yyyy HH:mm"); // Formato da stampare
-        
         // Recupera tutti gli scontrini dal database
         scontrini = invoiceService.findAll();
+        
+        // Definisce il formato di timestamp desiderato dall'utente
+        SimpleDateFormat displayDateFormat  = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		
 		// Popola il template tabulare con gli scontrini recuperati
 		tableModel.setRowCount(0);
 		for (ScontrinoRecord scontrino : scontrini) {
 			try {
-				Date dataOra = dbDateFormat.parse(scontrino.getDataora()); // Converte a data e cambia il formato
-				String desiredFormatData = displayDateFormat.format(dataOra); // Converte nuovamente a stringa
+				Timestamp dataOra = Timestamp.valueOf(scontrino.getDataora()); // Converte a timestamp
+				dataOra.setTime(dataOra.getTime() + 2 * 60 * 60 * 1000); // Aggiunge 2 ore in millisecondi
+				String desiredFormatData = displayDateFormat.format(dataOra); // Converte a stringa
 				tableModel.addRow(new Object[] { desiredFormatData, scontrino.getPrezzotot(), scontrino.getIdscontrino() });
-			} catch (ParseException e) {
+			} catch (Exception e) {
 				e.printStackTrace(); // In caso di errore nella conversione della data
 	            JOptionPane.showMessageDialog(this, "Errore nel formato della data: " + scontrino.getDataora(),
 	                                          "Errore di parsing", JOptionPane.ERROR_MESSAGE);
@@ -134,19 +134,4 @@ public class VisualizzaScontriniPanel extends JPanel {
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
-    // Controlla l'indice di ogni riga della tabella ed impostane il colore a seconda dello stesso
-    private class AlternatingRowRenderer extends DefaultTableCellRenderer {
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            if (row % 2 == 0) {
-                cell.setBackground(Color.decode("#F1F1F1")); // Righe pari
-            } else {
-                cell.setBackground(Color.decode("#FFFFFF")); // Righe dispari
-            }
-            setHorizontalAlignment(JLabel.CENTER); // Centra il contenuto della tabella
-            return cell;
-        }
-    }
 }

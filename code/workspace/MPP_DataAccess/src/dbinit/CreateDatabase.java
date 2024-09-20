@@ -26,5 +26,4 @@ public class CreateDatabase {
 			System.out.println(e.getMessage());
 		}
 	}
-
 }

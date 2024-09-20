@@ -24,17 +24,17 @@ import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import inventory.ProductService;
 import invoices.InvoiceService;
 
-import javax.swing.table.DefaultTableCellRenderer;
-
 import jooq.DataService;
 import jooq.generated.tables.records.ProdottoRecord;
 import jooq.generated.tables.records.VocescontrinoRecord;
 import ui.MainFrame;
+import ui.gipanel.GestisciInventarioPanel;
 import ui.vspanel.VisualizzaScontriniPanel;
 
 @SuppressWarnings("serial")
@@ -206,6 +206,10 @@ public class RegistraScontrinoPanel extends JPanel {
                 // Aggiorna la quantità disponibile del prodotto nel database, chiudendo automaticamente la connessione al termine
                 productService.updateQuantity(prodotto.getIdprodotto(), prodotto.getQtadisponibile() - qtaProdotto);
                 
+                // Aggiorna la tabella dei prodotti visualizzata nella seconda schermata
+                GestisciInventarioPanel gestisciInventarioPanel = mainFrame.getGestisciInventarioPanel();
+                gestisciInventarioPanel.caricaProdotti();
+                
                 // Resetta i campi di selezione
                 prodottoField.setText("");
                 qtaProdottoSpinner.setValue(1);
@@ -283,7 +287,7 @@ public class RegistraScontrinoPanel extends JPanel {
             } else {
                 cell.setBackground(Color.decode("#FFFFFF")); // Righe dispari
             }
-            setHorizontalAlignment(JLabel.CENTER); // Centra il contenuto della tabella
+            setHorizontalAlignment(JLabel.CENTER);
             return cell;
         }
     }

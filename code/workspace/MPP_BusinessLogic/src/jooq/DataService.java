@@ -16,6 +16,9 @@ import jooq.generated.tables.records.ProdottoRecord;
 import jooq.generated.tables.records.ScontrinoRecord;
 import jooq.generated.tables.records.VocescontrinoRecord;
 
+/*
+ * Mette a disposizione una serie di metodi per interagire con il database SQLite integrato usando jOOQ.
+ */
 public class DataService implements AutoCloseable {
 
     private Connection conn;

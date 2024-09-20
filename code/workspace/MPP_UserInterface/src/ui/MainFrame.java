@@ -5,6 +5,7 @@ import javax.swing.*;
 
 import com.formdev.flatlaf.FlatIntelliJLaf;
 
+import jooq.DataService;
 import ui.gipanel.GestisciInventarioPanel;
 import ui.rspanel.RegistraScontrinoPanel;
 import ui.vspanel.VisualizzaScontriniPanel;
@@ -51,10 +52,13 @@ public class MainFrame extends JFrame {
         // Crea un CardLayout per le schermate operative
         cardLayout = new CardLayout();
         JPanel cardPanel = new JPanel(cardLayout); // Pannello per le card (schede)
+        
+        // Crea un'istanza di DataService
+        DataService dataService = new DataService();
 
         // Inizializza le tre schermate operative, a cui si può accedere tramite un click sul relativo pulsante
         registraScontrinoPanel = new RegistraScontrinoPanel(this);
-        gestisciInventarioPanel = new GestisciInventarioPanel(this);
+        gestisciInventarioPanel = new GestisciInventarioPanel(this, dataService);
         visualizzaScontriniPanel = new VisualizzaScontriniPanel(this);
         
         // Aggiunge le schermate operative (a cui sono associati nomi univoci) al pannello per le card

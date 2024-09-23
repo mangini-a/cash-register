@@ -37,6 +37,12 @@
 			<artifactId>jooq-codegen</artifactId>
 			<version>3.19.11</version>
 		</dependency>
+		<!-- Dipendenza da Log4j -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
 		<!-- Dipendenza dal livello sottostante (DataAccess) -->
 		<dependency>
 			<groupId>MPP_DataAccess</groupId>

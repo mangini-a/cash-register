@@ -3,10 +3,12 @@ package ui.gipanel;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+
+import inventory.ProductService;
+
 import java.util.List;
 
 import jooq.DataService;
@@ -20,8 +22,13 @@ public class GestisciInventarioPanel extends JPanel {
 	private JTable prodottiTable;
 	private DefaultTableModel tableModel;
 	private List<ProdottoRecord> prodotti;
+	private DataService dataService;
+	private ProductService productService;
 
-	public GestisciInventarioPanel(JFrame mainFrame) {
+	public GestisciInventarioPanel(JFrame mainFrame, DataService dataService) {
+		this.dataService = dataService;
+		this.productService = ProductService.getInstance(dataService);
+		
 		setLayout(new BorderLayout());
 
 		// Modello della tabella con le colonne specificate ("Modifica" ed "Elimina" hanno colonne vuote per il titolo)
@@ -110,17 +117,16 @@ public class GestisciInventarioPanel extends JPanel {
 	/*
 	 * Recupera i prodotti dal database e li aggiunge alla tabella. 
 	 * Per ciascuna riga di quest'ultima prevede anche un pulsante per la modifica ed uno per la rimozione.
+	 * Pubblico in quanto utilizzato anche dalla classe RegistraScontrinoPanel, che si trova in un altro package.
 	 */
-	private void caricaProdotti() {
+	public void caricaProdotti() {
 		try {
 			// Resetta le righe della tabella
 			tableModel.setRowCount(0);
 
-			// Recupera i prodotti dal database, chiudendo automaticamente la connessione al termine
-			try (DataService dataService = new DataService()) {
-				prodotti = dataService.getProdotti();
-			} // La connessione viene chiusa qui
-
+			// Recupera tutti i prodotti dal database
+			prodotti = productService.findAll();
+			
 			// Aggiungi ciascuno dei prodotti alla tabella, corredato da due pulsanti per la modifica e la rimozione
 			for (ProdottoRecord prodotto : prodotti) {
 				tableModel.addRow(new Object[] { prodotto.getNome(), prodotto.getDescrizione(),
@@ -209,7 +215,7 @@ public class GestisciInventarioPanel extends JPanel {
 	 */
 	private void aggiungiProdotto() {
 		JFrame parentFrame = (JFrame) SwingUtilities.windowForComponent(this);
-		AggiungiProdottoDialog dialog = new AggiungiProdottoDialog(parentFrame);
+		AggiungiProdottoDialog dialog = new AggiungiProdottoDialog(parentFrame, dataService);
 		dialog.setVisible(true);
 	}
 
@@ -219,7 +225,7 @@ public class GestisciInventarioPanel extends JPanel {
 	private void modificaProdotto(String nomeAttuale, String descrizioneAttuale, int qtaAttuale,
 			float prezzoAttuale) {
 		JFrame parentFrame = (JFrame) SwingUtilities.windowForComponent(this);
-		ModificaProdottoDialog dialog = new ModificaProdottoDialog(parentFrame, nomeAttuale, descrizioneAttuale,
+		ModificaProdottoDialog dialog = new ModificaProdottoDialog(parentFrame, dataService, nomeAttuale, descrizioneAttuale,
 				qtaAttuale, prezzoAttuale);
 		dialog.setVisible(true);
 	}
@@ -237,13 +243,10 @@ public class GestisciInventarioPanel extends JPanel {
 
 		if (confirm == JOptionPane.YES_OPTION) {
 			try {
-				int rowsAffected = 0;
-				try (DataService dataService = new DataService()) {
-					rowsAffected = dataService.eliminaProdotto(nomeProdotto);
-				} // La connessione viene chiusa qui
-
-				if (rowsAffected > 0) {
-					// Mostra a video un messaggio di conferma
+				// Rimuove il prodotto dal database
+				boolean esito = productService.delete(nomeProdotto);
+				
+				if (esito) {
 					JOptionPane.showMessageDialog(this, "Prodotto rimosso con successo!", "Operazione riuscita",
 							JOptionPane.INFORMATION_MESSAGE);
 				} else {

@@ -22,14 +22,13 @@ public class DettagliScontrinoDialog extends JDialog {
 	
 	private JTable dettagliTable;
     private DefaultTableModel tableModel;
-    private DataService dataService;
 
-	public DettagliScontrinoDialog(Frame owner, List<VocescontrinoRecord> dettagliScontrino) {
+	public DettagliScontrinoDialog(Frame owner, DataService dataService, List<VocescontrinoRecord> dettagliScontrino) {
 		super(owner, "Dettagli scontrino", true);
-		this.dataService = new DataService();
+		
         setLayout(new BorderLayout());
 
-        // Crea la tabella per rappresentare le linee di dettaglio di uno scontrino
+        // Crea una tabella per rappresentare le linee di dettaglio di uno scontrino
         tableModel = new DefaultTableModel(new Object[]{ "Prodotto", "Quantità", "Prezzo (€)" }, 0) {
         	@Override
             public boolean isCellEditable(int row, int column) {
@@ -41,31 +40,41 @@ public class DettagliScontrinoDialog extends JDialog {
         // Mostra le righe della tabella colorate in modo alternato
         dettagliTable.setDefaultRenderer(Object.class, new AlternatingRowRenderer());
         
+        // Innesta la tabella su un pannello scorrevole
         JScrollPane scrollPane = new JScrollPane(dettagliTable);
+        
+        // Popola la tabella con le linee di dettaglio dello scontrino
         float totale = 0;
-        // Popola la tabella con le linee di dettaglio dello scontrino, connettendosi al database
+        ProdottoRecord prodotto;
         for (VocescontrinoRecord dettaglio : dettagliScontrino) {
-            ProdottoRecord prodotto = dataService.getProdottoById(dettaglio.getIdprodotto());
-            if (prodotto != null) {
-            	tableModel.addRow(new Object[]{ prodotto.getNome(), dettaglio.getQtaprodotto(), prodotto.getPrezzo() });
-            	totale += prodotto.getPrezzo() * dettaglio.getQtaprodotto();
+        	try {
+        		prodotto = dataService.getProdottoById(dettaglio.getIdprodotto());
+        		if (prodotto != null) {
+        			tableModel.addRow(new Object[]{ prodotto.getNome(), dettaglio.getQtaprodotto(), prodotto.getPrezzo() });
+        			totale += prodotto.getPrezzo() * dettaglio.getQtaprodotto();
+        		}
+        	} catch (Exception e) {
+        		e.printStackTrace();
             }
         }
-        tableModel.addRow(new Object[]{ "Totale", "", totale });
         
-        // Chiude la connessione al database
-        dataService.close();
+        // Aggiunge in coda una riga che mostra il totale complessivo dello scontrino
+        tableModel.addRow(new Object[]{ "TOTALE", "", totale });
 
+        // Posiziona la tabella (innestata su un pannello scorrevole) al centro della finestra di dialogo
         add(scrollPane, BorderLayout.CENTER);
-
+        
+        // Assicura che tutti i componenti vengano disposti in modo appropriato
         pack();
+        
+        // Fa coincidere il centro della finestra con quello della schermata "Visualizza gli scontrini emessi"
         setLocationRelativeTo(owner);
+        
+        // Mostra questo Dialog 
         setVisible(true);
 	}
 	
-	/*
-     *  Controlla l'indice di ogni riga della tabella ed impostane il colore a seconda dello stesso.
-     */
+	// Controlla l'indice di ogni riga della tabella ed impostane il colore a seconda dello stesso
     private class AlternatingRowRenderer extends DefaultTableCellRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {

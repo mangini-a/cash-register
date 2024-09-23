@@ -1,8 +1,11 @@
 package ui.gipanel;
 
 import java.awt.*;
+import java.sql.SQLException;
+
 import javax.swing.*;
 
+import inventory.ProductService;
 import jooq.DataService;
 
 @SuppressWarnings("serial")
@@ -14,10 +17,13 @@ public class ModificaProdottoDialog extends JDialog {
 	private JTextField prezzoField;
 	private JButton confermaButton;
 	private JButton annullaButton;
+	private ProductService productService;
 
-	public ModificaProdottoDialog(JFrame parentFrame, String nomeAttuale, String descrizioneAttuale,
+	public ModificaProdottoDialog(JFrame parentFrame, DataService dataService, String nomeAttuale, String descrizioneAttuale,
 			int qtaAttuale, float prezzoAttuale) {
 		super(parentFrame, "Modifica le informazioni relative a: " + nomeAttuale, true);
+		this.productService = ProductService.getInstance(dataService);
+		
 		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(5, 5, 5, 5);
@@ -80,7 +86,11 @@ public class ModificaProdottoDialog extends JDialog {
 		    String nuovoPrezzoText = prezzoField.getText();
 		    String nuovaQtaText = qtaField.getText();
 		    String nuovaDescrizione = descrizioneField.getText();
-		    modificaProdotto(nomeAttuale, nuovoNome, nuovoPrezzoText, nuovaQtaText, nuovaDescrizione);
+		    try {
+				modificaProdotto(nomeAttuale, nuovoNome, nuovoPrezzoText, nuovaQtaText, nuovaDescrizione);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		});
 		buttonPanel.add(confermaButton);
 
@@ -112,7 +122,7 @@ public class ModificaProdottoDialog extends JDialog {
 		setLocation(x, y);
 	}
 
-	private void modificaProdotto(String nomeAttuale, String nuovoNome, String nuovoPrezzoText, String nuovaQtaText, String nuovaDescrizione) {
+	private void modificaProdotto(String nomeAttuale, String nuovoNome, String nuovoPrezzoText, String nuovaQtaText, String nuovaDescrizione) throws SQLException {
 		// Sostituisce eventuali virgole con dei punti per gestire entrambi i separatori decimali
 		nuovoPrezzoText = nuovoPrezzoText.replace(",", ".");
 
@@ -147,15 +157,11 @@ public class ModificaProdottoDialog extends JDialog {
 					JOptionPane.ERROR_MESSAGE);
 			return; // Esce dal metodo se la nuova quantità è costituita da un valore non valido
 		}
-
-		int rowsAffected = 0;
 		
 		// Modifica il prodotto agendo sulla relativa tabella nel database, chiudendo automaticamente la connessione al termine
-		try (DataService dataService = new DataService()) {
-			rowsAffected = dataService.modificaProdotto(nomeAttuale, nuovoNome, nuovoPrezzo, nuovaQta, nuovaDescrizione);
-		} // La connessione viene chiusa qui
+		boolean esito = productService.update(nomeAttuale, nuovoNome, nuovoPrezzo, nuovaQta, nuovaDescrizione);
 		
-		if (rowsAffected > 0) {
+		if (esito) {
 			JOptionPane.showMessageDialog(this, "Prodotto modificato con successo!", "Operazione riuscita",
 					JOptionPane.INFORMATION_MESSAGE);
 			dispose();

@@ -23,11 +23,10 @@ public class CreateTables {
 						");";
 				stmt.executeUpdate(createProdottoTable);
 				
-				
 				// Creazione della tabella Scontrino
 				String createScontrinoTable = "CREATE TABLE Scontrino (" +
 						"IdScontrino INTEGER PRIMARY KEY, " +
-						"DataOra TEXT NOT NULL DEFAULT (datetime('now')), " + // SQLite usa TEXT per TIMESTAMP, si usa datetime('now') per il timestamp corrente
+						"DataOra DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, " + 
 						"PrezzoTot REAL NOT NULL" +
 						");";
 				stmt.executeUpdate(createScontrinoTable);
@@ -53,5 +52,4 @@ public class CreateTables {
 			System.out.println("Operations finished.");
 		}
 	}
-
 }

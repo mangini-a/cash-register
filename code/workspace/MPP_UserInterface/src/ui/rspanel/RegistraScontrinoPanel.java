@@ -205,6 +205,7 @@ public class RegistraScontrinoPanel extends JPanel {
 
                 // Aggiorna la quantità disponibile del prodotto nel database, chiudendo automaticamente la connessione al termine
                 productService.updateQuantity(prodotto.getIdprodotto(), prodotto.getQtadisponibile() - qtaProdotto);
+                prodotto.setQtadisponibile(prodotto.getQtadisponibile() - qtaProdotto);
                 
                 // Aggiorna la tabella dei prodotti visualizzata nella seconda schermata
                 GestisciInventarioPanel gestisciInventarioPanel = mainFrame.getGestisciInventarioPanel();

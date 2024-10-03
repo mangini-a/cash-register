@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -187,6 +188,7 @@ public class RegistraScontrinoPanel extends JPanel {
 
     // Aggiunge un prodotto al carrello qualora la sua disponibilità a magazzino sia sufficiente
     private void aggiungiAlCarrello() {
+    	final DecimalFormat df = new DecimalFormat("0.00");
         // Estrae il nome del prodotto aggiunto al carrello
         String nomeProdotto = prodottoField.getText();
 
@@ -195,14 +197,36 @@ public class RegistraScontrinoPanel extends JPanel {
 
         // Recupera il record del prodotto selezionato a partire dal suo nome
         ProdottoRecord prodotto = productService.findByName(nomeProdotto, prodotti);
+        boolean prodottopresente = false;
         
         if (prodotto != null) {
             // Se la quantità richiesta non eccede quella disponibile a stock
             if (qtaProdotto <= prodotto.getQtadisponibile()) {
-                VocescontrinoRecord voceScontrino = invoiceService.createLine(prodotto, qtaProdotto);
-                vociScontrino.add(voceScontrino);
-                tableModel.addRow(new Object[] { prodotto.getNome(), qtaProdotto, prodotto.getPrezzo() * qtaProdotto });
-
+            	for(int i=0; i < vociScontrino.size(); i++) {
+            		VocescontrinoRecord prod_pres = vociScontrino.get(i);
+            		if(prodotto.getIdprodotto() == prod_pres.getIdprodotto()) {
+            			
+            			int nuovaQuantitaTotale = prod_pres.getQtaprodotto() + qtaProdotto;
+            			if (nuovaQuantitaTotale <= prodotto.getQtadisponibile()) {
+            				prod_pres.setQtaprodotto(nuovaQuantitaTotale); //Aggiorna la quantità nel carrello
+            				tableModel.setValueAt(nuovaQuantitaTotale, i, 1); //Aggiorna nella tabella
+            				tableModel.setValueAt(df.format(prodotto.getPrezzo() * nuovaQuantitaTotale), i, 2); //Aggiorna il prezzo totale
+            			} else {
+            				//Mostra un messaggio di errore se la nuova quantità supera quella disponibile in magazzino
+            				JOptionPane.showMessageDialog(this,
+                                "La quantità disponibile non è sufficiente: ne restano " + prodotto.getQtadisponibile() + ".",
+                                "Errore", JOptionPane.ERROR_MESSAGE);
+            			}
+                    prodottopresente = true;
+                    break;
+            		}
+            	}
+            	if(!prodottopresente) {
+            		VocescontrinoRecord voceScontrino = invoiceService.createLine(prodotto, qtaProdotto);
+                    vociScontrino.add(voceScontrino);
+                    tableModel.addRow(new Object[] { prodotto.getNome(), qtaProdotto, df.format(prodotto.getPrezzo() * qtaProdotto) });
+            	}
+            	
                 // Aggiorna la quantità disponibile del prodotto nel database, chiudendo automaticamente la connessione al termine
                 productService.updateQuantity(prodotto.getIdprodotto(), prodotto.getQtadisponibile() - qtaProdotto);
                 prodotto.setQtadisponibile(prodotto.getQtadisponibile() - qtaProdotto);

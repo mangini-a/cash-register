@@ -1,0 +1,106 @@
+package controller;
+
+import java.util.List;
+
+import org.hibernate.Session;
+
+import model.User;
+import model.UserRole;
+import utils.HibernateSessionFactory;
+
+public class UserControllerImpl implements UserController {
+	
+	private static UserControllerImpl singleInstance = null;
+	
+	public static UserControllerImpl getInstance() {
+		if (singleInstance == null) {
+			singleInstance = new UserControllerImpl();
+		}
+		return singleInstance;
+	}
+
+	@Override
+	public void addUser(User user) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				session.persist(user);
+				session.getTransaction().commit();
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
+	}
+
+	@Override
+	public User getUserById(int id) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				User user = session.get(User.class, id);
+				session.getTransaction().commit();
+				return user; // Returns the user if found, or null if not found
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
+	}
+
+	@Override
+	public void updateUser(User user) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeUserById(int id) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				User user = session.get(User.class, id);
+				if (user != null) {
+					session.remove(user);
+				}
+				session.getTransaction().commit();
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
+	}
+
+	@Override
+	public List<Integer> getAllUserIds() {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				List<Integer> userIds = session.createQuery("select u.id from User u", Integer.class).list();
+				session.getTransaction().commit();
+				return userIds;
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
+	}
+
+	@Override
+	public int getLoggedUserId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean setLoggedUser(int loggedId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isUserAuthorized(int userId, UserRole requiredRole) {
+		User user = getUserById(userId);
+		return user != null && user.getRole().equals(requiredRole);
+	}
+}

@@ -6,6 +6,8 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -23,13 +25,17 @@ import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+
+import inventory.ProductService;
+import invoices.InvoiceService;
 
 import jooq.DataService;
 import jooq.generated.tables.records.ProdottoRecord;
 import jooq.generated.tables.records.VocescontrinoRecord;
 import ui.MainFrame;
+import ui.gipanel.GestisciInventarioPanel;
 import ui.vspanel.VisualizzaScontriniPanel;
 
 @SuppressWarnings("serial")
@@ -48,18 +54,24 @@ public class RegistraScontrinoPanel extends JPanel {
     private List<ProdottoRecord> prodotti;
     private List<VocescontrinoRecord> vociScontrino;
     private JPopupMenu suggestionPopup;
+    private DataService dataService;
+    private InvoiceService invoiceService;
+	private ProductService productService;
 
-    public RegistraScontrinoPanel(MainFrame mainFrame) {
+    public RegistraScontrinoPanel(MainFrame mainFrame, DataService dataService) throws SQLException {
     	this.mainFrame = mainFrame;
+    	
+    	this.dataService = dataService;
+    	this.invoiceService = InvoiceService.getInstance(dataService);
+		this.productService = ProductService.getInstance(dataService);
+    	
         setLayout(new BorderLayout());
 
         // Aggiunge questa schermata al pannello dei contenuti del frame principale
         mainFrame.getContentPane().add(this, BorderLayout.CENTER);
 
-        // Carica i prodotti dal database, chiudendo automaticamente la connessione al termine
-        try (DataService dataService = new DataService()) {
-        	prodotti = dataService.getProdotti();
-        } // La connessione viene chiusa qui
+        // Recupera tutti i prodotti dal database
+     	prodotti = productService.findAll();
         vociScontrino = new ArrayList<>();
 
         // Crea il campo di testo per la selezione dei prodotti (con auto-completamento)
@@ -174,32 +186,55 @@ public class RegistraScontrinoPanel extends JPanel {
         }
     }
 
-    /*
-     * Aggiunge un prodotto al carrello qualora la sua disponibilità sia sufficiente:
-     * in tal caso, ne aggiorna la quantità disponibile ad inventario, decrementandola.
-     */
+    // Aggiunge un prodotto al carrello qualora la sua disponibilità a magazzino sia sufficiente
     private void aggiungiAlCarrello() {
+    	final DecimalFormat df = new DecimalFormat("0.00");
         // Estrae il nome del prodotto aggiunto al carrello
         String nomeProdotto = prodottoField.getText();
 
         // Estrae la quantità in cui lo stesso è stato richiesto
         int qtaProdotto = (int) qtaProdottoSpinner.getValue();
 
-        // Recupera il record del prodotto selezionato, partendo dal suo nome
-        ProdottoRecord prodotto = getProductByName(nomeProdotto);
+        // Recupera il record del prodotto selezionato a partire dal suo nome
+        ProdottoRecord prodotto = productService.findByName(nomeProdotto, prodotti);
+        boolean prodottopresente = false;
+        
         if (prodotto != null) {
-
             // Se la quantità richiesta non eccede quella disponibile a stock
             if (qtaProdotto <= prodotto.getQtadisponibile()) {
-                VocescontrinoRecord voceScontrino = createVoceScontrinoRecord(prodotto, qtaProdotto);
-                vociScontrino.add(voceScontrino);
-                tableModel.addRow(new Object[] { prodotto.getNome(), qtaProdotto, prodotto.getPrezzo() * qtaProdotto });
-
+            	for(int i=0; i < vociScontrino.size(); i++) {
+            		VocescontrinoRecord prod_pres = vociScontrino.get(i);
+            		if(prodotto.getIdprodotto() == prod_pres.getIdprodotto()) {
+            			
+            			int nuovaQuantitaTotale = prod_pres.getQtaprodotto() + qtaProdotto;
+            			if (nuovaQuantitaTotale <= prodotto.getQtadisponibile()) {
+            				prod_pres.setQtaprodotto(nuovaQuantitaTotale); //Aggiorna la quantità nel carrello
+            				tableModel.setValueAt(nuovaQuantitaTotale, i, 1); //Aggiorna nella tabella
+            				tableModel.setValueAt(df.format(prodotto.getPrezzo() * nuovaQuantitaTotale), i, 2); //Aggiorna il prezzo totale
+            			} else {
+            				//Mostra un messaggio di errore se la nuova quantità supera quella disponibile in magazzino
+            				JOptionPane.showMessageDialog(this,
+                                "La quantità disponibile non è sufficiente: ne restano " + prodotto.getQtadisponibile() + ".",
+                                "Errore", JOptionPane.ERROR_MESSAGE);
+            			}
+                    prodottopresente = true;
+                    break;
+            		}
+            	}
+            	if(!prodottopresente) {
+            		VocescontrinoRecord voceScontrino = invoiceService.createLine(prodotto, qtaProdotto);
+                    vociScontrino.add(voceScontrino);
+                    tableModel.addRow(new Object[] { prodotto.getNome(), qtaProdotto, df.format(prodotto.getPrezzo() * qtaProdotto) });
+            	}
+            	
                 // Aggiorna la quantità disponibile del prodotto nel database, chiudendo automaticamente la connessione al termine
-                try (DataService dataService = new DataService()) {
-                	dataService.aggiornaQtaProdotto(prodotto.getIdprodotto(), prodotto.getQtadisponibile() - qtaProdotto);
-                } // La connessione viene chiusa qui
-
+                productService.updateQuantity(prodotto.getIdprodotto(), prodotto.getQtadisponibile() - qtaProdotto);
+                prodotto.setQtadisponibile(prodotto.getQtadisponibile() - qtaProdotto);
+                
+                // Aggiorna la tabella dei prodotti visualizzata nella seconda schermata
+                GestisciInventarioPanel gestisciInventarioPanel = mainFrame.getGestisciInventarioPanel();
+                gestisciInventarioPanel.caricaProdotti();
+                
                 // Resetta i campi di selezione
                 prodottoField.setText("");
                 qtaProdottoSpinner.setValue(1);
@@ -213,60 +248,30 @@ public class RegistraScontrinoPanel extends JPanel {
         }
     }
 
-    /*
-     * Recupera una entry della tabella Prodotto sulla base del nome del prodotto in questione.
-     */
-    private ProdottoRecord getProductByName(String nomeProdotto) {
-        for (ProdottoRecord prodotto : prodotti) {
-            if (prodotto.getNome().equalsIgnoreCase(nomeProdotto)) {
-                return prodotto;
-            }
-        }
-        return null;
-    }
-
-    /*
-     * Crea un'istanza di VocescontrinoRecord, senza inserirla nel database (non si
-     * conosce ancora IdScontrino).
-     */
-    private VocescontrinoRecord createVoceScontrinoRecord(ProdottoRecord prodotto, int qtaProdotto) {
-        VocescontrinoRecord voceScontrino = new VocescontrinoRecord();
-        voceScontrino.setIdprodotto(prodotto.getIdprodotto());
-        voceScontrino.setQtaprodotto(qtaProdotto);
-        return voceScontrino;
-    }
-
-    /*
-     * Genera uno scontrino, delegando il compito ad un'istanza della classe che
-     * implementa InvoiceService.
-     */
+    // Genera uno scontrino
     private void generaScontrino() {
-        // Controlla se il carrello risulti vuoto
+        // Controlla se siano stati aggiunti prodotti al carrello
         if (vociScontrino.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Il carrello della spesa è vuoto.", "Errore",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Validazione dei dati nel carrello
-        if (!validateCartData()) {
-            JOptionPane.showMessageDialog(this, "I dati nel carrello non sono validi.", "Errore", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
         try {
-        	try (DataService dataService = new DataService()) {
-        		float prezzoTotale = calcolaPrezzoTotale();
+        	float prezzoTotale = calcolaPrezzoTotale();
+        	try {
         		dataService.generaScontrino(vociScontrino, prezzoTotale);
-        	} // La connessione viene chiusa qui
+        	} catch (Exception e) {
+        		JOptionPane.showMessageDialog(this, "Errore durante la generazione dello scontrino: " + e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
+            }
             
             // Mostra un messaggio di conferma
             JOptionPane.showMessageDialog(this, "Scontrino generato con successo!", "Operazione riuscita",
                     JOptionPane.INFORMATION_MESSAGE);
             
-            //Aggiorna la tabella degli scontrini
+            // Aggiorna la tabella degli scontrini visualizzata nella terza schermata
             VisualizzaScontriniPanel visualizzaScontriniPanel = mainFrame.getVisualizzaScontriniPanel();
-            visualizzaScontriniPanel.caricaScontrini();  //Aggiorna gli scontrini
+            visualizzaScontriniPanel.caricaScontrini();  
             
             // Resetta sia il carrello (rimuovendo le voci scontrino dalla lista) che la relativa rappresentazione tabulare
             resettaCarrello();
@@ -277,29 +282,11 @@ public class RegistraScontrinoPanel extends JPanel {
         }
     }
 
-    private boolean validateCartData() {
-        for (VocescontrinoRecord voceScontrino : vociScontrino) {
-            // Controlla se l'ID del prodotto sia valido
-            if (getProductById(voceScontrino.getIdprodotto()) == null) {
-                return false;
-            }
-
-            // Controlla se la quantità selezionata al momento dell'inserimento nel carrello sia valida
-            if (voceScontrino.getQtaprodotto() <= 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /*
-     * Calcola il totale complessivo di uno scontrino, recuperando quantità
-     * acquistata e prezzo dei prodotti che ne fanno parte.
-     */
+    // Calcola il totale complessivo di uno scontrino, recuperando quantità acquistata e prezzo dei prodotti che ne fanno parte
     private float calcolaPrezzoTotale() {
         float prezzoTotale = 0;
         for (VocescontrinoRecord voceScontrino : vociScontrino) {
-            ProdottoRecord prodotto = getProductById(voceScontrino.getIdprodotto());
+            ProdottoRecord prodotto = productService.findById(voceScontrino.getIdprodotto(), prodotti);
             if (prodotto != null) {
                 prezzoTotale += prodotto.getPrezzo() * voceScontrino.getQtaprodotto();
             } else {
@@ -309,29 +296,13 @@ public class RegistraScontrinoPanel extends JPanel {
         return prezzoTotale;
     }
 
-    /*
-     * Recupera un record della tabella Prodotto sulla base del proprio ID.
-     */
-    private ProdottoRecord getProductById(int idProdotto) {
-        for (ProdottoRecord prodotto : prodotti) {
-            if (prodotto.getIdprodotto() == idProdotto) {
-                return prodotto;
-            }
-        }
-        return null;
-    }
-
-    /*
-     * Resetta sia il carrello che la relativa rappresentazione tabulare.
-     */
+    // Resetta sia il carrello che la relativa rappresentazione tabulare
     private void resettaCarrello() {
         vociScontrino.clear();
         tableModel.setRowCount(0);
     }
     
-    /*
-     *  Controlla l'indice di ogni riga della tabella ed impostane il colore a seconda dello stesso.
-     */
+    // Controlla l'indice di ogni riga della tabella ed impostane il colore a seconda dello stesso
     private class AlternatingRowRenderer extends DefaultTableCellRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -341,7 +312,7 @@ public class RegistraScontrinoPanel extends JPanel {
             } else {
                 cell.setBackground(Color.decode("#FFFFFF")); // Righe dispari
             }
-            setHorizontalAlignment(JLabel.CENTER); // Centra il contenuto della tabella
+            setHorizontalAlignment(JLabel.CENTER);
             return cell;
         }
     }

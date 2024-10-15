@@ -80,5 +80,4 @@ public class InsertProducts {
 			System.out.println("Done.");
 		}
 	}
-
 }

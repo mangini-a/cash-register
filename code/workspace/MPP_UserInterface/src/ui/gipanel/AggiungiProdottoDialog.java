@@ -1,8 +1,11 @@
 package ui.gipanel;
 
 import java.awt.*;
+import java.sql.SQLException;
+
 import javax.swing.*;
 
+import inventory.ProductService;
 import jooq.DataService;
 
 @SuppressWarnings("serial")
@@ -14,9 +17,12 @@ public class AggiungiProdottoDialog extends JDialog {
 	private JTextField prezzoField;
 	private JButton confermaButton;
 	private JButton annullaButton;
+	private ProductService productService;
 
-	public AggiungiProdottoDialog(JFrame parentFrame) {
+	public AggiungiProdottoDialog(JFrame parentFrame, DataService dataService) {
 		super(parentFrame, "Aggiungi un nuovo prodotto", true);
+		this.productService = ProductService.getInstance(dataService);
+		
 		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(5, 5, 5, 5);
@@ -74,7 +80,15 @@ public class AggiungiProdottoDialog extends JDialog {
 
 		// Crea il pulsante "Conferma" e lo aggiunge al pannello inferiore
 		confermaButton = new JButton("Conferma", new ImageIcon("../img/yes.png"));
-		confermaButton.addActionListener(e -> aggiungiProdotto());
+		confermaButton.addActionListener(e -> {
+			try {
+				aggiungiProdotto();
+			} catch (HeadlessException e1) {
+				e1.printStackTrace();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		});
 		buttonPanel.add(confermaButton);
 
 		// Crea il pulsante "Annulla" e lo aggiunge al pannello inferiore
@@ -105,18 +119,16 @@ public class AggiungiProdottoDialog extends JDialog {
 		setLocation(x, y);
 	}
 
-	private void aggiungiProdotto() {
+	private void aggiungiProdotto() throws HeadlessException, SQLException {
 		// Acquisisce il nome del nuovo prodotto inserito dall'utente nel form
 		String nome = nomeField.getText();
 		
-		// Controlla se il database contenga già un prodotto con lo stesso nome, chiudendo automaticamente la connessione al termine
-		try (DataService dataService = new DataService()) {
-			if (dataService.isProductAlreadyExisting(nome)) {	
-				JOptionPane.showMessageDialog(this, "Un prodotto con il nome '" + nome + "' è già presente a magazzino.", 
-						"Errore", JOptionPane.ERROR_MESSAGE);
-				return; // Esce dal metodo se il nome inserito è già presente ad inventario
-			}
-		} // La connessione viene chiusa qui
+		// Controlla se il database contenga già un prodotto con lo stesso nome
+		if (productService.exists(nome)) {
+			JOptionPane.showMessageDialog(this, "Un prodotto con il nome '" + nome + "' è già presente a magazzino.", 
+					"Errore", JOptionPane.ERROR_MESSAGE);
+			return; // Esce dal metodo se il nome inserito è già presente ad inventario
+		}
 		
 		// Acquisisce le altre informazioni inserite dall'utente nel form
 		String prezzoText = prezzoField.getText();
@@ -159,10 +171,8 @@ public class AggiungiProdottoDialog extends JDialog {
 		}
 
 		try {
-			// Aggiunge il prodotto alla relativa tabella nel database, chiudendo automaticamente la connessione al termine
-			try (DataService dataService = new DataService()) {
-				dataService.aggiungiProdotto(nome, prezzo, qta, descrizione);
-			} // La connessione viene chiusa qui
+			// Inserisce un nuovo prodotto nella rispettiva tabella del database
+			productService.create(nome, prezzo, qta, descrizione);
 
 			JOptionPane.showMessageDialog(this, "Prodotto aggiunto con successo!", "Operazione riuscita",
 					JOptionPane.INFORMATION_MESSAGE);

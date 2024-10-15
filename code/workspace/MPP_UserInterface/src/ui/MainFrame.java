@@ -1,10 +1,13 @@
 package ui;
 
 import java.awt.*;
+import java.sql.SQLException;
+
 import javax.swing.*;
 
 import com.formdev.flatlaf.FlatIntelliJLaf;
 
+import jooq.DataService;
 import ui.gipanel.GestisciInventarioPanel;
 import ui.rspanel.RegistraScontrinoPanel;
 import ui.vspanel.VisualizzaScontriniPanel;
@@ -18,7 +21,7 @@ public class MainFrame extends JFrame {
 	private GestisciInventarioPanel gestisciInventarioPanel;
 	private VisualizzaScontriniPanel visualizzaScontriniPanel;
 
-	public MainFrame() {
+	public MainFrame() throws SQLException {
 		setTitle("Store manager");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setIconImage(new ImageIcon("../img/euro-icon.png").getImage());
@@ -51,11 +54,14 @@ public class MainFrame extends JFrame {
         // Crea un CardLayout per le schermate operative
         cardLayout = new CardLayout();
         JPanel cardPanel = new JPanel(cardLayout); // Pannello per le card (schede)
+        
+        // Crea un'istanza di DataService
+        DataService dataService = new DataService();
 
         // Inizializza le tre schermate operative, a cui si può accedere tramite un click sul relativo pulsante
-        registraScontrinoPanel = new RegistraScontrinoPanel(this);
-        gestisciInventarioPanel = new GestisciInventarioPanel(this);
-        visualizzaScontriniPanel = new VisualizzaScontriniPanel(this);
+		registraScontrinoPanel = new RegistraScontrinoPanel(this, dataService);
+        gestisciInventarioPanel = new GestisciInventarioPanel(this, dataService);
+        visualizzaScontriniPanel = new VisualizzaScontriniPanel(this, dataService);
         
         // Aggiunge le schermate operative (a cui sono associati nomi univoci) al pannello per le card
         cardPanel.add(registraScontrinoPanel, "Registra");
@@ -76,19 +82,26 @@ public class MainFrame extends JFrame {
 		setVisible(true);
 	}
 
-	/*
-	 * Gestisce la transizione tra una schermata e l'altra.
-	 */
+	// Gestisce le transizioni tra una schermata e l'altra
 	private void showPanel(String panelName) {
 		cardLayout.show((Container) mainPanel.getComponent(1), panelName); // Mostra la schermata selezionata mediante il proprio nome
 	}
 	
-	
+	public GestisciInventarioPanel getGestisciInventarioPanel() {
+		return gestisciInventarioPanel;
+	}
+
 	public VisualizzaScontriniPanel getVisualizzaScontriniPanel() {
         return visualizzaScontriniPanel;
     }
 
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(MainFrame::new);
+		SwingUtilities.invokeLater(() -> {
+			try {
+				new MainFrame();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 }

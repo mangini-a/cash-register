@@ -3,7 +3,6 @@ package controller;
 import java.util.List;
 
 import model.User;
-import model.UserRole;
 
 public interface UserController {
 
@@ -37,17 +36,4 @@ public interface UserController {
 	 * @return a list with all the user ids
 	 */
 	List<Integer> getAllUserIds();
-	
-	int getLoggedUserId();
-	
-	boolean setLoggedUser(int loggedId);
-	
-	/**
-	 * Checks if a user is authorized to access a certain functionality.
-	 *
-	 * @param userId the user's id
-	 * @param requiredRole the required role to access the functionality
-	 * @return true, if the user is actually authorized
-	 */
-	boolean isUserAuthorized(int userId, UserRole requiredRole);
 }

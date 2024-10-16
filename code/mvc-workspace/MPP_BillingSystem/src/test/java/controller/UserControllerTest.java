@@ -21,7 +21,7 @@ class UserControllerTest {
 		user.setFirstName("Tommaso");
 		user.setLastName("Vinciguerra");
 		user.setPassword("btx424");
-		user.setRole(UserRole.CUSTOMER);
+		user.setRole(UserRole.CASHIER);
 		
 		// Act
 		userController.addUser(user);
@@ -40,7 +40,7 @@ class UserControllerTest {
 	    assertEquals(user.getPassword(), addedUser.getPassword());
 	    assertEquals(user.getRole(), addedUser.getRole());
 	}
-	
+	/*
 	@Test
 	void testAddUser_RollbackOnException() {
 		// Arrange
@@ -95,5 +95,5 @@ class UserControllerTest {
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 }

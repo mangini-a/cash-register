@@ -5,7 +5,6 @@ import java.util.List;
 import org.hibernate.Session;
 
 import model.User;
-import model.UserRole;
 import utils.HibernateSessionFactory;
 
 public class UserControllerImpl implements UserController {
@@ -84,23 +83,5 @@ public class UserControllerImpl implements UserController {
 				throw e; // Re-throw the exception to propagate it up the call stack
 			}
 		}
-	}
-
-	@Override
-	public int getLoggedUserId() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public boolean setLoggedUser(int loggedId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isUserAuthorized(int userId, UserRole requiredRole) {
-		User user = getUserById(userId);
-		return user != null && user.getRole().equals(requiredRole);
 	}
 }

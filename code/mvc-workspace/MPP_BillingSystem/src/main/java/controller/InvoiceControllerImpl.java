@@ -15,44 +15,35 @@ public class InvoiceControllerImpl implements InvoiceController {
 		}
 		return singleInstance;
 	}
-	
+
+	// Get the only instance of ItemController to perform item-related operations on the DB
 	private ItemController itemController = ItemControllerImpl.getInstance();
-	
-	// Create a HashMap to store item ids and their selected quantity
-    private Map<Integer, Integer> invoiceLines = new HashMap<>();
-    
-    private double cartPrice = 0.0;
-	
+
+	// Create a Map to store item IDs and their selected quantity
+	private Map<Integer, Integer> cartLines = new HashMap<>();
+
+	private double cartPrice = 0.0;
+
 	@Override
-	public String addInvoiceLine(int itemId, int itemQty) {
-		
-		int localQty = 0;
-		
-		// Check if the key passed as a parameter already exists
-        if (invoiceLines.containsKey(itemId)) {
-            int oldQty = invoiceLines.get(itemId);
-            localQty = oldQty + itemQty;
-            invoiceLines.put(itemId, localQty);
-        } else {
-        	localQty = itemQty;
-        	invoiceLines.put(itemId, localQty);
-        }
-        
-        // Show the added invoice line in the corresponding text area
-        Item item = itemController.getItemById(itemId);
-        return itemId + "\t" + item.getName() + "\t" + localQty + "\t" + item.getUnitPrice() + "\n";
+	public String addCartLine(Integer itemId, Integer itemQty) {
+		// Associate the specified value with the specified key in this map
+		cartLines.put(itemId, itemQty);
+
+		// Generate a string to be shown in the UI text area
+		Item item = itemController.getItemById(itemId);
+		return itemId + "\t" + item.getName() + "\t" + itemQty + "\t" + item.getUnitPrice() + "\n";
 	}
 
 	@Override
-	public double calculatePartial(int itemId, int itemQty) {
+	public double calculatePartial(Integer itemId, Integer itemQty) {
 		Item item = itemController.getItemById(itemId);
 		cartPrice += item.getUnitPrice() * itemQty;
 		return cartPrice;
 	}
-	
+
 	@Override
-	public void emptyInvoiceLines() {
-		invoiceLines.clear();
+	public void emptyCartLines() {
+		cartLines.clear();
 		cartPrice = 0.0;
 	}
 }

@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.print.PrinterException;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.*;
@@ -29,6 +30,7 @@ public class InvoiceView extends JFrame {
 	private InvoiceController invoiceController;
 
 	private Set<Integer> quantityModel;
+	private Set<Integer> selectedItemIds = new HashSet<>();
 
 	public InvoiceView(User user) {
 		// Setup the frame
@@ -47,49 +49,43 @@ public class InvoiceView extends JFrame {
 		// Get the only instance of InvoiceController to perform invoice-related operations
 		invoiceController = InvoiceControllerImpl.getInstance();
 		
-		JTextArea invoiceArea = new JTextArea();
-		invoiceArea.setBackground(new Color(211, 211, 211));
-		invoiceArea.setEditable(false);
+		JTextArea cartArea = new JTextArea();
+		cartArea.setBackground(new Color(211, 211, 211));
+		cartArea.setEditable(false);
 		String row = "Id" + "\t" + "Product" + "\t" + "Quantity" + "\t" + "Unit price" + "\n";
-		invoiceArea.setText(row);
+		cartArea.setText(row);
 
-		JScrollPane scrollPane = new JScrollPane(invoiceArea);
+		JScrollPane scrollPane = new JScrollPane(cartArea);
 		scrollPane.setBounds(15, 15, 345, 420);
 		contentPane.add(scrollPane);
 
-		JLabel lblComment = new JLabel("Search for an Item ID, choose quantity and click Add to cart");
+		JLabel lblComment = new JLabel("Search for an Item ID, choose a quantity and click Add to cart");
 		lblComment.setFont(new Font("Tahoma", Font.BOLD, 13));
 		lblComment.setBounds(370, 84, 442, 16);
 		contentPane.add(lblComment);
-		
-		/*
-		 * We'd like to decrease an item's available quantity when it gets added to the cart.
-		 * However, what would happen if the logged user chose to clear the cart before checking out?
-		 * The quantities would have been decreased for no reason at all!
-		 */
 
+		// Initialize JComboBoxes
 		JComboBox<Integer> comboBoxItemId = new JComboBox<>();
 		JComboBox<Integer> comboBoxItemQty = new JComboBox<>();
 		comboBoxItemId.setBounds(370, 122, 120, 23);
-		comboBoxItemId.setModel(new DefaultComboBoxModel(itemController.getAllItemIds().toArray()));
-		// Show in the combo box the range (1 to available quantity) of the pre-selected item ID
-		quantityModel = itemController.showOneToQuantity(itemController.getItemById(Integer.parseInt(comboBoxItemId.getSelectedItem().toString())));
+		comboBoxItemQty.setBounds(505, 122, 100, 23);
+		
+		// Populate comboBoxItemId
+		updateComboBoxItemId(comboBoxItemId);
+		
+		// Add action listener for item ID selection
 		comboBoxItemId.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					// Show in the combo box the range (1 to available quantity) of the selected item ID
-					quantityModel = itemController.showOneToQuantity(itemController.getItemById(Integer.parseInt(comboBoxItemId.getSelectedItem().toString())));
-					comboBoxItemQty.setModel(new DefaultComboBoxModel(quantityModel.toArray()));
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
+				updateComboBoxItemQty(comboBoxItemId, comboBoxItemQty);
 			}
 		});
+		
+		// Initialize comboBoxItemQty with available quantities for the first item
+		updateComboBoxItemQty(comboBoxItemId, comboBoxItemQty);
+		
+		// Add JComboBoxes to the content pane
 		contentPane.add(comboBoxItemId);
-
-		comboBoxItemQty.setModel(new DefaultComboBoxModel(quantityModel.toArray()));
-		comboBoxItemQty.setBounds(505, 122, 100, 23);
 		contentPane.add(comboBoxItemQty);
 		
 		JLabel lblTotalPrice = new JLabel("Total price:");
@@ -104,99 +100,126 @@ public class InvoiceView extends JFrame {
 		textFieldTotalPrice.setBounds(820, 230, 90, 25);
 		contentPane.add(textFieldTotalPrice);
 		
-		JButton btnAdd = new JButton("Add to cart");
+		// Initialize the "Add to cart" button
+		JButton btnAdd = new JButton("Add to cart", new ImageIcon("../img/add-to-cart.png"));
+		btnAdd.setBounds(620, 122, 120, 23);
 		btnAdd.setFont(new Font("Tahoma", Font.BOLD, 13));
+		
+		// Add action listener for the "Add to cart" button
 		btnAdd.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					int itemId = Integer.parseInt(comboBoxItemId.getSelectedItem().toString());
-					int itemQty = Integer.parseInt(comboBoxItemQty.getSelectedItem().toString());
+					Integer selectedItemId = (Integer) comboBoxItemId.getSelectedItem();
+					Integer selectedItemQty = (Integer) comboBoxItemQty.getSelectedItem();
 
-					String invoiceLine = invoiceController.addInvoiceLine(itemId, itemQty);
-					invoiceArea.append(invoiceLine);
+					String cartLine = invoiceController.addCartLine(selectedItemId, selectedItemQty);
+					cartArea.append(cartLine);
 
-					String totalPrice = String.valueOf(invoiceController.calculatePartial(itemId, itemQty));
-					textFieldTotalPrice.setText(totalPrice);
+					String partialPrice = String.valueOf(invoiceController.calculatePartial(selectedItemId, selectedItemQty));
+					textFieldTotalPrice.setText(partialPrice);
+					
+					// Add the selected item ID to the set of selected IDs
+		            selectedItemIds.add(selectedItemId);
+
+		            // Update the ComboBox to disable the selected item ID
+		            updateComboBoxItemId(comboBoxItemId);
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, e.getMessage());
 				}
 			}
 		});
-		btnAdd.setBounds(620, 122, 120, 23);
+		
+		// Add the "Add to cart" button to the content pane
 		contentPane.add(btnAdd);
 
-		JButton btnClear = new JButton("Clear");
+		// Initialize the "Clear cart" button
+		JButton btnClear = new JButton("Clear cart");
+		btnClear.setBounds(370, 193, 120, 23);
 		btnClear.setFont(new Font("Tahoma", Font.BOLD, 13));
+		
+		// Add action listener for the "Clear cart" button
 		btnClear.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// Empty the invoice lines' HashMap and reset the cart price
-				invoiceController.emptyInvoiceLines();
+				// Empty the cart lines' HashMap and reset the cart price
+				invoiceController.emptyCartLines();
+				
+				// Clear the selected item IDs
+		        selectedItemIds.clear();
 				
 				// Graphically clear the screen
 				comboBoxItemId.setSelectedIndex(0);
 				comboBoxItemQty.setSelectedIndex(0);
 				textFieldTotalPrice.setText("");
-				invoiceArea.setText(row);
+				cartArea.setText(row);
+				
+				// Update the ComboBox to show all available item IDs
+		        updateComboBoxItemId(comboBoxItemId);
 			}
-
 		});
-		btnClear.setBounds(370, 193, 120, 23);
+		
+		// Add the "Clear cart" button to the content pane
 		contentPane.add(btnClear);
 		
-		JButton btnPrint = new JButton("Print");
+		// Initialize the "Print cart" button
+		JButton btnPrint = new JButton("Print cart");
+		btnPrint.setBounds(505, 193, 100, 23);
+		btnPrint.setFont(new Font("Tahoma", Font.BOLD, 13));
+		
+		// Add action listener for the "Print cart" button
 		btnPrint.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					invoiceArea.print();
+					cartArea.print();
 				} catch (PrinterException e1) {
 					JOptionPane.showMessageDialog(null, "No Printer Found");
 				}
 			}
 		});
-		btnPrint.setFont(new Font("Tahoma", Font.BOLD, 13));
-		btnPrint.setBounds(505, 193, 100, 23);
+		
+		// Add the "Print cart" button to the content pane
 		contentPane.add(btnPrint);
 
-		JButton btnPay = new JButton("Pay");
-		btnPay.setFont(new Font("Tahoma", Font.BOLD, 13));
-		btnPay.addActionListener(new ActionListener() {
+		// Initialize the "Checkout" button
+		JButton btnCheckout = new JButton("Checkout");
+		btnCheckout.setBounds(820, 270, 90, 25);
+		btnCheckout.setFont(new Font("Tahoma", Font.BOLD, 13));
+		
+		// Add action listener for the "Checkout" button
+		btnCheckout.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				String strTot = textFieldTotalPrice.getText();
 				if (!strTot.isBlank()) {
 					Double tot = Double.parseDouble(strTot);
 					int userId = user.getId();
-					boolean payCheck = shopController.addPayment(userId, tot);
+					//boolean payCheck = shopController.addPayment(userId, tot);
 					
-					// Empty the invoice lines' HashMap and reset the cart price
-					invoiceController.emptyInvoiceLines();
+					// Update inventory here
+		            //invoiceController.updateInventory(); // Implement this method to decrease quantities
 					
-					// Graphically clear the screen
+					// Clear the cart and reset UI
+					invoiceController.emptyCartLines();
 					comboBoxItemId.setSelectedIndex(0);
 					comboBoxItemQty.setSelectedIndex(0);
 					textFieldTotalPrice.setText("");
-					invoiceArea.setText(row);
-					
-					if (payCheck && opCheck) {
+					cartArea.setText(row);
+					/*
+					if (payCheck) {
 						JOptionPane.showMessageDialog(null, "Operation ended successfully!");
-						comboBox_CustomerId.setSelectedIndex(0);
-						comboBoxItemQty.setSelectedIndex(0);
-						comboBoxItemId.setSelectedIndex(0);
-						textFieldTotalPrice.setText("");
-						invoiceArea.setText(row);
 					} else {
 						JOptionPane.showMessageDialog(null, "Something went wrong! Try again");
-					}
+					}*/
 				} else {
 					JOptionPane.showMessageDialog(null, "Start by adding some items to the cart!");
 				}
 			}
 		});
-		btnPay.setBounds(820, 270, 90, 25);
-		contentPane.add(btnPay);
+		
+		// Add the "Checkout" button to the content pane
+		contentPane.add(btnCheckout);
 
 		JButton btnBack = new JButton("Back");
 		btnBack.setFont(new Font("Tahoma", Font.BOLD, 13));
@@ -210,6 +233,35 @@ public class InvoiceView extends JFrame {
 		});
 		btnBack.setBounds(820, 400, 90, 25);
 		contentPane.add(btnBack);
+	}
+	
+	private void updateComboBoxItemId(JComboBox<Integer> comboBoxItemId) {
+		DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
+		
+		// Populate the model with item IDs that have not been selected
+	    for (Integer id : itemController.getAllItemIds()) {
+	        if (!selectedItemIds.contains(id)) {
+	            model.addElement(id);
+	        }
+	    }
+	    
+	    // Set the updated model to the combo box
+	    comboBoxItemId.setModel(model);
+	}
+	
+	private void updateComboBoxItemQty(JComboBox<Integer> comboBoxItemId, JComboBox<Integer> comboBoxItemQty) {
+		try {
+	        Integer selectedItemId = (Integer) comboBoxItemId.getSelectedItem();
+	        if (selectedItemId != null) {
+	            quantityModel = itemController.showOneToQuantity(itemController.getItemById(selectedItemId));
+	            comboBoxItemQty.setModel(new DefaultComboBoxModel<>(quantityModel.toArray(new Integer[0])));
+	        } else {
+	        	comboBoxItemQty.setModel(new DefaultComboBoxModel<>(new Integer[0])); // Clear if no selection
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        comboBoxItemQty.setModel(new DefaultComboBoxModel<>(new Integer[0])); // Clear on error
+	    }	
 	}
 
 	public void display() {

@@ -3,25 +3,25 @@ package controller;
 public interface InvoiceController {
 
 	/**
-	 * Adds an invoice line to the associated HashMap.
+	 * Adds a cart line to the associated HashMap.
 	 *
-	 * @param itemId the item id chosen by the user
-	 * @param itemQty the item quantity required by the user
-	 * @return a string representing the invoice line
+	 * @param itemId the item ID chosen by the user
+	 * @param itemQty the item quantity desired by the user
+	 * @return a string representing the cart line
 	 */
-	String addInvoiceLine(int itemId, int itemQty);
+	String addCartLine(Integer itemId, Integer itemQty);
 	
 	/**
 	 * Calculates the partial cart price step by step.
 	 *
-	 * @param itemId the item id chosen by the user
-	 * @param itemQty the item quantity required by the user
+	 * @param itemId the item ID chosen by the user
+	 * @param itemQty the item quantity desired by the user
 	 * @return a double representing the cumulative sum of the cart items' price
 	 */
-	double calculatePartial(int itemId, int itemQty);
+	double calculatePartial(Integer itemId, Integer itemQty);
 	
 	/**
-	 * Empties the invoice lines' HashMap and resets the cart price.
+	 * Empties the cart lines' HashMap and resets the cart price.
 	 */
-	void emptyInvoiceLines();
+	void emptyCartLines();
 }

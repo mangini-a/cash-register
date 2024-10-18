@@ -32,10 +32,10 @@ public class LoginView extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		// Get the only instance of UserControllerImpl in order to perform operations on the database
+		// Get the only instance of UserController to perform user-related operations on the DB
 		userController = UserControllerImpl.getInstance();
 		
-		JLabel lblWelcome = new JLabel("Welcome to Billing System!");
+		JLabel lblWelcome = new JLabel("Welcome to your billing system!");
 		lblWelcome.setFont(new Font("Rockwell Nova Extra Bold", Font.BOLD, 20));
 		lblWelcome.setBounds(200, 15, 300, 60);
 		contentPane.add(lblWelcome);
@@ -82,25 +82,25 @@ public class LoginView extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				int inputUserId = Integer.parseInt(fieldUserId.getText());
 				String inputUserPassword = String.valueOf(fieldUserPassword.getPassword());
-				boolean checkIdDb = false;
+				boolean isIdPresent = false;
 
 				List<Integer> userIds = userController.getAllUserIds();
 				for (int userId : userIds) {
 					if (userId == inputUserId) {
-						checkIdDb = true;
+						isIdPresent = true;
 						User user = userController.getUserById(userId);
 						String userPassword = user.getPassword();
 						if (userPassword.equals(inputUserPassword) && (!user.getRole().equals(UserRole.CUSTOMER))) {
-							HomeView homeView = new HomeView(user.getRole());
+							HomeView homeView = new HomeView(user);
 							setVisible(false);
 							homeView.repaint();
 							homeView.display();
 						} else {
-							JOptionPane.showMessageDialog(null, "No authorization!");
+							JOptionPane.showMessageDialog(null, "Wrong password or attempt to log in as a CUSTOMER!", "Access denied", JOptionPane.WARNING_MESSAGE);
 						}
 					}
 				}
-				if (!checkIdDb) {
+				if (!isIdPresent) {
 					JOptionPane.showMessageDialog(null, "User not found!");
 				}
 			}

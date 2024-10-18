@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.List;
+import java.util.Set;
 
 import model.Item;
 
@@ -36,6 +37,13 @@ public interface ItemController {
 	 * @return a list with all the item ids
 	 */
 	List<Integer> getAllItemIds();
+	
+	/**
+	 * Get quantity and all the numbers from one to argument
+	 * @param item
+	 * @return an array of all the values till quantity
+	 */
+	Set<Integer> fromOneToQuantity(Item item);
 	
 	void recalculateItemQuantity(int id, int soldQuantity);
 }

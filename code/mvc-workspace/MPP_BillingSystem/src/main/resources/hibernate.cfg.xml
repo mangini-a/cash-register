@@ -8,11 +8,13 @@
 		<property name="connection.url">jdbc:h2:../db/mydb</property>
 		<property name="connection.driver_class">org.h2.Driver</property>
 		<property name="hibernate.hbm2ddl.auto">update</property>
+		<!-- Do the following two lines impair the system's performance? -->
 		<property name="hibernate.show_sql">true</property>
 		<property name="hibernate.format_sql">true</property>
 		
 		<!-- Add your mapping classes here -->
 		<mapping class="model.User"/>
 		<mapping class="model.Item"/>
+		<mapping class="model.Invoice"/>
 	</session-factory>
 </hibernate-configuration>

@@ -1,6 +1,8 @@
 package controller;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Session;
 
@@ -92,5 +94,15 @@ public class ItemControllerImpl implements ItemController {
 		int newQuantity = oldQuantity - soldQuantity;
 		item.setQuantity(newQuantity);
 		// updateItem(item); vedi come viene gestito l'aggiornamento nel package view
+	}
+
+	@Override
+	public Set<Integer> fromOneToQuantity(Item item) {
+		Set<Integer> qtys = new HashSet<>();
+		int quantity = item.getQuantity();
+		for (int i = 1; i <= quantity; i++) {
+			qtys.add(i);
+		}
+		return qtys;
 	}
 }

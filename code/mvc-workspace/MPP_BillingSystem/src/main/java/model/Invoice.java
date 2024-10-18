@@ -1,6 +1,6 @@
 package model;
 
-import java.time.LocalDate;
+import java.time.Instant;
 
 import jakarta.persistence.*;
 
@@ -17,8 +17,8 @@ public class Invoice {
 				foreignKey = @ForeignKey(name = "InvoicesToUserById"))
 	private User user;
 	
-	@Column(name = "issue_date")
-	private LocalDate issueDate;
+	@Column(name = "issue_instant")
+	private Instant issueInstant;
 	
 	@Column(name = "total_price")
 	private double totalPrice;

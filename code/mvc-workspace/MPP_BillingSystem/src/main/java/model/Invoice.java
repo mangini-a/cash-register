@@ -24,4 +24,8 @@ public class Invoice {
 	
 	@Enumerated(EnumType.STRING)
 	private InvoiceStatus status;
+
+	public Invoice() {
+		super();
+	}
 }

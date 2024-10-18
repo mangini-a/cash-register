@@ -43,7 +43,7 @@ public interface ItemController {
 	 * @param item
 	 * @return an array of all the values till quantity
 	 */
-	Set<Integer> fromOneToQuantity(Item item);
+	Set<Integer> showOneToQuantity(Item item);
 	
 	void recalculateItemQuantity(int id, int soldQuantity);
 }

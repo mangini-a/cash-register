@@ -90,9 +90,9 @@ public class LoginView extends JFrame {
 						isIdPresent = true;
 						User user = userController.getUserById(userId);
 						String userPassword = user.getPassword();
-						if (userPassword.equals(inputUserPassword) && (!user.getRole().equals(UserRole.CUSTOMER))) {
-							HomeView homeView = new HomeView(user);
+						if (userPassword.equals(inputUserPassword) && (!user.getRole().equals(UserRole.TEMP))) {
 							setVisible(false);
+							HomeView homeView = new HomeView(user);
 							homeView.repaint();
 							homeView.display();
 						} else {

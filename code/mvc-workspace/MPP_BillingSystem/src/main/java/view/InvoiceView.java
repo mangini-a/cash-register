@@ -61,23 +61,25 @@ public class InvoiceView extends JFrame {
 		lblComment.setFont(new Font("Tahoma", Font.BOLD, 13));
 		lblComment.setBounds(370, 84, 442, 16);
 		contentPane.add(lblComment);
+		
+		/*
+		 * We'd like to decrease an item's available quantity when it gets added to the cart.
+		 * However, what would happen if the logged user chose to clear the cart before checking out?
+		 * The quantities would have been decreased for no reason at all!
+		 */
 
 		JComboBox<Integer> comboBoxItemId = new JComboBox<>();
 		JComboBox<Integer> comboBoxItemQty = new JComboBox<>();
 		comboBoxItemId.setBounds(370, 122, 120, 23);
 		comboBoxItemId.setModel(new DefaultComboBoxModel(itemController.getAllItemIds().toArray()));
-		// Show quantities from 1 to the available quantity of the pre-selected item ID
-		// in the related drop-down list
-		quantityModel = itemController.fromOneToQuantity(
-				itemController.getItemById(Integer.parseInt(comboBoxItemId.getSelectedItem().toString())));
+		// Show in the combo box the range (1 to available quantity) of the pre-selected item ID
+		quantityModel = itemController.showOneToQuantity(itemController.getItemById(Integer.parseInt(comboBoxItemId.getSelectedItem().toString())));
 		comboBoxItemId.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					// Show quantities from 1 to the available quantity of the selected item ID in
-					// the related drop-down list
-					quantityModel = itemController.fromOneToQuantity(
-							itemController.getItemById(Integer.parseInt(comboBoxItemId.getSelectedItem().toString())));
+					// Show in the combo box the range (1 to available quantity) of the selected item ID
+					quantityModel = itemController.showOneToQuantity(itemController.getItemById(Integer.parseInt(comboBoxItemId.getSelectedItem().toString())));
 					comboBoxItemQty.setModel(new DefaultComboBoxModel(quantityModel.toArray()));
 				} catch (Exception e1) {
 					e1.printStackTrace();

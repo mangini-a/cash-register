@@ -22,6 +22,9 @@ public class HomeView extends JFrame {
 	private static final double PERCENT = 0.6;
 	private JPanel contentPane;
 
+	/*
+	 * Used to instantiate the main screen when the application is first launched.
+	 */
 	public HomeView(UserRole userRole) {
 		// Setup the frame
 		setFont(new Font("Dialog", Font.PLAIN, 6));
@@ -37,14 +40,14 @@ public class HomeView extends JFrame {
 		contentPane.setLayout(null);
 
 		JButton btnCashier = new JButton("Cash register");
-		boolean isNotCustomer = !userRole.equals(UserRole.CUSTOMER) && !userRole.equals(UserRole.TEMP);
-		btnCashier.setEnabled(isNotCustomer);
+		boolean isNotTemp = !userRole.equals(UserRole.TEMP);
+		btnCashier.setEnabled(isNotTemp);
 		btnCashier.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (isNotCustomer) {
+				if (isNotTemp) {
+					setVisible(false);
 					InvoiceView invoiceView = new InvoiceView(userRole);
 					invoiceView.display();
-					setVisible(false);
 				} else {
 					JOptionPane.showMessageDialog(null, "You must be authenticated as CASHIER or MANAGER!",
 							"Access denied", JOptionPane.WARNING_MESSAGE);
@@ -73,8 +76,8 @@ public class HomeView extends JFrame {
 		btnManagement.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (isManager) {
-					ManagementView managementView = new ManagementView();
 					setVisible(false);
+					ManagementView managementView = new ManagementView();
 					managementView.display();
 				} else {
 					JOptionPane.showMessageDialog(null, "You must be authenticated as MANAGER!", "Access denied",
@@ -112,14 +115,14 @@ public class HomeView extends JFrame {
 		contentPane.setLayout(null);
 
 		JButton btnCashier = new JButton("Cash register");
-		boolean isNotCustomer = !user.getRole().equals(UserRole.CUSTOMER) && !user.getRole().equals(UserRole.TEMP);
-		btnCashier.setEnabled(isNotCustomer);
+		boolean isNotTemp = !user.getRole().equals(UserRole.TEMP);
+		btnCashier.setEnabled(isNotTemp);
 		btnCashier.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (isNotCustomer) {
+				if (isNotTemp) {
+					setVisible(false);
 					InvoiceView invoiceView = new InvoiceView(user);
 					invoiceView.display();
-					setVisible(false);
 				} else {
 					JOptionPane.showMessageDialog(null, "You must be authenticated as CASHIER or MANAGER!",
 							"Access denied", JOptionPane.WARNING_MESSAGE);
@@ -148,8 +151,8 @@ public class HomeView extends JFrame {
 		btnManagement.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (isManager) {
-					ManagementView managementView = new ManagementView();
 					setVisible(false);
+					ManagementView managementView = new ManagementView();
 					managementView.display();
 				} else {
 					JOptionPane.showMessageDialog(null, "You must be authenticated as MANAGER!", "Access denied",

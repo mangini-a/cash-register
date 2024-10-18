@@ -97,7 +97,7 @@ public class ItemControllerImpl implements ItemController {
 	}
 
 	@Override
-	public Set<Integer> fromOneToQuantity(Item item) {
+	public Set<Integer> showOneToQuantity(Item item) {
 		Set<Integer> qtys = new HashSet<>();
 		int quantity = item.getQuantity();
 		for (int i = 1; i <= quantity; i++) {

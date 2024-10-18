@@ -12,8 +12,9 @@ public class Invoice {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
-	@ManyToOne
-	@JoinColumn(name = "user_id", referencedColumnName = "id")
+	@ManyToOne(optional=false)
+	@JoinColumn(name = "user_id", referencedColumnName = "id", 
+				foreignKey = @ForeignKey(name = "InvoicesToUserById"))
 	private User user;
 	
 	@Column(name = "issue_date")

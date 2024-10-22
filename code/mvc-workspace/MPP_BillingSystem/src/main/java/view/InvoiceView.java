@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.print.PrinterException;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.*;
@@ -16,10 +15,8 @@ import controller.InvoiceController;
 import controller.InvoiceControllerImpl;
 import controller.ItemController;
 import controller.ItemControllerImpl;
-import controller.UserController;
-import controller.UserControllerImpl;
+import controller.StockExceededException;
 import model.User;
-import model.UserRole;
 
 @SuppressWarnings("serial")
 public class InvoiceView extends JFrame {
@@ -30,7 +27,6 @@ public class InvoiceView extends JFrame {
 	private InvoiceController invoiceController;
 
 	private Set<Integer> quantityModel;
-	private Set<Integer> selectedItemIds = new HashSet<>();
 
 	public InvoiceView(User user) {
 		// Setup the frame
@@ -71,7 +67,7 @@ public class InvoiceView extends JFrame {
 		comboBoxItemQty.setBounds(505, 122, 100, 23);
 		
 		// Populate comboBoxItemId
-		updateComboBoxItemId(comboBoxItemId);
+		populateComboBoxItemId(comboBoxItemId);
 		
 		// Add action listener for item ID selection
 		comboBoxItemId.addActionListener(new ActionListener() {
@@ -109,24 +105,18 @@ public class InvoiceView extends JFrame {
 		btnAdd.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				try {
 					Integer selectedItemId = (Integer) comboBoxItemId.getSelectedItem();
 					Integer selectedItemQty = (Integer) comboBoxItemQty.getSelectedItem();
 
-					String cartLine = invoiceController.addCartLine(selectedItemId, selectedItemQty);
-					cartArea.append(cartLine);
-
-					String partialPrice = String.valueOf(invoiceController.calculatePartial(selectedItemId, selectedItemQty));
-					textFieldTotalPrice.setText(partialPrice);
-					
-					// Add the selected item ID to the set of selected IDs
-		            selectedItemIds.add(selectedItemId);
-
-		            // Update the ComboBox to disable the selected item ID
-		            updateComboBoxItemId(comboBoxItemId);
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, e.getMessage());
-				}
+					try {
+						String cartLine = invoiceController.addCartLine(selectedItemId, selectedItemQty);
+						cartArea.append(cartLine);
+						
+						String partialPrice = String.valueOf(invoiceController.calculatePartial(selectedItemId, selectedItemQty));
+						textFieldTotalPrice.setText(partialPrice);
+					} catch (StockExceededException ex) {
+						JOptionPane.showMessageDialog(null, "Item's current stock stops at " + ex.getItemQty() + "!", "Required quantity exceeds quantity in stock", ERROR);
+					}
 			}
 		});
 		
@@ -145,17 +135,11 @@ public class InvoiceView extends JFrame {
 				// Empty the cart lines' HashMap and reset the cart price
 				invoiceController.emptyCartLines();
 				
-				// Clear the selected item IDs
-		        selectedItemIds.clear();
-				
 				// Graphically clear the screen
 				comboBoxItemId.setSelectedIndex(0);
 				comboBoxItemQty.setSelectedIndex(0);
 				textFieldTotalPrice.setText("");
 				cartArea.setText(row);
-				
-				// Update the ComboBox to show all available item IDs
-		        updateComboBoxItemId(comboBoxItemId);
 			}
 		});
 		
@@ -193,12 +177,13 @@ public class InvoiceView extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				String strTot = textFieldTotalPrice.getText();
 				if (!strTot.isBlank()) {
-					Double tot = Double.parseDouble(strTot);
-					int userId = user.getId();
-					//boolean payCheck = shopController.addPayment(userId, tot);
+					Double totalPrice = Double.parseDouble(strTot);
 					
-					// Update inventory here
-		            //invoiceController.updateInventory(); // Implement this method to decrease quantities
+					// Add a new invoice to the database
+					invoiceController.addInvoice(user, totalPrice);
+					
+					// Update the stock by decreasing the sold quantities
+		            invoiceController.updateInventory();
 					
 					// Clear the cart and reset UI
 					invoiceController.emptyCartLines();
@@ -206,12 +191,6 @@ public class InvoiceView extends JFrame {
 					comboBoxItemQty.setSelectedIndex(0);
 					textFieldTotalPrice.setText("");
 					cartArea.setText(row);
-					/*
-					if (payCheck) {
-						JOptionPane.showMessageDialog(null, "Operation ended successfully!");
-					} else {
-						JOptionPane.showMessageDialog(null, "Something went wrong! Try again");
-					}*/
 				} else {
 					JOptionPane.showMessageDialog(null, "Start by adding some items to the cart!");
 				}
@@ -235,14 +214,12 @@ public class InvoiceView extends JFrame {
 		contentPane.add(btnBack);
 	}
 	
-	private void updateComboBoxItemId(JComboBox<Integer> comboBoxItemId) {
+	private void populateComboBoxItemId(JComboBox<Integer> comboBoxItemId) {
 		DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
 		
-		// Populate the model with item IDs that have not been selected
+		// Populate the model with all the item IDs
 	    for (Integer id : itemController.getAllItemIds()) {
-	        if (!selectedItemIds.contains(id)) {
 	            model.addElement(id);
-	        }
 	    }
 	    
 	    // Set the updated model to the combo box

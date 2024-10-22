@@ -22,8 +22,6 @@ public interface ItemController {
 	 */
 	Item getItemById(int id);
 	
-	void updateItem(Item item);
-	
 	/**
 	 * Removes an item from the database by its id.
 	 *
@@ -45,5 +43,5 @@ public interface ItemController {
 	 */
 	Set<Integer> showOneToQuantity(Item item);
 	
-	void recalculateItemQuantity(int id, int soldQuantity);
+	void updateItemQuantityById(int id, int newQuantity);
 }

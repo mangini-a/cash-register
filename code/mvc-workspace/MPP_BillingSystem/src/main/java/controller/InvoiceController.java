@@ -1,5 +1,7 @@
 package controller;
 
+import model.User;
+
 public interface InvoiceController {
 
 	/**
@@ -8,8 +10,9 @@ public interface InvoiceController {
 	 * @param itemId the item ID chosen by the user
 	 * @param itemQty the item quantity desired by the user
 	 * @return a string representing the cart line
+	 * @throws StockExceededException 
 	 */
-	String addCartLine(Integer itemId, Integer itemQty);
+	String addCartLine(Integer itemId, Integer itemQty) throws StockExceededException;
 	
 	/**
 	 * Calculates the partial cart price step by step.
@@ -24,4 +27,14 @@ public interface InvoiceController {
 	 * Empties the cart lines' HashMap and resets the cart price.
 	 */
 	void emptyCartLines();
+	
+	/**
+	 * Adds a new invoice to the database.
+	 *
+	 * @param user the user which generated it
+	 * @param totalPrice the total cart amount
+	 */
+	void addInvoice(User user, Double totalPrice);
+
+	void updateInventory();
 }

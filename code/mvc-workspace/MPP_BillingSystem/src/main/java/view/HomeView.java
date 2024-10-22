@@ -25,7 +25,7 @@ public class HomeView extends JFrame {
 	/*
 	 * Used to instantiate the main screen when the application is first launched.
 	 */
-	public HomeView(UserRole userRole) {
+	public HomeView() {
 		// Setup the frame
 		setFont(new Font("Dialog", Font.PLAIN, 6));
 		setTitle("Main menu");
@@ -40,18 +40,11 @@ public class HomeView extends JFrame {
 		contentPane.setLayout(null);
 
 		JButton btnCashier = new JButton("Cash register");
-		boolean isNotTemp = !userRole.equals(UserRole.TEMP);
-		btnCashier.setEnabled(isNotTemp);
+		btnCashier.setEnabled(false);
 		btnCashier.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (isNotTemp) {
-					setVisible(false);
-					InvoiceView invoiceView = new InvoiceView(userRole);
-					invoiceView.display();
-				} else {
-					JOptionPane.showMessageDialog(null, "You must be authenticated as CASHIER or MANAGER!",
-							"Access denied", JOptionPane.WARNING_MESSAGE);
-				}
+				JOptionPane.showMessageDialog(null, "You must be authenticated!", "Access denied",
+						JOptionPane.WARNING_MESSAGE);
 			}
 		});
 		btnCashier.setFont(new Font("Serif", Font.BOLD, 15));
@@ -71,18 +64,11 @@ public class HomeView extends JFrame {
 		contentPane.add(btnLogin);
 
 		JButton btnManagement = new JButton("Management");
-		boolean isManager = userRole.equals(UserRole.MANAGER);
-		btnManagement.setEnabled(isManager);
+		btnManagement.setEnabled(false);
 		btnManagement.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (isManager) {
-					setVisible(false);
-					ManagementView managementView = new ManagementView();
-					managementView.display();
-				} else {
-					JOptionPane.showMessageDialog(null, "You must be authenticated as MANAGER!", "Access denied",
-							JOptionPane.WARNING_MESSAGE);
-				}
+				JOptionPane.showMessageDialog(null, "You must be authenticated!", "Access denied",
+						JOptionPane.WARNING_MESSAGE);
 			}
 		});
 		btnManagement.setFont(new Font("Serif", Font.BOLD, 15));
@@ -115,18 +101,12 @@ public class HomeView extends JFrame {
 		contentPane.setLayout(null);
 
 		JButton btnCashier = new JButton("Cash register");
-		boolean isNotTemp = !user.getRole().equals(UserRole.TEMP);
-		btnCashier.setEnabled(isNotTemp);
+		btnCashier.setEnabled(true);
 		btnCashier.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (isNotTemp) {
-					setVisible(false);
-					InvoiceView invoiceView = new InvoiceView(user);
-					invoiceView.display();
-				} else {
-					JOptionPane.showMessageDialog(null, "You must be authenticated as CASHIER or MANAGER!",
-							"Access denied", JOptionPane.WARNING_MESSAGE);
-				}
+				setVisible(false);
+				InvoiceView invoiceView = new InvoiceView(user);
+				invoiceView.display();
 			}
 		});
 		btnCashier.setFont(new Font("Serif", Font.BOLD, 15));
@@ -152,7 +132,7 @@ public class HomeView extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (isManager) {
 					setVisible(false);
-					ManagementView managementView = new ManagementView();
+					ManagementView managementView = new ManagementView(user);
 					managementView.display();
 				} else {
 					JOptionPane.showMessageDialog(null, "You must be authenticated as MANAGER!", "Access denied",

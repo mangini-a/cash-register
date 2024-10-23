@@ -5,10 +5,12 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.util.Set;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 
 import controller.InvoiceController;
 import controller.InvoiceControllerImpl;
@@ -22,8 +24,8 @@ public class InvoiceView extends JFrame {
 
 	private JPanel contentPane;
 	
-	private JTextArea cartArea;
-	private String cartAreaHeader = "ID" + "\t" + "Name" + "\t" + "Quantity" + "\t" + "Unit price" + "\n";
+	private DefaultTableModel cartTableModel;
+	private JTable cartTable;
 	private JScrollPane scrollPane;
 	
 	// Components used in the "Item Selection" section
@@ -60,10 +62,12 @@ public class InvoiceView extends JFrame {
 		itemController = ItemControllerImpl.getInstance();
 		invoiceController = InvoiceControllerImpl.getInstance();
 		
-		cartArea = new JTextArea();
-		cartArea.setEditable(false);
-		cartArea.setText(cartAreaHeader);
-		scrollPane = new JScrollPane(cartArea);
+		// Define the cart composition table's model
+		cartTableModel = new DefaultTableModel(new Object[]{"ID", "Name", "Quantity", "Unit Price"}, 0);
+		cartTable = new JTable(cartTableModel);
+		cartTable.setFillsViewportHeight(true);
+		scrollPane = new JScrollPane(cartTable);
+		scrollPane.setBounds(15, 15, 345, 420);
 		contentPane.add(scrollPane);
 		
 		// Instantiate and populate the Item Selection section's components
@@ -130,35 +134,18 @@ public class InvoiceView extends JFrame {
 		});
 		contentPane.add(btnBackToHome);
 	}
-	
-	private void printCart() {
-		try {
-			cartArea.print();
-		} catch (PrinterException ex) {
-			JOptionPane.showMessageDialog(null, "An error in the print system caused the job to be aborted.", "Printout failed", ABORT);
-		}
-	}
-
-	private void clearCart() {
-		invoiceController.emptyCartLines();
-		comboBoxItemId.setSelectedIndex(0);
-		comboBoxItemQty.setSelectedIndex(0);
-		textFieldTotalPrice.setText("");
-		cartArea.setText(cartAreaHeader);
-	}
 
 	private void addToCart() {
 		Integer selectedItemId = (Integer) comboBoxItemId.getSelectedItem();
 		Integer selectedItemQty = (Integer) comboBoxItemQty.getSelectedItem();
-
 		try {
-			String cartLine = invoiceController.addCartLine(selectedItemId, selectedItemQty);
-			cartArea.append(cartLine);
-			
+			invoiceController.addCartLine(selectedItemId, selectedItemQty);
+            Object[] rowData = {selectedItemId, invoiceController.getItemNameById(selectedItemId), selectedItemQty, invoiceController.getItemUnitPriceById(selectedItemId)};
+            cartTableModel.addRow(rowData);
 			String partialPrice = String.valueOf(invoiceController.calculatePartial(selectedItemId, selectedItemQty));
 			textFieldTotalPrice.setText(partialPrice);
 		} catch (StockExceededException ex) {
-			JOptionPane.showMessageDialog(null, "Item's current stock stops at " + ex.getItemQty() + "!", "Required quantity exceeds quantity in stock", ERROR);
+			JOptionPane.showMessageDialog(null, "The item's current stock is limited to " + ex.getItemQty() + " pcs!", "Required quantity exceeds quantity in stock", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
@@ -178,21 +165,39 @@ public class InvoiceView extends JFrame {
 			comboBoxItemId.setSelectedIndex(0);
 			comboBoxItemQty.setSelectedIndex(0);
 			textFieldTotalPrice.setText("");
-			cartArea.setText(cartAreaHeader);
+			cartTableModel.setRowCount(0); // Clear the table
 		} else {
-			JOptionPane.showMessageDialog(null, "Start by adding some items to the cart!");
+			JOptionPane.showMessageDialog(null, "Start by adding some items to the cart!", "Empty cart", JOptionPane.WARNING_MESSAGE);
 		}
+	}
+	
+	private void clearCart() {
+		invoiceController.emptyCartLines();
+		comboBoxItemId.setSelectedIndex(0);
+		comboBoxItemQty.setSelectedIndex(0);
+		textFieldTotalPrice.setText("");
+		cartTableModel.setRowCount(0); // Clear the table
+	}
+	
+	private void printCart() {
+		PrinterJob printerJob = PrinterJob.getPrinterJob();
+        printerJob.setPrintable(cartTable.getPrintable(JTable.PrintMode.FIT_WIDTH, null, null));
+        
+        boolean doPrint = printerJob.printDialog();
+        if (doPrint) {
+            try {
+                printerJob.print();
+            } catch (PrinterException ex) {
+            	JOptionPane.showMessageDialog(null, "An error in the print system caused the job to be aborted.", "Printout failed", JOptionPane.ERROR_MESSAGE);
+            }
+        }
 	}
 
 	private void populateComboBoxItemId(JComboBox<Integer> comboBoxItemId) {
 		DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
-		
-		// Populate the model with all the item IDs
 	    for (Integer id : itemController.getAllItemIds()) {
 	            model.addElement(id);
 	    }
-	    
-	    // Set the updated model to the combo box
 	    comboBoxItemId.setModel(model);
 	}
 	

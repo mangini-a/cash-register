@@ -31,7 +31,7 @@ public class InvoiceControllerImpl implements InvoiceController {
 	private double cartPrice = 0.0;
 
 	@Override
-	public String addCartLine(Integer itemId, Integer itemQty) throws StockExceededException {
+	public void addCartLine(Integer itemId, Integer itemQty) throws StockExceededException {
 		
 		Item item = itemController.getItemById(itemId);
 		Integer localQty = 0;
@@ -49,9 +49,18 @@ public class InvoiceControllerImpl implements InvoiceController {
 			localQty = itemQty;
 			cartLines.put(itemId, localQty);
 		}
-
-		// Generate a string to be shown in the UI text area
-		return itemId + "\t" + item.getName() + "\t" + itemQty + "\t" + item.getUnitPrice() + "\n";
+	}
+	
+	@Override
+	public String getItemNameById(Integer itemId) {
+		Item item = itemController.getItemById(itemId);
+		return item.getName();
+	}
+	
+	@Override
+	public double getItemUnitPriceById(Integer itemId) {
+		Item item = itemController.getItemById(itemId);
+		return item.getUnitPrice();
 	}
 
 	@Override
@@ -87,7 +96,6 @@ public class InvoiceControllerImpl implements InvoiceController {
 
 	@Override
 	public void updateInventory() {
-		// Update the available quantity of each sold item
 		for (Integer itemId : cartLines.keySet()) {
 			Item item = itemController.getItemById(itemId);
 			itemController.updateItemQuantityById(item.getId(), item.getQuantity() - cartLines.get(itemId));

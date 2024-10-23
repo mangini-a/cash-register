@@ -1,5 +1,5 @@
 package model;
 
 public enum UserRole {
-	CASHIER, MANAGER, TEMP;
+	CASHIER, MANAGER;
 }

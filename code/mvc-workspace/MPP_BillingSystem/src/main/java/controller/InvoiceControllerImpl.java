@@ -103,4 +103,8 @@ public class InvoiceControllerImpl implements InvoiceController {
 			itemController.updateItemQuantityById(item.getId(), item.getQuantity() - cartLines.get(itemId));
 		}
 	}
+
+	public Map<Integer, Integer> getCartLines() {
+		return cartLines;
+	}
 }

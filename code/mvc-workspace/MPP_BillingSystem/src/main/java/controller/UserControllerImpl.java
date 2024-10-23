@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.Session;
 
 import model.User;
+import model.UserRole;
 import utils.HibernateSessionFactory;
 
 public class UserControllerImpl implements UserController {
@@ -83,5 +84,10 @@ public class UserControllerImpl implements UserController {
 				throw e; // Re-throw the exception to propagate it up the call stack
 			}
 		}
+	}
+
+	@Override
+	public boolean isUserManager(User user) {
+		return user.getRole().equals(UserRole.MANAGER);
 	}
 }

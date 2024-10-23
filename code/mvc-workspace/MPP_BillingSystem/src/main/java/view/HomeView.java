@@ -1,166 +1,112 @@
 package view;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import javax.swing.*;
 
+import controller.UserController;
+import controller.UserControllerImpl;
 import model.User;
-import model.UserRole;
 
 @SuppressWarnings("serial")
 public class HomeView extends JFrame {
 
-	private static final double PERCENT = 0.6;
 	private JPanel contentPane;
 
-	/*
-	 * Used to instantiate the main screen when the application is first launched.
+	private UserController userController;
+
+	/**
+	 * Instantiates a new home view when the application is first launched.
 	 */
 	public HomeView() {
-		// Setup the frame
-		setFont(new Font("Dialog", Font.PLAIN, 6));
-		setTitle("Main menu");
-		setBackground(Color.WHITE);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(620, 280, 653, 374);
-		contentPane = new JPanel();
-		contentPane.setBackground(Color.WHITE);
-		contentPane.setForeground(Color.WHITE);
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		contentPane.setLayout(null);
-
-		JButton btnCashier = new JButton("Cash register");
-		btnCashier.setEnabled(false);
-		btnCashier.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "You must be authenticated!", "Access denied",
-						JOptionPane.WARNING_MESSAGE);
-			}
-		});
-		btnCashier.setFont(new Font("Serif", Font.BOLD, 15));
-		btnCashier.setBounds(194, 272, 129, 54);
-		contentPane.add(btnCashier);
-
-		JButton btnLogin = new JButton("Login");
-		btnLogin.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setVisible(false);
-				LoginView loginView = new LoginView();
-				loginView.display();
-			}
-		});
-		btnLogin.setFont(new Font("Serif", Font.BOLD, 15));
-		btnLogin.setBounds(12, 13, 79, 29);
-		contentPane.add(btnLogin);
-
-		JButton btnManagement = new JButton("Management");
-		btnManagement.setEnabled(false);
-		btnManagement.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "You must be authenticated!", "Access denied",
-						JOptionPane.WARNING_MESSAGE);
-			}
-		});
-		btnManagement.setFont(new Font("Serif", Font.BOLD, 15));
-		btnManagement.setBounds(387, 272, 129, 54);
-		contentPane.add(btnManagement);
-
-		JButton btnExit = new JButton("Exit");
-		btnExit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				System.exit(0);
-			}
-		});
-		btnExit.setFont(new Font("Serif", Font.BOLD, 15));
-		btnExit.setBounds(12, 55, 79, 29);
-		contentPane.add(btnExit);
+		initialize();
 	}
 
+	/**
+	 * Instantiates a new home view after a user has logged in.
+	 *
+	 * @param user the user who logged in
+	 */
 	public HomeView(User user) {
-		// Setup the frame
-		setFont(new Font("Dialog", Font.PLAIN, 6));
-		setTitle("Main menu");
-		setBackground(Color.WHITE);
+		initialize();
+		userController = UserControllerImpl.getInstance();
+		setupUserButtons(user);
+	}
+
+	private void initialize() {
+		// Configure the frame
+		setTitle("Main Menu");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(620, 280, 653, 374);
 		contentPane = new JPanel();
-		contentPane.setBackground(Color.WHITE);
-		contentPane.setForeground(Color.WHITE);
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(null);
+		contentPane.setLayout(new GridBagLayout());
 
-		JButton btnCashier = new JButton("Cash register");
-		btnCashier.setEnabled(true);
-		btnCashier.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setVisible(false);
-				InvoiceView invoiceView = new InvoiceView(user);
-				invoiceView.display();
-			}
-		});
-		btnCashier.setFont(new Font("Serif", Font.BOLD, 15));
-		btnCashier.setBounds(194, 272, 129, 54);
-		contentPane.add(btnCashier);
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(10, 10, 10, 10); // Add padding around components
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 
+		// Configure the "Login" button
 		JButton btnLogin = new JButton("Login");
-		btnLogin.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setVisible(false);
-				LoginView loginView = new LoginView();
-				loginView.display();
-			}
+		btnLogin.addActionListener(e -> {
+			setVisible(false);
+			new LoginView().display();
 		});
-		btnLogin.setFont(new Font("Serif", Font.BOLD, 15));
-		btnLogin.setBounds(12, 13, 79, 29);
-		contentPane.add(btnLogin);
+		gbc.gridx = 0; // Column 0
+		gbc.gridy = 0; // Row 0
+		contentPane.add(btnLogin, gbc);
 
-		JButton btnManagement = new JButton("Management");
-		boolean isManager = user.getRole().equals(UserRole.MANAGER);
-		btnManagement.setEnabled(isManager);
-		btnManagement.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (isManager) {
-					setVisible(false);
-					ManagementView managementView = new ManagementView(user);
-					managementView.display();
-				} else {
-					JOptionPane.showMessageDialog(null, "You must be authenticated as MANAGER!", "Access denied",
-							JOptionPane.WARNING_MESSAGE);
-				}
-			}
-		});
-		btnManagement.setFont(new Font("Serif", Font.BOLD, 15));
-		btnManagement.setBounds(387, 272, 129, 54);
-		contentPane.add(btnManagement);
-
+		// Configure the "Exit" button
 		JButton btnExit = new JButton("Exit");
-		btnExit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				System.exit(0);
+		btnExit.addActionListener(e -> System.exit(0));
+		gbc.gridx = 1; // Column 1
+		gbc.gridy = 0; // Row 0
+		contentPane.add(btnExit, gbc);
+
+		// Configure the "Cash Register" button
+		JButton btnCashRegister = new JButton("Cash Register");
+		btnCashRegister.setEnabled(false);
+		btnCashRegister.addActionListener(e -> JOptionPane.showMessageDialog(null,
+				"You must sign in to access this screen!", "Access denied", JOptionPane.WARNING_MESSAGE));
+		gbc.gridx = 0; // Column 0
+		gbc.gridy = 1; // Row 1
+		contentPane.add(btnCashRegister, gbc);
+
+		// Configure the "Management" button
+		JButton btnManagement = new JButton("Management");
+		btnManagement.setEnabled(false);
+		btnManagement.addActionListener(e -> JOptionPane.showMessageDialog(null,
+				"You must sign in to access this screen!", "Access denied", JOptionPane.WARNING_MESSAGE));
+		gbc.gridx = 1; // Column 1
+		gbc.gridy = 1; // Row 1
+		contentPane.add(btnManagement, gbc);
+	}
+
+	private void setupUserButtons(User user) {
+		JButton btnCashier = (JButton) contentPane.getComponent(2);
+		btnCashier.setEnabled(true);
+		btnCashier.addActionListener(e -> {
+			setVisible(false);
+			new InvoiceView(user).display();
+		});
+
+		JButton btnManagement = (JButton) contentPane.getComponent(3);
+		boolean isManager = userController.isUserManager(user);
+		btnManagement.setEnabled(isManager);
+		btnManagement.addActionListener(e -> {
+			if (isManager) {
+				setVisible(false);
+				new ManagementView(user).display();
+			} else {
+				JOptionPane.showMessageDialog(null, "You must be a manager to access this screen!", "Access denied",
+						JOptionPane.WARNING_MESSAGE);
 			}
 		});
-		btnExit.setFont(new Font("Serif", Font.BOLD, 15));
-		btnExit.setBounds(12, 55, 79, 29);
-		contentPane.add(btnExit);
 	}
 
 	public void display() {
 		setVisible(true);
 		setResizable(true);
-		setMinimumSize(new Dimension(500, 500));
 		setLocationRelativeTo(null);
-		final Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		setSize((int) (dimension.getWidth() * (HomeView.PERCENT)), (int) (dimension.getHeight() * HomeView.PERCENT));
+		setMinimumSize(new Dimension(800, 600));
 	}
 }

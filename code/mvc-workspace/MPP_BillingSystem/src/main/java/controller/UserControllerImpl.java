@@ -9,14 +9,16 @@ import model.UserRole;
 import utils.HibernateSessionFactory;
 
 public class UserControllerImpl implements UserController {
-	
-	private static UserControllerImpl singleInstance = null;
-	
+
+	// Private constructor to prevent instantiation
+	private UserControllerImpl() {}
+
+	private static class SingletonHelper {
+		private static final UserControllerImpl singleInstance = new UserControllerImpl();
+	}
+
 	public static UserControllerImpl getInstance() {
-		if (singleInstance == null) {
-			singleInstance = new UserControllerImpl();
-		}
-		return singleInstance;
+		return SingletonHelper.singleInstance;
 	}
 
 	@Override
@@ -51,7 +53,7 @@ public class UserControllerImpl implements UserController {
 	@Override
 	public void updateUser(User user) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

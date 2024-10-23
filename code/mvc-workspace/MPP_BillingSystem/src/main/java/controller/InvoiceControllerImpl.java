@@ -12,14 +12,16 @@ import model.User;
 import utils.HibernateSessionFactory;
 
 public class InvoiceControllerImpl implements InvoiceController {
-
-	private static InvoiceControllerImpl singleInstance = null;
+	
+	// Private constructor to prevent instantiation
+	private InvoiceControllerImpl() {}
+	
+	private static class SingletonHelper {
+		private static final InvoiceControllerImpl singleInstance = new InvoiceControllerImpl();
+	}
 
 	public static InvoiceControllerImpl getInstance() {
-		if (singleInstance == null) {
-			singleInstance = new InvoiceControllerImpl();
-		}
-		return singleInstance;
+		return SingletonHelper.singleInstance;
 	}
 
 	// Get the only instance of ItemController to perform item-related operations on the DB

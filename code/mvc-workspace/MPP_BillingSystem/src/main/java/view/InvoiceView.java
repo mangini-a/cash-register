@@ -1,7 +1,6 @@
 package view;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.print.PrinterException;
@@ -24,6 +23,7 @@ public class InvoiceView extends JFrame {
 
 	private JPanel contentPane;
 	
+	// Components used for the cart composition representation
 	private DefaultTableModel cartTableModel;
 	private JTable cartTable;
 	private JScrollPane scrollPane;
@@ -55,8 +55,6 @@ public class InvoiceView extends JFrame {
 		// Setup the frame
 		setTitle("Cash Register");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		contentPane = new JPanel();
-		setContentPane(contentPane);
 		
 		// Initialize controllers
 		itemController = ItemControllerImpl.getInstance();
@@ -67,8 +65,6 @@ public class InvoiceView extends JFrame {
 		cartTable = new JTable(cartTableModel);
 		cartTable.setFillsViewportHeight(true);
 		scrollPane = new JScrollPane(cartTable);
-		scrollPane.setBounds(15, 15, 345, 420);
-		contentPane.add(scrollPane);
 		
 		// Instantiate and populate the Item Selection section's components
 		lblItemId = new JLabel("Item ID:");
@@ -90,7 +86,6 @@ public class InvoiceView extends JFrame {
 		panelItemSelection.add(lblItemQty);
 		panelItemSelection.add(comboBoxItemQty);
 		panelItemSelection.add(btnAddToCart);
-		contentPane.add(panelItemSelection);
 		
 		// Instantiate the Checkout section's components
 		lblTotalPrice = new JLabel("Total price:");
@@ -106,7 +101,6 @@ public class InvoiceView extends JFrame {
 		panelCheckout.add(lblTotalPrice);
 		panelCheckout.add(textFieldTotalPrice);
 		panelCheckout.add(btnCheckout);
-		contentPane.add(panelCheckout);
 		
 		// Instantiate the Other Actions section's components
 		btnClearCart = new JButton("Clear Cart");
@@ -120,7 +114,13 @@ public class InvoiceView extends JFrame {
 		panelOtherButtons.setLayout(new FlowLayout());
 		panelOtherButtons.add(btnClearCart);
 		panelOtherButtons.add(btnPrintCart);
-		contentPane.add(panelOtherButtons);
+
+		// Create a panel to hold the three previous sections vertically
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.add(panelItemSelection);
+        centerPanel.add(panelCheckout);
+        centerPanel.add(panelOtherButtons);
 		
 		// Add the "Back to Home" button separately
 		btnBackToHome = new JButton("Back to Home");
@@ -132,7 +132,15 @@ public class InvoiceView extends JFrame {
 				homeView.display();
 			}
 		});
-		contentPane.add(btnBackToHome);
+		
+		// Set up the content pane with the BorderLayout
+        contentPane = new JPanel();
+        contentPane.setLayout(new BorderLayout());
+        contentPane.add(scrollPane, BorderLayout.WEST);
+        contentPane.add(centerPanel, BorderLayout.CENTER);
+        contentPane.add(btnBackToHome, BorderLayout.SOUTH);
+
+        setContentPane(contentPane);
 	}
 
 	private void addToCart() {
@@ -220,6 +228,6 @@ public class InvoiceView extends JFrame {
 		setVisible(true);
 		setResizable(true);
 		setLocationRelativeTo(null);
-		setMinimumSize(new Dimension(500, 500));
+		setMinimumSize(new Dimension(800, 600));
 	}
 }

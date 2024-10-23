@@ -1,19 +1,14 @@
 package view;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Arrays;
 import java.util.List;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import controller.UserController;
 import controller.UserControllerImpl;
 import model.User;
-import model.UserRole;
 
 @SuppressWarnings("serial")
 public class LoginView extends JFrame {
@@ -22,45 +17,39 @@ public class LoginView extends JFrame {
 	private UserController userController;
 
 	public LoginView() {
-		// Setup the frame
-		setTitle("Login");
+		// Configure the frame
+		setTitle("Login Procedure");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(620, 280, 600, 400);
-		contentPane = new JPanel();
-		contentPane.setBackground(Color.WHITE);
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane = new JPanel(new GridLayout(6, 1));
 		setContentPane(contentPane);
-		contentPane.setLayout(null);
-
+        
 		// Get the only instance of UserController to perform user-related operations on the DB
 		userController = UserControllerImpl.getInstance();
-		
-		JLabel lblWelcome = new JLabel("Welcome to your billing system!");
-		lblWelcome.setFont(new Font("Rockwell Nova Extra Bold", Font.BOLD, 20));
-		lblWelcome.setBounds(200, 15, 300, 60);
-		contentPane.add(lblWelcome);
 
-		JLabel lblUserId = new JLabel("User ID");
-		lblUserId.setFont(new Font("Tahoma", Font.BOLD, 13));
-		lblUserId.setBounds(175, 115, 100, 45);
-		contentPane.add(lblUserId);
-
-		JLabel lblPassword = new JLabel("Password");
-		lblPassword.setFont(new Font("Tahoma", Font.BOLD, 13));
-		lblPassword.setBounds(175, 145, 100, 45);
-		contentPane.add(lblPassword);
-
+		// Define the "User ID" field to be filled in
+		JPanel panelUserId = new JPanel(new GridLayout(2, 1));
+		JLabel lblUserId = new JLabel("User ID *");
+		lblUserId.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		panelUserId.add(lblUserId);
 		JTextField fieldUserId = new JTextField();
-		fieldUserId.setBounds(250, 120, 120, 25);
-		contentPane.add(fieldUserId);
-		fieldUserId.setColumns(10);
+		fieldUserId.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		fieldUserId.setBorder(new EmptyBorder(10, 10, 10, 10));
+		panelUserId.add(fieldUserId);
+		contentPane.add(panelUserId);
 
+		// Define the "Password" field to be filled in
+		JPanel panelUserPassword = new JPanel(new GridLayout(2, 1));
+		JLabel lblUserPassword = new JLabel("Password *");
+		lblUserPassword.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		panelUserPassword.add(lblUserPassword);
 		JPasswordField fieldUserPassword = new JPasswordField();
-		fieldUserPassword.setBounds(250, 150, 120, 25);
-		contentPane.add(fieldUserPassword);
-
-		JCheckBox chckbxShowPassword = new JCheckBox("Show password");
-		chckbxShowPassword.setFont(new Font("Tahoma", Font.BOLD, 13));
+		fieldUserPassword.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		fieldUserPassword.setBorder(new EmptyBorder(10, 10, 10, 10));
+		panelUserPassword.add(fieldUserPassword);
+		contentPane.add(panelUserPassword);
+		
+		// Define the "Show Password" option
+		JCheckBox chckbxShowPassword = new JCheckBox("Show Password");
 		chckbxShowPassword.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -71,60 +60,59 @@ public class LoginView extends JFrame {
 				}
 			}
 		});
-		chckbxShowPassword.setBackground(Color.WHITE);
-		chckbxShowPassword.setBounds(200, 250, 140, 25);
 		contentPane.add(chckbxShowPassword);
-
-		JButton btnLogin = new JButton("Login");
-		btnLogin.setFont(new Font("Tahoma", Font.BOLD, 13));
-		btnLogin.addActionListener(new ActionListener() {
+        
+        // Define the "SIGN IN" button
+		JButton btnSignIn = new JButton("SIGN IN");
+		btnSignIn.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnSignIn.setBackground(Color.decode("#206C88"));
+		btnSignIn.setForeground(Color.WHITE);
+		btnSignIn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				int inputUserId = Integer.parseInt(fieldUserId.getText());
-				String inputUserPassword = String.valueOf(fieldUserPassword.getPassword());
-				boolean isIdPresent = false;
-
-				List<Integer> userIds = userController.getAllUserIds();
-				for (int userId : userIds) {
-					if (userId == inputUserId) {
-						isIdPresent = true;
-						User user = userController.getUserById(userId);
-						String userPassword = user.getPassword();
-						if (userPassword.equals(inputUserPassword) && (!user.getRole().equals(UserRole.TEMP))) {
-							setVisible(false);
-							HomeView homeView = new HomeView(user);
-							homeView.repaint();
-							homeView.display();
-						} else {
-							JOptionPane.showMessageDialog(null, "Wrong password or attempt to log in as a CUSTOMER!", "Access denied", JOptionPane.WARNING_MESSAGE);
+				try {
+					int inputUserId = Integer.parseInt(fieldUserId.getText());
+					char[] passwordChars = fieldUserPassword.getPassword();
+					String inputUserPassword = String.valueOf(passwordChars);
+					
+					// Clear the returned character array after use for stronger security
+					Arrays.fill(passwordChars, '0');
+					
+					boolean isIdPresent = false;
+					
+					List<Integer> userIds = userController.getAllUserIds();
+					for (int userId : userIds) {
+						if (userId == inputUserId) {
+							isIdPresent = true;
+							User user = userController.getUserById(userId);
+							String userPassword = userController.getUserPassword(user);
+							if (userPassword.equals(inputUserPassword)) {
+								dispose();
+								SwingUtilities.invokeLater(() -> {
+									new HomeView(user).display();
+								});
+							} else {
+								JOptionPane.showMessageDialog(null, "You entered a wrong password!", "Access denied", JOptionPane.WARNING_MESSAGE);
+							}
 						}
 					}
-				}
-				if (!isIdPresent) {
-					JOptionPane.showMessageDialog(null, "User not found!");
+					if (!isIdPresent) {
+						JOptionPane.showMessageDialog(null, "Your ID could not be found!", "Access denied", JOptionPane.WARNING_MESSAGE);
+					}
+				} catch (NullPointerException npe) {
+					JOptionPane.showMessageDialog(null, "User ID and/or Password have not been specified!", "Missing information", JOptionPane.WARNING_MESSAGE);
+				} catch (NumberFormatException nfe) {
+					JOptionPane.showMessageDialog(null, "Your ID must be an integer numeric value!", "Unprocessable input", JOptionPane.WARNING_MESSAGE);
 				}
 			}
 		});
-		btnLogin.setBounds(140, 320, 120, 40);
-		contentPane.add(btnLogin);
-
-		JButton btnCancel = new JButton("Exit");
-		btnCancel.setFont(new Font("Tahoma", Font.BOLD, 13));
-		btnCancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-				;
-			}
-		});
-		btnCancel.setBounds(280, 320, 120, 40);
-		contentPane.add(btnCancel);
+		contentPane.add(btnSignIn);
 	}
 
 	public void display() {
+		setSize(500, 500);
+		setResizable(false);
 		setVisible(true);
-		setResizable(true);
 		setLocationRelativeTo(null);
-		setMinimumSize(new Dimension(500, 500));
 	}
 }

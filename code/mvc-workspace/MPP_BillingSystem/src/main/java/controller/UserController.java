@@ -44,4 +44,12 @@ public interface UserController {
 	 * @return true, if the user is actually a manager
 	 */
 	boolean isUserManager(User user);
+	
+	/**
+	 * Gets the specified user's password.
+	 *
+	 * @param user the user
+	 * @return the user's password
+	 */
+	String getUserPassword(User user);
 }

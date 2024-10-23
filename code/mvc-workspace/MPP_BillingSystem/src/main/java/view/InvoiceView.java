@@ -127,9 +127,10 @@ public class InvoiceView extends JFrame {
 		btnBackToHome.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				setVisible(false);
-				HomeView homeView = new HomeView(user);
-				homeView.display();
+				dispose();
+				SwingUtilities.invokeLater(() -> {
+					new HomeView(user).display();
+				});
 			}
 		});
 		
@@ -225,9 +226,9 @@ public class InvoiceView extends JFrame {
 	}
 
 	public void display() {
-		setVisible(true);
-		setResizable(true);
-		setLocationRelativeTo(null);
 		setMinimumSize(new Dimension(800, 600));
+		setResizable(true);
+		setVisible(true);
+		setLocationRelativeTo(null);
 	}
 }

@@ -90,4 +90,9 @@ public class UserControllerImpl implements UserController {
 	public boolean isUserManager(User user) {
 		return user.getRole().equals(UserRole.MANAGER);
 	}
+
+	@Override
+	public String getUserPassword(User user) {
+		return user.getPassword();
+	}
 }

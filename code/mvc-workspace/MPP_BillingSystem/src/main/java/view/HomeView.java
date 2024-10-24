@@ -1,6 +1,8 @@
 package view;
 
 import java.awt.*;
+import java.awt.event.ActionListener;
+
 import javax.swing.*;
 
 import controller.UserController;
@@ -37,11 +39,10 @@ public class HomeView extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		contentPane = new JPanel();
 		setContentPane(contentPane);
-		contentPane.setLayout(new GridLayout(3, 1, 10, 10));
+		contentPane.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
 
 		// Make the "Login" screen accessible
-		JButton btnLogin = new JButton("Login");
-		btnLogin.addActionListener(e -> {
+		JButton btnLogin = createButton("Login", "", e -> {
 			dispose();
 			SwingUtilities.invokeLater(() -> {
 				new LoginView().display();
@@ -50,14 +51,33 @@ public class HomeView extends JFrame {
 		contentPane.add(btnLogin);
 
 		// Make the "Cash Register" screen not accessible
-		JButton btnCashRegister = new JButton("Cash Register");
+		JButton btnCashRegister = createButton("Cash Register", "", null);
 		btnCashRegister.setEnabled(false);
 		contentPane.add(btnCashRegister);
 
 		// Make the "Management" screen not accessible
-		JButton btnManagement = new JButton("Management");
+		JButton btnManagement = createButton("Management", "", null);
 		btnManagement.setEnabled(false);
 		contentPane.add(btnManagement);
+	}
+
+	private JButton createButton(String text, String iconPath, ActionListener actionListener) {
+		JButton button = new JButton(text);
+        if (iconPath != null && !iconPath.isEmpty()) {
+        	ImageIcon icon = new ImageIcon(iconPath);
+            button.setIcon(icon);
+        }
+        button.setHorizontalTextPosition(SwingConstants.CENTER); // Center the text horizontally
+        button.setVerticalTextPosition(SwingConstants.BOTTOM); // Position the text below the icon
+        button.setPreferredSize(new Dimension(200, 150));
+        button.setFont(new Font("Tahoma", Font.BOLD, 16));
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createRaisedBevelBorder());
+        button.setToolTipText(text);
+        if (actionListener != null) {
+            button.addActionListener(actionListener);
+        }
+        return button;
 	}
 
 	private void setupUserButtons(User user) {
@@ -88,8 +108,9 @@ public class HomeView extends JFrame {
 	}
 
 	public void display() {
-		setMinimumSize(new Dimension(500, 500));
-		setResizable(true);
+		setMinimumSize(new Dimension(680, 190));
+		setResizable(false);
+		pack();
 		setVisible(true);
 		setLocationRelativeTo(null);
 	}

@@ -1,19 +1,27 @@
 package controller;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hibernate.Session;
+
+import model.Invoice;
 import model.Item;
+import model.User;
+import utils.HibernateSessionFactory;
 
 public class InvoiceControllerImpl implements InvoiceController {
-
-	private static InvoiceControllerImpl singleInstance = null;
+	
+	// Private constructor to prevent instantiation
+	private InvoiceControllerImpl() {}
+	
+	private static class SingletonHelper {
+		private static final InvoiceControllerImpl singleInstance = new InvoiceControllerImpl();
+	}
 
 	public static InvoiceControllerImpl getInstance() {
-		if (singleInstance == null) {
-			singleInstance = new InvoiceControllerImpl();
-		}
-		return singleInstance;
+		return SingletonHelper.singleInstance;
 	}
 
 	// Get the only instance of ItemController to perform item-related operations on the DB
@@ -25,13 +33,36 @@ public class InvoiceControllerImpl implements InvoiceController {
 	private double cartPrice = 0.0;
 
 	@Override
-	public String addCartLine(Integer itemId, Integer itemQty) {
-		// Associate the specified value with the specified key in this map
-		cartLines.put(itemId, itemQty);
-
-		// Generate a string to be shown in the UI text area
+	public void addCartLine(Integer itemId, Integer itemQty) throws StockExceededException {
+		
 		Item item = itemController.getItemById(itemId);
-		return itemId + "\t" + item.getName() + "\t" + itemQty + "\t" + item.getUnitPrice() + "\n";
+		Integer localQty = 0;
+		
+		// Check if the key passed as a parameter already exists
+		if (cartLines.containsKey(itemId)) {
+			Integer oldQty = cartLines.get(itemId);
+			localQty = oldQty + itemQty;
+			if (localQty > item.getQuantity()) {
+				throw new StockExceededException(item.getQuantity());
+			} else {
+				cartLines.put(itemId, localQty);
+			}
+		} else {
+			localQty = itemQty;
+			cartLines.put(itemId, localQty);
+		}
+	}
+	
+	@Override
+	public String getItemNameById(Integer itemId) {
+		Item item = itemController.getItemById(itemId);
+		return item.getName();
+	}
+	
+	@Override
+	public double getItemUnitPriceById(Integer itemId) {
+		Item item = itemController.getItemById(itemId);
+		return item.getUnitPrice();
 	}
 
 	@Override
@@ -45,5 +76,35 @@ public class InvoiceControllerImpl implements InvoiceController {
 	public void emptyCartLines() {
 		cartLines.clear();
 		cartPrice = 0.0;
+	}
+
+	@Override
+	public void addInvoice(User user, Double totalPrice) {
+		
+		Invoice invoice = new Invoice(user, Instant.now(), totalPrice);
+		
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				session.persist(invoice);
+				session.getTransaction().commit();
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
+		
+	}
+
+	@Override
+	public void updateInventory() {
+		for (Integer itemId : cartLines.keySet()) {
+			Item item = itemController.getItemById(itemId);
+			itemController.updateItemQuantityById(item.getId(), item.getQuantity() - cartLines.get(itemId));
+		}
+	}
+
+	public Map<Integer, Integer> getCartLines() {
+		return cartLines;
 	}
 }

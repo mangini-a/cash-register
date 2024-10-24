@@ -31,9 +31,25 @@ public interface UserController {
 	void removeUserById(int id);
 	
 	/**
-	 * Gets all the user ids from the database.
+	 * Gets all the user identifiers from the database.
 	 *
-	 * @return a list with all the user ids
+	 * @return a list with all the user identifiers
 	 */
 	List<Integer> getAllUserIds();
+
+	/**
+	 * Checks if a user is a manager.
+	 *
+	 * @param user the user to be checked
+	 * @return true, if the user is actually a manager
+	 */
+	boolean isUserManager(User user);
+	
+	/**
+	 * Gets the specified user's password.
+	 *
+	 * @param user the user
+	 * @return the user's password
+	 */
+	String getUserPassword(User user);
 }

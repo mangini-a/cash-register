@@ -11,13 +11,15 @@ import utils.HibernateSessionFactory;
 
 public class ItemControllerImpl implements ItemController {
 
-	private static ItemControllerImpl singleInstance = null;
+	// Private constructor to prevent instantiation
+	private ItemControllerImpl() {}
+
+	private static class SingletonHelper {
+		private static final ItemControllerImpl singleInstance = new ItemControllerImpl();
+	}
 
 	public static ItemControllerImpl getInstance() {
-		if (singleInstance == null) {
-			singleInstance = new ItemControllerImpl();
-		}
-		return singleInstance;
+		return SingletonHelper.singleInstance;
 	}
 
 	@Override
@@ -50,9 +52,23 @@ public class ItemControllerImpl implements ItemController {
 	}
 
 	@Override
-	public void updateItem(Item item) {
-		// TODO Auto-generated method stub
-
+	public void updateItemQuantityById(int id, int newQuantity) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				Item item = session.get(Item.class, id);
+				if (item != null) {
+					item.setQuantity(newQuantity);
+					session.persist(item);
+					session.getTransaction().commit();
+				} else {
+					throw new IllegalArgumentException("Item not found with ID: " + id);
+				}
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
 	}
 
 	@Override
@@ -85,15 +101,6 @@ public class ItemControllerImpl implements ItemController {
 				throw e; // Re-throw the exception to propagate it up the call stack
 			}
 		}
-	}
-
-	@Override
-	public void recalculateItemQuantity(int itemId, int soldQuantity) {
-		Item item = getItemById(itemId);
-		int oldQuantity = item.getQuantity();
-		int newQuantity = oldQuantity - soldQuantity;
-		item.setQuantity(newQuantity);
-		// updateItem(item); vedi come viene gestito l'aggiornamento nel package view
 	}
 
 	@Override

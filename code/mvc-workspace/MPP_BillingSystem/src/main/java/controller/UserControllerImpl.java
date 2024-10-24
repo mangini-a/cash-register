@@ -5,17 +5,20 @@ import java.util.List;
 import org.hibernate.Session;
 
 import model.User;
+import model.UserRole;
 import utils.HibernateSessionFactory;
 
 public class UserControllerImpl implements UserController {
-	
-	private static UserControllerImpl singleInstance = null;
-	
+
+	// Private constructor to prevent instantiation
+	private UserControllerImpl() {}
+
+	private static class SingletonHelper {
+		private static final UserControllerImpl singleInstance = new UserControllerImpl();
+	}
+
 	public static UserControllerImpl getInstance() {
-		if (singleInstance == null) {
-			singleInstance = new UserControllerImpl();
-		}
-		return singleInstance;
+		return SingletonHelper.singleInstance;
 	}
 
 	@Override
@@ -50,7 +53,7 @@ public class UserControllerImpl implements UserController {
 	@Override
 	public void updateUser(User user) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -83,5 +86,15 @@ public class UserControllerImpl implements UserController {
 				throw e; // Re-throw the exception to propagate it up the call stack
 			}
 		}
+	}
+
+	@Override
+	public boolean isUserManager(User user) {
+		return user.getRole().equals(UserRole.MANAGER);
+	}
+
+	@Override
+	public String getUserPassword(User user) {
+		return user.getPassword();
 	}
 }

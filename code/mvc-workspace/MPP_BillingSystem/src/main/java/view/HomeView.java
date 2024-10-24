@@ -2,6 +2,7 @@ package view;
 
 import java.awt.*;
 import javax.swing.*;
+
 import controller.UserController;
 import controller.UserControllerImpl;
 import model.User;
@@ -51,15 +52,11 @@ public class HomeView extends JFrame {
 		// Make the "Cash Register" screen not accessible
 		JButton btnCashRegister = new JButton("Cash Register");
 		btnCashRegister.setEnabled(false);
-		btnCashRegister.addActionListener(e -> JOptionPane.showMessageDialog(null,
-				"You must sign in to access this screen!", "Access denied", JOptionPane.WARNING_MESSAGE));
 		contentPane.add(btnCashRegister);
 
 		// Make the "Management" screen not accessible
 		JButton btnManagement = new JButton("Management");
 		btnManagement.setEnabled(false);
-		btnManagement.addActionListener(e -> JOptionPane.showMessageDialog(null,
-				"You must sign in to access this screen!", "Access denied", JOptionPane.WARNING_MESSAGE));
 		contentPane.add(btnManagement);
 	}
 
@@ -67,9 +64,7 @@ public class HomeView extends JFrame {
 		// Make the "Login" screen not accessible
 		JButton btnLogin = (JButton) contentPane.getComponent(0);
 		btnLogin.setEnabled(false);
-		btnLogin.addActionListener(e -> JOptionPane.showMessageDialog(null,
-				"You have already gone through the authentication process!", "Access denied", JOptionPane.WARNING_MESSAGE));
-		
+
 		// Make the "Cash Register" screen accessible
 		JButton btnCashRegister = (JButton) contentPane.getComponent(1);
 		btnCashRegister.setEnabled(true);
@@ -85,15 +80,10 @@ public class HomeView extends JFrame {
 		boolean isManager = userController.isUserManager(user);
 		btnManagement.setEnabled(isManager);
 		btnManagement.addActionListener(e -> {
-			if (isManager) {
-				dispose();
-				SwingUtilities.invokeLater(() -> {
-					new ManagementView(user).display();
-				});
-			} else {
-				JOptionPane.showMessageDialog(null, "You must be a manager to access this screen!", "Access denied",
-						JOptionPane.WARNING_MESSAGE);
-			}
+			dispose();
+			SwingUtilities.invokeLater(() -> {
+				new ManagementView(user).display();
+			});
 		});
 	}
 

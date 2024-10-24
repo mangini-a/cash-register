@@ -12,17 +12,17 @@ public class ManagementView extends JFrame {
 
 	public ManagementView(User user) {
 		// Configure the frame
-        setTitle("Management Screen");
+        setTitle("Management");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainTabbedPane = new JTabbedPane();
 
+        // Create and add the inventory tab
+        JTabbedPane inventoryTabbedPane = createInventoryTabbedPane(user);
+        mainTabbedPane.addTab("Inventory", inventoryTabbedPane);
+        
         // Create and add the user tab
-        JTabbedPane userTabbedPane = createUserTabbedPane(user);
-        mainTabbedPane.addTab("Users", userTabbedPane);
-
-        // Create and add the item tab
-        JTabbedPane itemTabbedPane = createItemTabbedPane(user);
-        mainTabbedPane.addTab("Items", itemTabbedPane);
+        JTabbedPane staffTabbedPane = createStaffTabbedPane(user);
+        mainTabbedPane.addTab("Staff", staffTabbedPane);
 
         // Create and add the accounting tab
         JTabbedPane accountingTabbedPane = createAccountingTabbedPane(user);
@@ -46,7 +46,7 @@ public class ManagementView extends JFrame {
         add(mainPanel);
 	}
 	
-	private JTabbedPane createUserTabbedPane(User user) {
+	private JTabbedPane createStaffTabbedPane(User user) {
 		JTabbedPane userTabbedPane = new JTabbedPane();
 
         // User View Panel
@@ -64,7 +64,7 @@ public class ManagementView extends JFrame {
         return userTabbedPane;
 	}
 	
-	private JTabbedPane createItemTabbedPane(User user) {
+	private JTabbedPane createInventoryTabbedPane(User user) {
 		JTabbedPane itemTabbedPane = new JTabbedPane();
 
         // Item View Panel

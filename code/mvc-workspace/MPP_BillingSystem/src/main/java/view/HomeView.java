@@ -91,7 +91,7 @@ public class HomeView extends JFrame {
 		btnCashRegister.addActionListener(e -> {
 			dispose();
 			SwingUtilities.invokeLater(() -> {
-				new InvoiceView(user).display();
+				new CashRegisterView(user).display();
 			});
 		});
 

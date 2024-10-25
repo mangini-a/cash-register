@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import model.Item;
+import model.ItemCategory;
 
 public interface ItemController {
 
@@ -44,4 +45,12 @@ public interface ItemController {
 	Set<Integer> showOneToQuantity(Item item);
 	
 	void updateItemQuantityById(int id, int newQuantity);
+
+	String getItemName(Item selectedItem);
+
+	int getItemQuantity(Item selectedItem);
+
+	double getItemUnitPrice(Item selectedItem);
+
+	ItemCategory getItemCategory(Item selectedItem);
 }

@@ -7,6 +7,7 @@ import java.util.Set;
 import org.hibernate.Session;
 
 import model.Item;
+import model.ItemCategory;
 import utils.HibernateSessionFactory;
 
 public class ItemControllerImpl implements ItemController {
@@ -111,5 +112,25 @@ public class ItemControllerImpl implements ItemController {
 			qtys.add(i);
 		}
 		return qtys;
+	}
+
+	@Override
+	public String getItemName(Item selectedItem) {
+		return selectedItem.getName();
+	}
+
+	@Override
+	public int getItemQuantity(Item selectedItem) {
+		return selectedItem.getQuantity();
+	}
+
+	@Override
+	public double getItemUnitPrice(Item selectedItem) {
+		return selectedItem.getUnitPrice();
+	}
+
+	@Override
+	public ItemCategory getItemCategory(Item selectedItem) {
+		return selectedItem.getCategory();
 	}
 }

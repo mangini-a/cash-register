@@ -16,15 +16,15 @@ public class ManagementView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainTabbedPane = new JTabbedPane();
 
-        // Create and add the inventory tab
-        JTabbedPane inventoryTabbedPane = createInventoryTabbedPane(user);
-        mainTabbedPane.addTab("Inventory", inventoryTabbedPane);
+        // Create and add the "Stock" tab
+        JTabbedPane stockTabbedPane = createStockTabbedPane(user);
+        mainTabbedPane.addTab("Stock", stockTabbedPane);
         
-        // Create and add the user tab
+        // Create and add the "Staff" tab
         JTabbedPane staffTabbedPane = createStaffTabbedPane(user);
         mainTabbedPane.addTab("Staff", staffTabbedPane);
 
-        // Create and add the accounting tab
+        // Create and add the "Accounting" tab
         JTabbedPane accountingTabbedPane = createAccountingTabbedPane(user);
         mainTabbedPane.addTab("Accounting", accountingTabbedPane);
 
@@ -46,52 +46,52 @@ public class ManagementView extends JFrame {
         add(mainPanel);
 	}
 	
+	private JTabbedPane createStockTabbedPane(User user) {
+		JTabbedPane stockTabbedPane = new JTabbedPane();
+		
+		// Create and add the "Item View" tab
+		JPanel itemViewPanel = new JPanel();
+		itemViewPanel.add(new JLabel("Item View Panel"));
+		// Add more components as needed
+		stockTabbedPane.addTab("Item View", itemViewPanel);
+		
+		// Create and add the "Product Details" tab
+		JPanel productDetailsPanel = new JPanel();
+		productDetailsPanel.add(new JLabel("Product Details Panel"));
+		// Add more components as needed
+		stockTabbedPane.addTab("Product Details", productDetailsPanel);
+		
+		return stockTabbedPane;
+	}
+	
 	private JTabbedPane createStaffTabbedPane(User user) {
-		JTabbedPane userTabbedPane = new JTabbedPane();
+		JTabbedPane staffTabbedPane = new JTabbedPane();
 
-        // User View Panel
+		// Create and add the "User View" tab
         JPanel userViewPanel = new JPanel();
         userViewPanel.add(new JLabel("User  View Panel"));
         // Add more components as needed
-        userTabbedPane.addTab("User  View", userViewPanel);
+        staffTabbedPane.addTab("User  View", userViewPanel);
 
-        // Customer View Panel
+        // Create and add the "Customer View" tab
         JPanel customerViewPanel = new JPanel();
         customerViewPanel.add(new JLabel("Customer View Panel"));
         // Add more components as needed
-        userTabbedPane.addTab("Customer View", customerViewPanel);
+        staffTabbedPane.addTab("Customer View", customerViewPanel);
 
-        return userTabbedPane;
+        return staffTabbedPane;
 	}
 	
-	private JTabbedPane createInventoryTabbedPane(User user) {
-		JTabbedPane itemTabbedPane = new JTabbedPane();
-
-        // Item View Panel
-        JPanel itemViewPanel = new JPanel();
-        itemViewPanel.add(new JLabel("Item View Panel"));
-        // Add more components as needed
-        itemTabbedPane.addTab("Item View", itemViewPanel);
-
-        // Product Details Panel
-        JPanel productDetailsPanel = new JPanel();
-        productDetailsPanel.add(new JLabel("Product Details Panel"));
-        // Add more components as needed
-        itemTabbedPane.addTab("Product Details", productDetailsPanel);
-
-        return itemTabbedPane;
-	}
-
 	private JTabbedPane createAccountingTabbedPane(User user) {
 		JTabbedPane accountingTabbedPane = new JTabbedPane();
 
-        // Accounting View Panel
+		// Create and add the "Accounting View" tab
         JPanel accountingViewPanel = new JPanel();
         accountingViewPanel.add(new JLabel("Accounting View Panel"));
         // Add more components as needed
         accountingTabbedPane.addTab("Accounting View", accountingViewPanel);
 
-        // Reports View Panel
+        // Create and add the "Reports View" tab
         JPanel reportsViewPanel = new JPanel();
         reportsViewPanel.add(new JLabel("Reports View Panel"));
         // Add more components as needed

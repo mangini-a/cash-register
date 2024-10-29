@@ -51,5 +51,5 @@ public interface UserController {
 	 * @param user the user
 	 * @return the user's password
 	 */
-	String getUserPassword(User user);
+	String getPassword(User user);
 }

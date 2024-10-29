@@ -94,7 +94,7 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public String getUserPassword(User user) {
+	public String getPassword(User user) {
 		return user.getPassword();
 	}
 }

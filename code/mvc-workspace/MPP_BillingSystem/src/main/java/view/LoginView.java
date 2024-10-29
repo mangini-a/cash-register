@@ -85,7 +85,7 @@ public class LoginView extends JFrame {
 						if (userId == inputUserId) {
 							isIdPresent = true;
 							User user = userController.getUserById(userId);
-							String userPassword = userController.getUserPassword(user);
+							String userPassword = userController.getPassword(user);
 							if (userPassword.equals(inputUserPassword)) {
 								dispose();
 								SwingUtilities.invokeLater(() -> {

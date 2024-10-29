@@ -2,7 +2,11 @@ package view;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import controller.UserController;
@@ -13,6 +17,10 @@ import model.User;
 public class HomeView extends JFrame {
 
 	private JPanel contentPane;
+	
+	// Define color constants
+    private static final Color BUTTON_COLOR = new Color(70, 130, 180); // Steel blue
+	
 	private UserController userController;
 
 	/**
@@ -63,9 +71,18 @@ public class HomeView extends JFrame {
 
 	private JButton createButton(String text, String iconPath, ActionListener actionListener) {
 		JButton button = new JButton(text);
+		button.setBackground(BUTTON_COLOR);
+		button.setForeground(Color.WHITE);
         if (iconPath != null && !iconPath.isEmpty()) {
-        	ImageIcon icon = new ImageIcon(iconPath);
-            button.setIcon(icon);
+            try {
+                BufferedImage originalImage = ImageIO.read(new File(iconPath));
+                Image scaledImage = originalImage.getScaledInstance(150, 100, Image.SCALE_SMOOTH);
+                ImageIcon icon = new ImageIcon(scaledImage);
+                button.setIcon(icon);
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Icons cannot be loaded!", "Input error", JOptionPane.ERROR_MESSAGE);
+            }
         }
         button.setHorizontalTextPosition(SwingConstants.CENTER); // Center the text horizontally
         button.setVerticalTextPosition(SwingConstants.BOTTOM); // Position the text below the icon

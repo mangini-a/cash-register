@@ -1,9 +1,13 @@
 package application;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.hibernate.Session;
 
+import com.formdev.flatlaf.FlatIntelliJLaf;
 import jakarta.persistence.TypedQuery;
 import utils.HibernateSessionFactory;
 import view.HomeView;
@@ -12,11 +16,16 @@ public class DesktopApp {
 
 	public static void main(String[] args) {
 		try {
+			UIManager.setLookAndFeel(new FlatIntelliJLaf());
 			warmUpDatabase();
-			// Start the application by displaying the HomeView
-			new HomeView().display();
+			SwingUtilities.invokeLater(() -> {
+				new HomeView().display();
+			});
+		} catch (UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "An error occurred while starting the application: " + e.getMessage(),
+					"Error", JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
-			// Log the exception and show an error message
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "An error occurred while starting the application: " + e.getMessage(),
 					"Error", JOptionPane.ERROR_MESSAGE);

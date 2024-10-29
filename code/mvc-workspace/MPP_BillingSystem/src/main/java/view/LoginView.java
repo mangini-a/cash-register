@@ -15,6 +15,9 @@ public class LoginView extends JFrame {
 
 	private JPanel contentPane;
 	
+	// Define color constants
+    private static final Color BUTTON_COLOR = new Color(70, 130, 180); // Steel blue
+	
 	// Components used for the "User ID" field
 	private JPanel panelUserId;
 	private JLabel lblUserId;
@@ -50,7 +53,6 @@ public class LoginView extends JFrame {
 		lblUserId.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		panelUserId.add(lblUserId);
 		fieldUserId = new JTextField();
-		fieldUserId.setBorder(new EmptyBorder(10, 10, 10, 10));
 		panelUserId.add(fieldUserId);
 		contentPane.add(panelUserId);
 
@@ -60,7 +62,6 @@ public class LoginView extends JFrame {
 		lblUserPassword.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		panelUserPassword.add(lblUserPassword);
 		fieldUserPassword = new JPasswordField();
-		fieldUserPassword.setBorder(new EmptyBorder(10, 10, 10, 10));
 		panelUserPassword.add(fieldUserPassword);
 		contentPane.add(panelUserPassword);
 		
@@ -80,6 +81,8 @@ public class LoginView extends JFrame {
         
         // Define the "Sign In" button
 		btnSignIn = new JButton("Sign In");
+		btnSignIn.setBackground(BUTTON_COLOR);
+		btnSignIn.setForeground(Color.WHITE);
 		btnSignIn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {

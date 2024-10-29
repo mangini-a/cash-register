@@ -14,42 +14,58 @@ import model.User;
 public class LoginView extends JFrame {
 
 	private JPanel contentPane;
+	
+	// Components used for the "User ID" field
+	private JPanel panelUserId;
+	private JLabel lblUserId;
+	private JTextField fieldUserId;
+	
+	// Components used for the "Password" field
+	private JPanel panelUserPassword;
+	private JLabel lblUserPassword;
+	private JPasswordField fieldUserPassword;
+	
+	// Component used for the "Show Password" option
+	private JCheckBox chckbxShowPassword;
+	
+	// Component used for the "Sign In" button
+	private JButton btnSignIn;
+	
 	private UserController userController;
 
 	public LoginView() {
 		// Configure the frame
 		setTitle("Login Procedure");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		contentPane = new JPanel(new GridLayout(6, 1));
+		contentPane = new JPanel(new GridLayout(4, 1, 0, 10)); // 4 rows, 1 column, 10px vertical gap
+		contentPane.setBorder(new EmptyBorder(20, 20, 20, 20)); // 20px border on all sides
 		setContentPane(contentPane);
         
 		// Get the only instance of UserController to perform user-related operations on the DB
 		userController = UserControllerImpl.getInstance();
 
 		// Define the "User ID" field to be filled in
-		JPanel panelUserId = new JPanel(new GridLayout(2, 1));
-		JLabel lblUserId = new JLabel("User ID *");
-		lblUserId.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		panelUserId = new JPanel(new GridLayout(2, 1));
+		lblUserId = new JLabel("User ID *");
+		lblUserId.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		panelUserId.add(lblUserId);
-		JTextField fieldUserId = new JTextField();
-		fieldUserId.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		fieldUserId = new JTextField();
 		fieldUserId.setBorder(new EmptyBorder(10, 10, 10, 10));
 		panelUserId.add(fieldUserId);
 		contentPane.add(panelUserId);
 
 		// Define the "Password" field to be filled in
-		JPanel panelUserPassword = new JPanel(new GridLayout(2, 1));
-		JLabel lblUserPassword = new JLabel("Password *");
-		lblUserPassword.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		panelUserPassword = new JPanel(new GridLayout(2, 1));
+		lblUserPassword = new JLabel("Password *");
+		lblUserPassword.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		panelUserPassword.add(lblUserPassword);
-		JPasswordField fieldUserPassword = new JPasswordField();
-		fieldUserPassword.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		fieldUserPassword = new JPasswordField();
 		fieldUserPassword.setBorder(new EmptyBorder(10, 10, 10, 10));
 		panelUserPassword.add(fieldUserPassword);
 		contentPane.add(panelUserPassword);
 		
 		// Define the "Show Password" option
-		JCheckBox chckbxShowPassword = new JCheckBox("Show Password");
+		chckbxShowPassword = new JCheckBox("Show Password");
 		chckbxShowPassword.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -62,11 +78,8 @@ public class LoginView extends JFrame {
 		});
 		contentPane.add(chckbxShowPassword);
         
-        // Define the "SIGN IN" button
-		JButton btnSignIn = new JButton("SIGN IN");
-		btnSignIn.setFont(new Font("Tahoma", Font.BOLD, 18));
-		btnSignIn.setBackground(Color.decode("#206C88"));
-		btnSignIn.setForeground(Color.WHITE);
+        // Define the "Sign In" button
+		btnSignIn = new JButton("Sign In");
 		btnSignIn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -106,6 +119,7 @@ public class LoginView extends JFrame {
 				}
 			}
 		});
+		btnSignIn.setFont(new Font("Tahoma", Font.BOLD, 14));
 		contentPane.add(btnSignIn);
 	}
 

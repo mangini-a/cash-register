@@ -1,10 +1,6 @@
 package view;
 
-import java.awt.Font;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 
@@ -29,65 +25,31 @@ public class AddItemPanel extends JPanel {
 	private ItemController itemController;
 
 	public AddItemPanel() {
-		setLayout(null);
 		itemController = ItemControllerImpl.getInstance();
 		initializeComponents();
+		setLayout(new GridLayout(5, 2, 10, 10));
+        layoutComponents();
 	}
 
 	private void initializeComponents() {
-		// Create the "Name" mandatory field
 		lblName = new JLabel("Name *");
-		lblName.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblName.setBounds(12, 83, 100, 22);
-		add(lblName);
-		textFieldName = new JTextField();
-		textFieldName.setFont(new Font("Tahoma", Font.BOLD, 14));
-		textFieldName.setColumns(10);
-		textFieldName.setBounds(134, 83, 116, 22);
-		add(textFieldName);
+		textFieldName = new JTextField(10);
 
-		// Create the "Quantity" mandatory field
 		lblQuantity = new JLabel("Quantity *");
-		lblQuantity.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblQuantity.setBounds(12, 118, 100, 16);
-		add(lblQuantity);
 		textFieldQuantity = createQuantityFormattedTextField();
-		textFieldQuantity.setFont(new Font("Tahoma", Font.BOLD, 14));
-		textFieldQuantity.setColumns(10);
-        textFieldQuantity.setBounds(134, 118, 116, 22);
-        add(textFieldQuantity);
 
-		// Create the "Unit Price" mandatory field
 		lblUnitPrice = new JLabel("Unit Price *");
-		lblUnitPrice.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblUnitPrice.setBounds(12, 153, 100, 16);
-		add(lblUnitPrice);
 		textFieldUnitPrice = createUnitPriceFormattedTextField();
-		textFieldUnitPrice.setFont(new Font("Tahoma", Font.BOLD, 14));
-		textFieldUnitPrice.setColumns(10);
-		textFieldUnitPrice.setBounds(134, 153, 116, 22);
-		add(textFieldUnitPrice);
 
-		// Create the "Category" mandatory field
 		lblCategory = new JLabel("Category *");
-		lblCategory.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblCategory.setBounds(12, 54, 100, 16);
-		add(lblCategory);
 		comboBoxCategory = new JComboBox<>(ItemCategory.values());
-		comboBoxCategory.setFont(new Font("Tahoma", Font.BOLD, 14));
-		comboBoxCategory.setBounds(134, 48, 116, 25);
-		add(comboBoxCategory);
 
-		// Create the "Add" button
 		btnAdd = new JButton("Add");
 		btnAdd.addActionListener(e -> addItem(textFieldName, textFieldQuantity, textFieldUnitPrice, comboBoxCategory));
-		btnAdd.setFont(new Font("Tahoma", Font.BOLD, 14));
-		btnAdd.setBounds(395, 48, 97, 25);
-		add(btnAdd);
 	}
 
 	private JFormattedTextField createQuantityFormattedTextField() {
-		NumberFormatter intFormatter = new NumberFormatter(NumberFormat.getInstance());
+		NumberFormatter intFormatter = new NumberFormatter();
         intFormatter.setValueClass(Integer.class);
         intFormatter.setMinimum(0);
         intFormatter.setMaximum(Integer.MAX_VALUE);
@@ -96,11 +58,8 @@ public class AddItemPanel extends JPanel {
 	}
 	
 	private JFormattedTextField createUnitPriceFormattedTextField() {
-		NumberFormat format = DecimalFormat.getInstance();
-		format.setMinimumFractionDigits(2);
-		format.setMaximumFractionDigits(2);
-		format.setRoundingMode(RoundingMode.HALF_UP);
-		NumberFormatter decFormatter = new NumberFormatter(format);
+		NumberFormatter decFormatter = new NumberFormatter();
+		decFormatter.setValueClass(Double.class);
 		decFormatter.setMinimum(0.0);
 		decFormatter.setMaximum(Double.MAX_VALUE);
 		decFormatter.setAllowsInvalid(false);
@@ -133,5 +92,24 @@ public class AddItemPanel extends JPanel {
 		textFieldQuantity.setText("0");
 		textFieldUnitPrice.setText("0.00");
 		comboBoxCategory.setSelectedIndex(0);
+	}
+	
+	private void layoutComponents() {
+		// Add labels and fields to the panel
+        add(lblName);
+        add(textFieldName);
+        
+        add(lblQuantity);
+        add(textFieldQuantity);
+        
+        add(lblUnitPrice);
+        add(textFieldUnitPrice);
+        
+        add(lblCategory);
+        add(comboBoxCategory);
+        
+        // Add an empty cell for spacing
+        add(new JLabel()); // Empty label for spacing
+        add(btnAdd); // Add button in the last row
 	}
 }

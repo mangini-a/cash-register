@@ -9,11 +9,19 @@ import model.ItemCategory;
 public interface ItemController {
 
 	/**
-	 * Adds a new item to the database.
+	 * Adds a new item or updates an existing item in the database.
 	 *
-	 * @param item the item to be added to the database
+	 * @param item the item to be added or updated
 	 */
 	void addItem(Item item);
+	
+	/**
+	 * Checks for the existence of an item ID in the database.
+	 *
+	 * @param id the item's identifier
+	 * @return true, if successful
+	 */
+	boolean itemIdExists(Integer id);
 	
 	/**
 	 * Gets an item from the database by its id.
@@ -46,11 +54,11 @@ public interface ItemController {
 	
 	void updateItemQuantityById(int id, int newQuantity);
 
-	String getItemName(Item selectedItem);
+	String getName(Item selectedItem);
 
-	int getItemQuantity(Item selectedItem);
+	int getQuantity(Item selectedItem);
 
-	double getItemUnitPrice(Item selectedItem);
+	double getUnitPrice(Item selectedItem);
 
-	ItemCategory getItemCategory(Item selectedItem);
+	ItemCategory getCategory(Item selectedItem);
 }

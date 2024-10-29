@@ -28,13 +28,36 @@ public class ItemControllerImpl implements ItemController {
 		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			try {
-				session.persist(item);
+				if (!itemIdExists(item.getId())) {
+	                // If the item ID does not exist, it's a new item, so persist it
+	                session.persist(item);
+	            } else {
+	                // If the item ID exists, it's an already existing item, so merge it
+	                session.merge(item);
+	            }
 				session.getTransaction().commit();
 			} catch (Exception e) {
 				session.getTransaction().rollback();
 				throw e; // Re-throw the exception to propagate it up the call stack
 			}
 		}
+	}
+	
+	@Override
+	public boolean itemIdExists(Integer id) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+	        session.beginTransaction();
+	        try {
+	            Long count = session.createQuery("select count(i.id) from Item i where i.id = :id", Long.class)
+	                                .setParameter("id", id)
+	                                .uniqueResult();
+	            session.getTransaction().commit();
+	            return count != null && count > 0; // Return true if the count is greater than 0
+	        } catch (Exception e) {
+	            session.getTransaction().rollback();
+	            throw e; // Re-throw the exception to propagate it up the call stack
+	        }
+	    }
 	}
 
 	@Override
@@ -115,22 +138,22 @@ public class ItemControllerImpl implements ItemController {
 	}
 
 	@Override
-	public String getItemName(Item selectedItem) {
+	public String getName(Item selectedItem) {
 		return selectedItem.getName();
 	}
 
 	@Override
-	public int getItemQuantity(Item selectedItem) {
+	public int getQuantity(Item selectedItem) {
 		return selectedItem.getQuantity();
 	}
 
 	@Override
-	public double getItemUnitPrice(Item selectedItem) {
+	public double getUnitPrice(Item selectedItem) {
 		return selectedItem.getUnitPrice();
 	}
 
 	@Override
-	public ItemCategory getItemCategory(Item selectedItem) {
+	public ItemCategory getCategory(Item selectedItem) {
 		return selectedItem.getCategory();
 	}
 }

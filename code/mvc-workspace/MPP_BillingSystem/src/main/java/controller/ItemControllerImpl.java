@@ -7,12 +7,14 @@ import java.util.Set;
 import org.hibernate.Session;
 
 import model.Item;
+import model.ItemCategory;
 import utils.HibernateSessionFactory;
 
 public class ItemControllerImpl implements ItemController {
 
 	// Private constructor to prevent instantiation
-	private ItemControllerImpl() {}
+	private ItemControllerImpl() {
+	}
 
 	private static class SingletonHelper {
 		private static final ItemControllerImpl singleInstance = new ItemControllerImpl();
@@ -23,12 +25,36 @@ public class ItemControllerImpl implements ItemController {
 	}
 
 	@Override
-	public void addItem(Item item) {
+	public void addItem(String name, int quantity, double unitPrice, ItemCategory category) {
 		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			try {
+				Item item = new Item(name, quantity, unitPrice, category);
 				session.persist(item);
 				session.getTransaction().commit();
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
+	}
+	
+	@Override
+	public void updateItem(int id, String newName, int newQuantity, double newUnitPrice, ItemCategory newCategory) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				Item item = session.get(Item.class, id);
+				if (item != null) {
+					item.setName(newName);
+					item.setQuantity(newQuantity);
+					item.setUnitPrice(newUnitPrice);
+					item.setCategory(newCategory);
+					session.persist(item);
+					session.getTransaction().commit();
+				} else {
+					throw new IllegalArgumentException("Item not found with ID: " + id);
+				}
 			} catch (Exception e) {
 				session.getTransaction().rollback();
 				throw e; // Re-throw the exception to propagate it up the call stack
@@ -111,5 +137,25 @@ public class ItemControllerImpl implements ItemController {
 			qtys.add(i);
 		}
 		return qtys;
+	}
+
+	@Override
+	public String getName(Item selectedItem) {
+		return selectedItem.getName();
+	}
+
+	@Override
+	public int getQuantity(Item selectedItem) {
+		return selectedItem.getQuantity();
+	}
+
+	@Override
+	public double getUnitPrice(Item selectedItem) {
+		return selectedItem.getUnitPrice();
+	}
+
+	@Override
+	public ItemCategory getCategory(Item selectedItem) {
+		return selectedItem.getCategory();
 	}
 }

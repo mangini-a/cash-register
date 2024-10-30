@@ -25,12 +25,11 @@
 			<version>5.11.3</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- Mockito -->
+		<!-- FlatLaf -->
 		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>5.14.2</version>
-			<scope>test</scope>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf</artifactId>
+			<version>3.5</version>
 		</dependency>
 	</dependencies>
 </project>

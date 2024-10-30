@@ -4,15 +4,30 @@ import java.util.List;
 import java.util.Set;
 
 import model.Item;
+import model.ItemCategory;
 
 public interface ItemController {
 
 	/**
 	 * Adds a new item to the database.
 	 *
-	 * @param item the item to be added to the database
+	 * @param name the item's name
+	 * @param quantity the item's quantity
+	 * @param unitPrice the item's unit price
+	 * @param category the item's category
 	 */
-	void addItem(Item item);
+	void addItem(String name, int quantity, double unitPrice, ItemCategory category);
+	
+	/**
+	 * Updates an existing item in the database.
+	 *
+	 * @param id the item's id
+	 * @param newName the item's new name
+	 * @param newQuantity the item's new quantity
+	 * @param newUnitPrice the item's new unit price
+	 * @param newCategory the item's new category
+	 */
+	void updateItem(int id, String newName, int newQuantity, double newUnitPrice, ItemCategory newCategory);
 	
 	/**
 	 * Gets an item from the database by its id.
@@ -44,4 +59,12 @@ public interface ItemController {
 	Set<Integer> showOneToQuantity(Item item);
 	
 	void updateItemQuantityById(int id, int newQuantity);
+
+	String getName(Item selectedItem);
+
+	int getQuantity(Item selectedItem);
+
+	double getUnitPrice(Item selectedItem);
+
+	ItemCategory getCategory(Item selectedItem);
 }

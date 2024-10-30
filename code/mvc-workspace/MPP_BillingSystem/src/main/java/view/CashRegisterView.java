@@ -19,7 +19,7 @@ import controller.StockExceededException;
 import model.User;
 
 @SuppressWarnings("serial")
-public class InvoiceView extends JFrame {
+public class CashRegisterView extends JFrame {
 
 	private JPanel contentPane;
 	
@@ -51,7 +51,7 @@ public class InvoiceView extends JFrame {
 	
 	private Set<Integer> quantityModel;
 
-	public InvoiceView(User user) {
+	public CashRegisterView(User user) {
 		// Setup the frame
 		setTitle("Cash Register");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

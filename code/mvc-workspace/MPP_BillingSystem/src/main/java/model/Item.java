@@ -1,7 +1,5 @@
 package model;
 
-import java.time.LocalDate;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -19,12 +17,6 @@ public class Item {
 	@Column(name = "unit_price")
 	private double unitPrice;
 	
-	@Column(name = "received_date")
-	private LocalDate receivedDate;
-	
-	@Column(name = "expiration_date")
-	private LocalDate expirationDate;
-	
 	@Enumerated(EnumType.STRING)
 	private ItemCategory category;
 
@@ -32,14 +24,11 @@ public class Item {
 		super();
 	}
 
-	public Item(String name, int quantity, double unitPrice, LocalDate receivedDate, LocalDate expirationDate,
-			ItemCategory category) {
+	public Item(String name, int quantity, double unitPrice, ItemCategory category) {
 		super();
 		this.name = name;
 		this.quantity = quantity;
 		this.unitPrice = unitPrice;
-		this.receivedDate = receivedDate;
-		this.expirationDate = expirationDate;
 		this.category = category;
 	}
 
@@ -75,34 +64,11 @@ public class Item {
 		this.unitPrice = unitPrice;
 	}
 
-	public LocalDate getReceivedDate() {
-		return receivedDate;
-	}
-
-	public void setReceivedDate(LocalDate receivedDate) {
-		this.receivedDate = receivedDate;
-	}
-
-	public LocalDate getExpirationDate() {
-		return expirationDate;
-	}
-
-	public void setExpirationDate(LocalDate expirationDate) {
-		this.expirationDate = expirationDate;
-	}
-
 	public ItemCategory getCategory() {
 		return category;
 	}
 
 	public void setCategory(ItemCategory category) {
 		this.category = category;
-	}
-
-	@Override
-	public String toString() {
-		return "Item [id=" + id + ", name=" + name + ", quantity=" + quantity + ", unitPrice=" + unitPrice
-				+ ", receivedDate=" + receivedDate + ", expirationDate=" + expirationDate + ", category=" + category
-				+ "]";
 	}
 }

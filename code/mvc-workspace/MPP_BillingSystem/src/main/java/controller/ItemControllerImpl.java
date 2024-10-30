@@ -13,7 +13,8 @@ import utils.HibernateSessionFactory;
 public class ItemControllerImpl implements ItemController {
 
 	// Private constructor to prevent instantiation
-	private ItemControllerImpl() {}
+	private ItemControllerImpl() {
+	}
 
 	private static class SingletonHelper {
 		private static final ItemControllerImpl singleInstance = new ItemControllerImpl();
@@ -24,17 +25,12 @@ public class ItemControllerImpl implements ItemController {
 	}
 
 	@Override
-	public void addItem(Item item) {
+	public void addItem(String name, int quantity, double unitPrice, ItemCategory category) {
 		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			try {
-				if (!itemIdExists(item.getId())) {
-	                // If the item ID does not exist, it's a new item, so persist it
-	                session.persist(item);
-	            } else {
-	                // If the item ID exists, it's an already existing item, so merge it
-	                session.merge(item);
-	            }
+				Item item = new Item(name, quantity, unitPrice, category);
+				session.persist(item);
 				session.getTransaction().commit();
 			} catch (Exception e) {
 				session.getTransaction().rollback();
@@ -44,20 +40,26 @@ public class ItemControllerImpl implements ItemController {
 	}
 	
 	@Override
-	public boolean itemIdExists(Integer id) {
+	public void updateItem(int id, String newName, int newQuantity, double newUnitPrice, ItemCategory newCategory) {
 		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
-	        session.beginTransaction();
-	        try {
-	            Long count = session.createQuery("select count(i.id) from Item i where i.id = :id", Long.class)
-	                                .setParameter("id", id)
-	                                .uniqueResult();
-	            session.getTransaction().commit();
-	            return count != null && count > 0; // Return true if the count is greater than 0
-	        } catch (Exception e) {
-	            session.getTransaction().rollback();
-	            throw e; // Re-throw the exception to propagate it up the call stack
-	        }
-	    }
+			session.beginTransaction();
+			try {
+				Item item = session.get(Item.class, id);
+				if (item != null) {
+					item.setName(newName);
+					item.setQuantity(newQuantity);
+					item.setUnitPrice(newUnitPrice);
+					item.setCategory(newCategory);
+					session.persist(item);
+					session.getTransaction().commit();
+				} else {
+					throw new IllegalArgumentException("Item not found with ID: " + id);
+				}
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
 	}
 
 	@Override

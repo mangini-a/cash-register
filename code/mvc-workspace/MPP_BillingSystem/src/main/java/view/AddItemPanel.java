@@ -12,14 +12,30 @@ import model.ItemCategory;
 @SuppressWarnings("serial")
 public class AddItemPanel extends JPanel {
 	
+	// Define color constants
+    private static final Color BUTTON_COLOR = new Color(70, 130, 180); // Steel blue
+    
+    // Components used for the "Name" field
+ 	private JPanel panelName;
 	private JLabel lblName;
 	private JTextField textFieldName;
+	
+	// Components used for the "Quantity" field
+	private JPanel panelQuantity;
 	private JLabel lblQuantity;
 	private JFormattedTextField textFieldQuantity;
+	
+	// Components used for the "Unit Price" field
+	private JPanel panelUnitPrice;
 	private JLabel lblUnitPrice;
 	private JFormattedTextField textFieldUnitPrice;
+	
+	// Components used for the "Category" field
+	private JPanel panelCategory;
 	private JLabel lblCategory;
 	private JComboBox<ItemCategory> comboBoxCategory;
+	
+	// Component used for the "Add" button
 	private JButton btnAdd;
 
 	private ItemController itemController;
@@ -76,8 +92,7 @@ public class AddItemPanel extends JPanel {
             if (!name.isBlank() && (!quantityString.isBlank() && (!unitPriceString.isBlank()))) {
             	int quantity = Integer.parseInt(quantityString);
             	double unitPrice = Double.parseDouble(unitPriceString);
-                Item item = new Item(name, quantity, unitPrice, null, null, category);
-                itemController.addItem(item);
+                itemController.addItem(name, quantity, unitPrice, category);
                 clearFields();
             } else {
             	JOptionPane.showMessageDialog(null, "Fields with * must be filled to complete the operation!", "Missing information", JOptionPane.WARNING_MESSAGE);

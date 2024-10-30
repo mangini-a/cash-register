@@ -26,6 +26,7 @@ public class ModifyItemPanel extends JPanel {
 	private JFormattedTextField textFieldUnitPrice;
 	private JLabel lblCategory;
 	private JComboBox<ItemCategory> comboBoxCategory;
+	private JButton btnRemove;
 	private JButton btnUpdate;
 
 	private ItemController itemController;
@@ -89,6 +90,18 @@ public class ModifyItemPanel extends JPanel {
 		comboBoxCategory.setFont(new Font("Tahoma", Font.BOLD, 14));
 		comboBoxCategory.setBounds(152, 83, 116, 25);
 		add(comboBoxCategory);
+		
+		// Create the "Remove" button
+		btnRemove = new JButton("Remove");
+		btnRemove.addActionListener(e -> {
+			itemController.removeItemById((Integer) comboBoxItemId.getSelectedItem());
+			populateComboBoxItemId(comboBoxItemId);
+			fillItemFields(comboBoxItemId, textFieldName, textFieldQuantity, textFieldUnitPrice, comboBoxCategory);
+			JOptionPane.showMessageDialog(null, "Item removed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+		});
+		btnRemove.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnRemove.setBounds(495, 148, 97, 25);
+		add(btnRemove);
 
 		// Create the "Update" button
 		btnUpdate = new JButton("Update");
@@ -135,8 +148,7 @@ public class ModifyItemPanel extends JPanel {
 			if (!name.isBlank() && !quantityString.isBlank() && !unitPriceString.isBlank()) {
 				int quantity = Integer.parseInt(quantityString);
             	double unitPrice = Double.parseDouble(unitPriceString);
-            	Item item = new Item(name, quantity, unitPrice, null, null, category);
-                itemController.addItem(item);
+                itemController.updateItem((Integer) comboBoxItemId.getSelectedItem(), name, quantity, unitPrice, category);
                 clearFields();
 				JOptionPane.showMessageDialog(null, "Item updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
 			} else {

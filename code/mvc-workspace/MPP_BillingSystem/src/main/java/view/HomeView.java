@@ -2,11 +2,6 @@ package view;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import controller.UserController;
@@ -17,10 +12,7 @@ import model.User;
 public class HomeView extends JFrame {
 
 	private JPanel contentPane;
-	
-	// Define color constants
-    private static final Color BUTTON_COLOR = new Color(70, 130, 180); // Steel blue
-	
+
 	private UserController userController;
 
 	/**
@@ -49,8 +41,8 @@ public class HomeView extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
 
-		// Make the "Login" screen accessible
-		JButton btnLogin = createButton("Login", "", e -> {
+		// Create the "Login" button and make the corresponding screen accessible
+		JButton btnLogin = createButton("Login", "Log into the system with your credentials", e -> {
 			dispose();
 			SwingUtilities.invokeLater(() -> {
 				new LoginView().display();
@@ -58,43 +50,41 @@ public class HomeView extends JFrame {
 		});
 		contentPane.add(btnLogin);
 
-		// Make the "Cash Register" screen not accessible
-		JButton btnCashRegister = createButton("Cash Register", "", null);
+		// Create the "Cash Register" button and make the corresponding screen not accessible
+		JButton btnCashRegister = createButton("Cash Register", "Record a new receipt", null);
 		btnCashRegister.setEnabled(false);
 		contentPane.add(btnCashRegister);
 
-		// Make the "Management" screen not accessible
-		JButton btnManagement = createButton("Management", "", null);
+		// Create the "Management" button and make the corresponding screen not accessible
+		JButton btnManagement = createButton("Management", "Manage stock, staff and accounting", null);
 		btnManagement.setEnabled(false);
 		contentPane.add(btnManagement);
 	}
 
-	private JButton createButton(String text, String iconPath, ActionListener actionListener) {
+	private JButton createButton(String text, String toolTipText, ActionListener actionListener) {
 		JButton button = new JButton(text);
-		button.setBackground(BUTTON_COLOR);
+
+		// Set the background color based on the button text
+		if (text.equals("Cash Register")) {
+			button.setBackground(new Color(0, 123, 255)); // bright blue
+		} else if (text.equals("Management")) {
+			button.setBackground(new Color(40, 167, 69)); // green
+		} else if (text.equals("Login")) {
+			button.setBackground(new Color(52, 58, 64)); // dark gray
+		}
+
 		button.setForeground(Color.WHITE);
-        if (iconPath != null && !iconPath.isEmpty()) {
-            try {
-                BufferedImage originalImage = ImageIO.read(new File(iconPath));
-                Image scaledImage = originalImage.getScaledInstance(150, 100, Image.SCALE_SMOOTH);
-                ImageIcon icon = new ImageIcon(scaledImage);
-                button.setIcon(icon);
-            } catch (IOException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Icons cannot be loaded!", "Input error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        button.setHorizontalTextPosition(SwingConstants.CENTER); // Center the text horizontally
-        button.setVerticalTextPosition(SwingConstants.BOTTOM); // Position the text below the icon
-        button.setPreferredSize(new Dimension(200, 150));
-        button.setFont(new Font("Tahoma", Font.BOLD, 16));
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createRaisedBevelBorder());
-        button.setToolTipText(text);
-        if (actionListener != null) {
-            button.addActionListener(actionListener);
-        }
-        return button;
+		button.setToolTipText(toolTipText);
+		button.setPreferredSize(new Dimension(200, 150));
+		button.setFont(new Font("Tahoma", Font.BOLD, 16));
+		button.setFocusPainted(false);
+		button.setBorder(BorderFactory.createRaisedBevelBorder());
+
+		if (actionListener != null) {
+			button.addActionListener(actionListener);
+		}
+
+		return button;
 	}
 
 	private void setupUserButtons(User user) {

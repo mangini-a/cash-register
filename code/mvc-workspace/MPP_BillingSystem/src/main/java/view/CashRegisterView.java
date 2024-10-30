@@ -8,6 +8,7 @@ import java.awt.print.PrinterJob;
 import java.util.Set;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
@@ -91,7 +92,7 @@ public class CashRegisterView extends JFrame {
 		lblTotalPrice = new JLabel("Total price:");
 		textFieldTotalPrice = new JTextField();
 		textFieldTotalPrice.setEditable(false);
-		btnCheckout = new JButton("Checkout");
+		btnCheckout = new JButton("Checkout", new ImageIcon("../img/checkout.png"));
 		btnCheckout.addActionListener(e -> checkout(user));
 		
 		// Create a panel for the Checkout section
@@ -103,9 +104,9 @@ public class CashRegisterView extends JFrame {
 		panelCheckout.add(btnCheckout);
 		
 		// Instantiate the Other Actions section's components
-		btnClearCart = new JButton("Clear Cart");
+		btnClearCart = new JButton("Clear Cart", new ImageIcon("../img/clear-cart.png"));
 		btnClearCart.addActionListener(e -> clearCart());
-		btnPrintCart = new JButton("Print Cart");
+		btnPrintCart = new JButton("Print Cart", new ImageIcon("../img/print-cart.png"));
 		btnPrintCart.addActionListener(e -> printCart());
 		
 		// Create a panel for the Other Actions section
@@ -119,11 +120,13 @@ public class CashRegisterView extends JFrame {
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.add(panelItemSelection);
+        centerPanel.add(Box.createVerticalStrut(10)); // Add a 10px vertical space
         centerPanel.add(panelCheckout);
+        centerPanel.add(Box.createVerticalStrut(10)); // Add a 10px vertical space
         centerPanel.add(panelOtherButtons);
 		
 		// Add the "Back to Home" button separately
-		btnBackToHome = new JButton("Back to Home");
+		btnBackToHome = new JButton("Back to Home", new ImageIcon("../img/back-to-home.png"));
 		btnBackToHome.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -135,11 +138,11 @@ public class CashRegisterView extends JFrame {
 		});
 		
 		// Set up the content pane with the BorderLayout
-        contentPane = new JPanel();
-        contentPane.setLayout(new BorderLayout());
+        contentPane = new JPanel(new BorderLayout());
         contentPane.add(scrollPane, BorderLayout.WEST);
         contentPane.add(centerPanel, BorderLayout.CENTER);
         contentPane.add(btnBackToHome, BorderLayout.SOUTH);
+        contentPane.setBorder(new EmptyBorder(20, 20, 20, 20)); // 20px border on all sides
 
         setContentPane(contentPane);
 	}

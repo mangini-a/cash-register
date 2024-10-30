@@ -66,14 +66,13 @@ public class HomeView extends JFrame {
 
 		// Set the background color based on the button text
 		if (text.equals("Cash Register")) {
-			button.setBackground(new Color(0, 123, 255)); // bright blue
+			button.setBackground(new Color(173, 216, 230)); // Light blue
 		} else if (text.equals("Management")) {
-			button.setBackground(new Color(40, 167, 69)); // green
+			button.setBackground(new Color(144, 238, 144)); // Light green
 		} else if (text.equals("Login")) {
-			button.setBackground(new Color(52, 58, 64)); // dark gray
+			button.setBackground(new Color(211, 211, 211)); // Light gray
 		}
 
-		button.setForeground(Color.WHITE);
 		button.setToolTipText(toolTipText);
 		button.setPreferredSize(new Dimension(200, 150));
 		button.setFont(new Font("Tahoma", Font.BOLD, 16));

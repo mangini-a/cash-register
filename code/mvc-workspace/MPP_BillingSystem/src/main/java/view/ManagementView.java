@@ -43,24 +43,31 @@ public class ManagementView extends JFrame {
 	private JTabbedPane createStockTabbedPane(User user) {
 		JTabbedPane stockTabbedPane = new JTabbedPane();
 		stockTabbedPane.addTab("Add a new item", createAddItemPanel(user));
-		stockTabbedPane.addTab("Modify an existing item", createModifyItemPanel(user));
+		stockTabbedPane.addTab("Modify an existing item's features", createModifyItemPanel(user));
 		return stockTabbedPane;
 	}
 	
 	private JPanel createAddItemPanel(User user) {
-		JPanel addItemPanel = new AddItemPanel();
-		return addItemPanel;
+		return new AddItemPanel();
 	}
 	
 	private JPanel createModifyItemPanel(User user) {
-		JPanel modifyItemPanel = new ModifyItemPanel();
-        return modifyItemPanel;
+        return new ModifyItemPanel();
 	}
 
 	private JTabbedPane createStaffTabbedPane(User user) {
 		JTabbedPane staffTabbedPane = new JTabbedPane();
-		// ...
+		staffTabbedPane.addTab("Add a new user", createAddUserPanel());
+		staffTabbedPane.addTab("Modify an existing user's credentials", createModifyUserPanel());
 		return staffTabbedPane;
+	}
+
+	private JPanel createAddUserPanel() {
+		return new AddUserPanel();
+	}
+	
+	private JPanel createModifyUserPanel() {
+		return new ModifyUserPanel();
 	}
 
 	private JTabbedPane createAccountingTabbedPane(User user) {

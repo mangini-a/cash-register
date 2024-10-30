@@ -41,7 +41,7 @@ public class LoginView extends JFrame {
 		setTitle("Login Procedure");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		contentPane = new JPanel(new GridLayout(4, 1, 0, 10)); // 4 rows, 1 column, 10px vertical gap
-		contentPane.setBorder(new EmptyBorder(20, 20, 20, 20)); // 20px border on all sides
+		contentPane.setBorder(new EmptyBorder(15, 15, 15, 15)); // 15px border on all sides
 		setContentPane(contentPane);
         
 		// Get the only instance of UserController to perform user-related operations on the DB

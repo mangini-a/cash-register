@@ -138,11 +138,15 @@ public class CashRegisterView extends JFrame {
 		});
 		
 		// Set up the content pane with the BorderLayout
-        contentPane = new JPanel(new BorderLayout());
+		BorderLayout layout = new BorderLayout();
+		layout.setHgap(10); // Add a 10px horizontal gap between components
+		layout.setVgap(10); // Add a 10px vertical gap between components
+		
+        contentPane = new JPanel(layout);
         contentPane.add(scrollPane, BorderLayout.WEST);
         contentPane.add(centerPanel, BorderLayout.CENTER);
         contentPane.add(btnBackToHome, BorderLayout.SOUTH);
-        contentPane.setBorder(new EmptyBorder(20, 20, 20, 20)); // 20px border on all sides
+        contentPane.setBorder(new EmptyBorder(15, 15, 15, 15)); // 15px border on all sides
 
         setContentPane(contentPane);
 	}

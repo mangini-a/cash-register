@@ -39,7 +39,7 @@ public class HomeView extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		contentPane = new JPanel();
 		setContentPane(contentPane);
-		contentPane.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
+		contentPane.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15));
 
 		// Create the "Login" button and make the corresponding screen accessible
 		JButton btnLogin = createButton("Login", "Log into the system with your credentials", e -> {
@@ -114,7 +114,7 @@ public class HomeView extends JFrame {
 	}
 
 	public void display() {
-		setMinimumSize(new Dimension(680, 190));
+		setMinimumSize(new Dimension(660, 180));
 		setResizable(false);
 		pack();
 		setVisible(true);

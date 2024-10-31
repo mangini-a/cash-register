@@ -1,7 +1,9 @@
 package view;
 
 import java.awt.*;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -141,34 +143,54 @@ public class AddItemPanel extends JPanel {
 	}
 	
 	private JFormattedTextField createQuantityFormattedTextField() {
-		NumberFormatter intFormatter = new NumberFormatter();
+		// Create a NumberFormatter for integers
+        NumberFormat format = NumberFormat.getIntegerInstance();
+		NumberFormatter intFormatter = new NumberFormatter(format);
 		intFormatter.setValueClass(Integer.class);
-		intFormatter.setMinimum(0);
+		intFormatter.setMinimum(1); // Set minimum to 1 for positive integers
 		intFormatter.setMaximum(Integer.MAX_VALUE);
-		intFormatter.setAllowsInvalid(false);
-		return new JFormattedTextField(intFormatter);
+		intFormatter.setAllowsInvalid(false); // Prevent invalid input
+		intFormatter.setCommitsOnValidEdit(true); // Commit on valid edit
+		
+		// Create the JFormattedTextField with the formatter
+		JFormattedTextField quantityField = new JFormattedTextField(intFormatter);
+		quantityField.setValue(1); // Set a default value
+		return quantityField;
 	}
 
 	private JFormattedTextField createUnitPriceFormattedTextField() {
-		NumberFormatter decFormatter = new NumberFormatter();
+		// Create a NumberFormatter for currency (€)
+        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.ITALY);
+		NumberFormatter decFormatter = new NumberFormatter(format);
 		decFormatter.setValueClass(Double.class);
 		decFormatter.setMinimum(0.0);
 		decFormatter.setMaximum(Double.MAX_VALUE);
-		decFormatter.setAllowsInvalid(false);
-		return new JFormattedTextField(decFormatter);
+		decFormatter.setAllowsInvalid(false); // Prevent invalid input
+		decFormatter.setCommitsOnValidEdit(true); // Commit on valid edit
+		
+		// Create the JFormattedTextField with the formatter
+        JFormattedTextField priceField = new JFormattedTextField(decFormatter);
+        priceField.setValue(0.0); // Set a default value
+		return priceField;
 	}
 
 	private void addItem(JTextField textFieldName, JFormattedTextField textFieldQuantity,
 			JFormattedTextField textFieldUnitPrice, JComboBox<ItemCategory> comboBoxCategory) {
 		try {
 			String name = textFieldName.getText();
-			String quantityString = textFieldQuantity.getText();
-			String unitPriceString = textFieldUnitPrice.getText();
+			// Get the quantity as a Number and convert to int
+	        Number quantityNumber = (Number) textFieldQuantity.getValue();
+			//String quantityString = textFieldQuantity.getText();
+	        // Get the unit price as a Number and convert to double
+	        Number unitPriceNumber = (Number) textFieldUnitPrice.getValue();
+			//String unitPriceString = textFieldUnitPrice.getText();
 			ItemCategory category = (ItemCategory) comboBoxCategory.getSelectedItem();
 
-			if (!name.isBlank() && (!quantityString.isBlank() && (!unitPriceString.isBlank()))) {
-				int quantity = Integer.parseInt(quantityString);
-				double unitPrice = Double.parseDouble(unitPriceString);
+			if (!name.isBlank() && quantityNumber != null && unitPriceNumber != null) {
+				int quantity = quantityNumber.intValue(); // Convert to int
+				//int quantity = Integer.parseInt(quantityString);
+				double unitPrice = unitPriceNumber.doubleValue(); // Convert to double
+				//double unitPrice = Double.parseDouble(unitPriceString);
 				itemController.addItem(name, quantity, unitPrice, category);
 			} else {
 				JOptionPane.showMessageDialog(null, "Fields with * must be filled to complete the operation!",
@@ -176,6 +198,8 @@ public class AddItemPanel extends JPanel {
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null, "The new item could not be added!",
+					"Something went wrong", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

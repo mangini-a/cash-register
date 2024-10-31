@@ -24,6 +24,9 @@ public class CashRegisterView extends JFrame {
 
 	private JPanel contentPane;
 	
+	// Define color constants
+	private static final Color BUTTON_COLOR = new Color(173, 216, 230); // Light blue
+	
 	// Components used for the cart composition representation
 	private DefaultTableModel cartTableModel;
 	private JTable cartTable;
@@ -75,7 +78,9 @@ public class CashRegisterView extends JFrame {
 		populateComboBoxItemId(comboBoxItemId);
 		updateComboBoxItemQty(comboBoxItemId, comboBoxItemQty);
 		comboBoxItemId.addActionListener(e -> updateComboBoxItemQty(comboBoxItemId, comboBoxItemQty));
-		btnAddToCart = new JButton("Add to Cart", new ImageIcon("../img/add-to-cart.png"));
+		btnAddToCart = new JButton("Add to Cart");
+		btnAddToCart.setBackground(BUTTON_COLOR);
+		btnAddToCart.setFont(new Font("Tahoma", Font.BOLD, 12));
 		btnAddToCart.addActionListener(e -> addToCart());
 		
 		// Create a panel for the Item Selection section
@@ -92,7 +97,9 @@ public class CashRegisterView extends JFrame {
 		lblTotalPrice = new JLabel("Total price:");
 		textFieldTotalPrice = new JTextField();
 		textFieldTotalPrice.setEditable(false);
-		btnCheckout = new JButton("Checkout", new ImageIcon("../img/checkout.png"));
+		btnCheckout = new JButton("Checkout");
+		btnCheckout.setBackground(BUTTON_COLOR);
+		btnCheckout.setFont(new Font("Tahoma", Font.BOLD, 12));
 		btnCheckout.addActionListener(e -> checkout(user));
 		
 		// Create a panel for the Checkout section
@@ -104,9 +111,13 @@ public class CashRegisterView extends JFrame {
 		panelCheckout.add(btnCheckout);
 		
 		// Instantiate the Other Actions section's components
-		btnClearCart = new JButton("Clear Cart", new ImageIcon("../img/clear-cart.png"));
+		btnClearCart = new JButton("Clear Cart");
+		btnClearCart.setBackground(BUTTON_COLOR);
+		btnClearCart.setFont(new Font("Tahoma", Font.BOLD, 12));
 		btnClearCart.addActionListener(e -> clearCart());
-		btnPrintCart = new JButton("Print Cart", new ImageIcon("../img/print-cart.png"));
+		btnPrintCart = new JButton("Print Cart");
+		btnPrintCart.setBackground(BUTTON_COLOR);
+		btnPrintCart.setFont(new Font("Tahoma", Font.BOLD, 12));
 		btnPrintCart.addActionListener(e -> printCart());
 		
 		// Create a panel for the Other Actions section
@@ -126,7 +137,9 @@ public class CashRegisterView extends JFrame {
         centerPanel.add(panelOtherButtons);
 		
 		// Add the "Back to Home" button separately
-		btnBackToHome = new JButton("Back to Home", new ImageIcon("../img/back-to-home.png"));
+		btnBackToHome = new JButton("Back to Home");
+		btnBackToHome.setBackground(BUTTON_COLOR);
+		btnBackToHome.setFont(new Font("Tahoma", Font.BOLD, 12));
 		btnBackToHome.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {

@@ -8,4 +8,4 @@ Realizzare un applicativo desktop utilizzando ***Hibernate ORM*** e ***Java Swin
 - *Visualizzare lo storico degli scontrini emessi*
 
 ## Relational Database Schema
-![db-schema](https://github.com/user-attachments/assets/7cd3db8a-681b-4649-b815-4c71b5881669)
+![db-schema](https://github.com/user-attachments/assets/bb586e37-889b-4b7c-9419-419cc59f167d)

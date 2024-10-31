@@ -75,7 +75,7 @@ public class HomeView extends JFrame {
 
 		button.setToolTipText(toolTipText);
 		button.setPreferredSize(new Dimension(200, 150));
-		button.setFont(new Font("Tahoma", Font.BOLD, 16));
+		button.setFont(new Font("Segoe UI", Font.BOLD, 18));
 		button.setFocusPainted(false);
 		button.setBorder(BorderFactory.createRaisedBevelBorder());
 

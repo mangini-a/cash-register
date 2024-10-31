@@ -29,7 +29,8 @@ public class LoginView extends JFrame {
 	private JPasswordField fieldUserPassword;
 	
 	// Component used for the "Show Password" option
-	private JCheckBox chckbxShowPassword;
+	private JPanel checkBoxPanel;
+	private JCheckBox checkBoxShowPassword;
 	
 	// Component used for the "Sign In" button
 	private JButton btnSignIn;
@@ -50,39 +51,44 @@ public class LoginView extends JFrame {
 		// Define the "User ID" field to be filled in
 		panelUserId = new JPanel(new GridLayout(2, 1));
 		lblUserId = new JLabel("User ID *");
-		lblUserId.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblUserId.setFont(new Font("Segoe UI", Font.BOLD, 14));
 		panelUserId.add(lblUserId);
 		fieldUserId = new JTextField();
+		fieldUserId.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		panelUserId.add(fieldUserId);
 		contentPane.add(panelUserId);
 
 		// Define the "Password" field to be filled in
 		panelUserPassword = new JPanel(new GridLayout(2, 1));
 		lblUserPassword = new JLabel("Password *");
-		lblUserPassword.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblUserPassword.setFont(new Font("Segoe UI", Font.BOLD, 14));
 		panelUserPassword.add(lblUserPassword);
 		fieldUserPassword = new JPasswordField();
+		fieldUserPassword.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		panelUserPassword.add(fieldUserPassword);
 		contentPane.add(panelUserPassword);
 		
 		// Define the "Show Password" option
-		chckbxShowPassword = new JCheckBox("Show Password");
-		chckbxShowPassword.addActionListener(new ActionListener() {
+		checkBoxPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		checkBoxShowPassword = new JCheckBox("Show Password");
+		checkBoxShowPassword.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		checkBoxShowPassword.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (chckbxShowPassword.isSelected()) {
+				if (checkBoxShowPassword.isSelected()) {
 					fieldUserPassword.setEchoChar((char) 0);
 				} else {
 					fieldUserPassword.setEchoChar('*');
 				}
 			}
 		});
-		contentPane.add(chckbxShowPassword);
+		checkBoxPanel.add(checkBoxShowPassword);
+		contentPane.add(checkBoxPanel);
         
         // Define the "Sign In" button
 		btnSignIn = new JButton("Sign In");
 		btnSignIn.setBackground(BUTTON_COLOR);
-		btnSignIn.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnSignIn.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		btnSignIn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -126,7 +132,7 @@ public class LoginView extends JFrame {
 	}
 
 	public void display() {
-		setSize(500, 500);
+		setSize(315, 420);
 		setResizable(false);
 		setVisible(true);
 		setLocationRelativeTo(null);

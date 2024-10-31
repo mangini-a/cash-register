@@ -7,10 +7,18 @@ import javax.swing.border.EmptyBorder;
 import model.User;
 
 @SuppressWarnings("serial")
-public class ManagementView extends JFrame {
+public class ManagementView extends JFrame implements PanelChangeListener {
 
 	private JTabbedPane mainTabbedPane;
 	private JPanel mainPanel;
+	
+	// Components of the first tab (Stock)
+	private AddItemPanel addItemPanel;
+    private ModifyItemPanel modifyItemPanel;
+    
+    // Components of the second tab (Staff)
+    private AddUserPanel addUserPanel;
+    private ModifyUserPanel modifyUserPanel;
 	
 	private JPanel btnBackToHomePanel;
 	private JButton btnBackToHome;
@@ -52,36 +60,24 @@ public class ManagementView extends JFrame {
 
 	private JTabbedPane createStockTabbedPane(User user) {
 		JTabbedPane stockTabbedPane = new JTabbedPane();
-		stockTabbedPane.addTab("Add a new item", createAddItemPanel(user));
-		stockTabbedPane.addTab("Modify an existing item's details", createModifyItemPanel(user));
-		return stockTabbedPane;
-	}
-	
-	private JPanel createAddItemPanel(User user) {
-		JPanel addItemPanel = new AddItemPanel();
+		addItemPanel = new AddItemPanel(this);
 		addItemPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
-		return addItemPanel;
-	}
-	
-	private JPanel createModifyItemPanel(User user) {
-		JPanel modifyItemPanel = new ModifyItemPanel(); 
-        modifyItemPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
-        return modifyItemPanel;
+		stockTabbedPane.addTab("Add a new item", addItemPanel);
+		modifyItemPanel = new ModifyItemPanel(this); 
+		modifyItemPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
+		stockTabbedPane.addTab("Modify an existing item's details", modifyItemPanel);
+		return stockTabbedPane;
 	}
 
 	private JTabbedPane createStaffTabbedPane(User user) {
 		JTabbedPane staffTabbedPane = new JTabbedPane();
-		staffTabbedPane.addTab("Add a new user", createAddUserPanel());
-		staffTabbedPane.addTab("Modify an existing user's credentials", createModifyUserPanel());
+		addUserPanel = new AddUserPanel();
+		addUserPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
+		staffTabbedPane.addTab("Add a new user", addUserPanel);
+		modifyUserPanel = new ModifyUserPanel();
+		modifyUserPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
+		staffTabbedPane.addTab("Modify an existing user's credentials", modifyUserPanel);
 		return staffTabbedPane;
-	}
-
-	private JPanel createAddUserPanel() {
-		return new AddUserPanel();
-	}
-	
-	private JPanel createModifyUserPanel() {
-		return new ModifyUserPanel();
 	}
 
 	private JTabbedPane createAccountingTabbedPane(User user) {
@@ -90,6 +86,14 @@ public class ManagementView extends JFrame {
 		return accountingTabbedPane;
 	}
 
+	@Override
+	public void onItemChanged() {
+		// Refresh both panels when an item is added, updated, or removed
+        addItemPanel.populateItemTable();
+        modifyItemPanel.populateItemTable();
+        modifyItemPanel.populateComboBoxItemId(modifyItemPanel.getComboBoxItemId());
+	}
+	
 	public void display() {
 		setMinimumSize(new Dimension(800, 600));
 		setResizable(true);

@@ -31,8 +31,11 @@ public class AddItemPanel extends JPanel {
 	private JComboBox<ItemCategory> comboBoxCategory;
 
 	private ItemController itemController;
+	
+	private PanelChangeListener listener;
 
-	public AddItemPanel() {
+	public AddItemPanel(PanelChangeListener listener) {
+		this.listener = listener;
 		itemController = ItemControllerImpl.getInstance();
 		initializeComponents();
 		BorderLayout layout = new BorderLayout();
@@ -109,7 +112,6 @@ public class AddItemPanel extends JPanel {
 		btnAdd.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		btnAdd.addActionListener(e -> {
 			addItem(fieldName, fieldQuantity, fieldUnitPrice, comboBoxCategory);
-			populateItemTable();
 			clearFields();
 		});	
 		panelButton.add(btnAdd);
@@ -178,20 +180,17 @@ public class AddItemPanel extends JPanel {
 			JFormattedTextField textFieldUnitPrice, JComboBox<ItemCategory> comboBoxCategory) {
 		try {
 			String name = textFieldName.getText();
-			// Get the quantity as a Number and convert to int
 	        Number quantityNumber = (Number) textFieldQuantity.getValue();
-			//String quantityString = textFieldQuantity.getText();
-	        // Get the unit price as a Number and convert to double
 	        Number unitPriceNumber = (Number) textFieldUnitPrice.getValue();
-			//String unitPriceString = textFieldUnitPrice.getText();
 			ItemCategory category = (ItemCategory) comboBoxCategory.getSelectedItem();
 
 			if (!name.isBlank() && quantityNumber != null && unitPriceNumber != null) {
 				int quantity = quantityNumber.intValue(); // Convert to int
-				//int quantity = Integer.parseInt(quantityString);
 				double unitPrice = unitPriceNumber.doubleValue(); // Convert to double
-				//double unitPrice = Double.parseDouble(unitPriceString);
 				itemController.addItem(name, quantity, unitPrice, category);
+				listener.onItemChanged(); // Notify the listener
+				JOptionPane.showMessageDialog(null, "Item added successfully!", "Success",
+						JOptionPane.INFORMATION_MESSAGE);
 			} else {
 				JOptionPane.showMessageDialog(null, "Fields with * must be filled to complete the operation!",
 						"Missing information", JOptionPane.WARNING_MESSAGE);
@@ -206,7 +205,7 @@ public class AddItemPanel extends JPanel {
 	/**
 	 * Orchestrates the data fetching and table population.
 	 */
-	private void populateItemTable() {
+	void populateItemTable() {
 		// Fetch data from the database using Hibernate
 		List<Item> items = itemController.getAllItems(); 
 		
@@ -228,8 +227,8 @@ public class AddItemPanel extends JPanel {
 	
 	private void clearFields() {
 		fieldName.setText("");
-		fieldQuantity.setText("0");
-		fieldUnitPrice.setText("0.00");
+		fieldQuantity.setValue(1); // Reset to default value
+		fieldUnitPrice.setValue(0.0); // Reset to default value
 		comboBoxCategory.setSelectedIndex(0);
 	}
 }

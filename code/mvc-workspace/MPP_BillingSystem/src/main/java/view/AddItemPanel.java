@@ -6,29 +6,28 @@ import javax.swing.text.NumberFormatter;
 
 import controller.ItemController;
 import controller.ItemControllerImpl;
-import model.Item;
 import model.ItemCategory;
 
 @SuppressWarnings("serial")
 public class AddItemPanel extends JPanel {
 	
 	// Define color constants
-    private static final Color BUTTON_COLOR = new Color(70, 130, 180); // Steel blue
+    private static final Color BUTTON_COLOR = new Color(144, 238, 144); // Light green
     
     // Components used for the "Name" field
  	private JPanel panelName;
 	private JLabel lblName;
-	private JTextField textFieldName;
+	private JTextField fieldName;
 	
 	// Components used for the "Quantity" field
 	private JPanel panelQuantity;
 	private JLabel lblQuantity;
-	private JFormattedTextField textFieldQuantity;
+	private JFormattedTextField fieldQuantity;
 	
 	// Components used for the "Unit Price" field
 	private JPanel panelUnitPrice;
 	private JLabel lblUnitPrice;
-	private JFormattedTextField textFieldUnitPrice;
+	private JFormattedTextField fieldUnitPrice;
 	
 	// Components used for the "Category" field
 	private JPanel panelCategory;
@@ -43,25 +42,52 @@ public class AddItemPanel extends JPanel {
 	public AddItemPanel() {
 		itemController = ItemControllerImpl.getInstance();
 		initializeComponents();
-		setLayout(new GridLayout(5, 2, 10, 10));
+		setLayout(new GridLayout(5, 1, 0, 10)); // 5 rows, 1 column, 10px vertical gap
         layoutComponents();
 	}
 
 	private void initializeComponents() {
+		// Define the "Name" field to be filled in
+		panelName = new JPanel(new GridLayout(2, 1));
 		lblName = new JLabel("Name *");
-		textFieldName = new JTextField(10);
-
+		lblName.setFont(new Font("Segoe UI", Font.BOLD, 14));
+		panelName.add(lblName);
+		fieldName = new JTextField();
+		fieldName.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		panelName.add(fieldName);
+		
+		// Define the "Quantity" field to be filled in
+		panelQuantity = new JPanel(new GridLayout(2, 1));
 		lblQuantity = new JLabel("Quantity *");
-		textFieldQuantity = createQuantityFormattedTextField();
+		lblQuantity.setFont(new Font("Segoe UI", Font.BOLD, 14));
+		panelQuantity.add(lblQuantity);
+		fieldQuantity = createQuantityFormattedTextField();
+		fieldQuantity.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		panelQuantity.add(fieldQuantity);
 
+		// Define the "Unit Price" field to be filled in
+		panelUnitPrice = new JPanel(new GridLayout(2, 1));
 		lblUnitPrice = new JLabel("Unit Price *");
-		textFieldUnitPrice = createUnitPriceFormattedTextField();
+		lblUnitPrice.setFont(new Font("Segoe UI", Font.BOLD, 14));
+		panelUnitPrice.add(lblUnitPrice);
+		fieldUnitPrice = createUnitPriceFormattedTextField();
+		fieldUnitPrice.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		panelUnitPrice.add(fieldUnitPrice);
 
+		// Define the "Category" field to be selected
+		panelCategory = new JPanel(new GridLayout(2, 1));
 		lblCategory = new JLabel("Category *");
+		lblCategory.setFont(new Font("Segoe UI", Font.BOLD, 14));
+		panelCategory.add(lblCategory);
 		comboBoxCategory = new JComboBox<>(ItemCategory.values());
+		comboBoxCategory.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		panelCategory.add(comboBoxCategory);
 
+		// Define the "Add" button
 		btnAdd = new JButton("Add");
-		btnAdd.addActionListener(e -> addItem(textFieldName, textFieldQuantity, textFieldUnitPrice, comboBoxCategory));
+		btnAdd.setBackground(BUTTON_COLOR);
+		btnAdd.setFont(new Font("Segoe UI", Font.BOLD, 16));
+		btnAdd.addActionListener(e -> addItem(fieldName, fieldQuantity, fieldUnitPrice, comboBoxCategory));
 	}
 
 	private JFormattedTextField createQuantityFormattedTextField() {
@@ -103,28 +129,17 @@ public class AddItemPanel extends JPanel {
 	}
 
 	private void clearFields() {
-		textFieldName.setText("");
-		textFieldQuantity.setText("0");
-		textFieldUnitPrice.setText("0.00");
+		fieldName.setText("");
+		fieldQuantity.setText("0");
+		fieldUnitPrice.setText("0.00");
 		comboBoxCategory.setSelectedIndex(0);
 	}
 	
 	private void layoutComponents() {
-		// Add labels and fields to the panel
-        add(lblName);
-        add(textFieldName);
-        
-        add(lblQuantity);
-        add(textFieldQuantity);
-        
-        add(lblUnitPrice);
-        add(textFieldUnitPrice);
-        
-        add(lblCategory);
-        add(comboBoxCategory);
-        
-        // Add an empty cell for spacing
-        add(new JLabel()); // Empty label for spacing
-        add(btnAdd); // Add button in the last row
+        add(panelName);
+        add(panelQuantity);
+        add(panelUnitPrice);
+        add(panelCategory);
+        add(btnAdd);
 	}
 }

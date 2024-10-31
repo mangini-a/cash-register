@@ -2,40 +2,50 @@ package view;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
 import model.User;
 
 @SuppressWarnings("serial")
 public class ManagementView extends JFrame {
 
-	private JPanel mainPanel;
 	private JTabbedPane mainTabbedPane;
-	private JButton backButton;
+	private JPanel mainPanel;
+	
+	private JPanel btnBackToHomePanel;
+	private JButton btnBackToHome;
 
 	public ManagementView(User user) {
 		// Configure the frame
 		setTitle("Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		// Create the main tabbed pane
+		// Create the main tabbed pane, to which three tabs are added
 		mainTabbedPane = new JTabbedPane();
 		mainTabbedPane.addTab("Stock", createStockTabbedPane(user));
 		mainTabbedPane.addTab("Staff", createStaffTabbedPane(user));
-		mainTabbedPane.addTab("Accounting", createAccountingTabbedPane(user));
+		mainTabbedPane.addTab("Accounting", createAccountingTabbedPane(user)); 
 
-		// Create the "Back to Home" button
-		backButton = new JButton("Back to Home");
-		backButton.setToolTipText("Go back to the home page");
-		backButton.addActionListener(e -> {
+		// Add the "Back to Home" button
+		btnBackToHomePanel = new JPanel();
+		btnBackToHome = new JButton("Back to Home");
+		btnBackToHome.setToolTipText("Go back to the home page");
+		btnBackToHome.addActionListener(e -> {
 			dispose();
 			SwingUtilities.invokeLater(() -> {
 				new HomeView(user).display();
 			});
 		});
+		btnBackToHomePanel.add(btnBackToHome);
+		btnBackToHomePanel.setBorder(new EmptyBorder(0, 15, 15, 15));
 
-		// Layout setup
-		mainPanel = new JPanel(new BorderLayout());
+		// Set up the content pane with the BorderLayout
+		BorderLayout layout = new BorderLayout();
+		layout.setVgap(10); // Add a 10px vertical gap between components
+				
+		mainPanel = new JPanel(layout);
 		mainPanel.add(mainTabbedPane, BorderLayout.CENTER);
-		mainPanel.add(backButton, BorderLayout.SOUTH);
+		mainPanel.add(btnBackToHomePanel, BorderLayout.SOUTH);
 
 		add(mainPanel);
 	}
@@ -43,12 +53,14 @@ public class ManagementView extends JFrame {
 	private JTabbedPane createStockTabbedPane(User user) {
 		JTabbedPane stockTabbedPane = new JTabbedPane();
 		stockTabbedPane.addTab("Add a new item", createAddItemPanel(user));
-		stockTabbedPane.addTab("Modify an existing item's features", createModifyItemPanel(user));
+		stockTabbedPane.addTab("Modify an existing item's details", createModifyItemPanel(user));
 		return stockTabbedPane;
 	}
 	
 	private JPanel createAddItemPanel(User user) {
-		return new AddItemPanel();
+		JPanel addItemPanel = new AddItemPanel();
+		addItemPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
+		return addItemPanel;
 	}
 	
 	private JPanel createModifyItemPanel(User user) {

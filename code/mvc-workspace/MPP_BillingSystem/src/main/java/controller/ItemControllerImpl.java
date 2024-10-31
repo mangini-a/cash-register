@@ -61,6 +61,21 @@ public class ItemControllerImpl implements ItemController {
 			}
 		}
 	}
+	
+	@Override
+	public List<Item> getAllItems() {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+            try {
+                List<Item> items = session.createQuery("FROM Item", Item.class).list();
+                session.getTransaction().commit();
+                return items;
+            } catch (Exception e) {
+            	session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+            }
+        }
+	}
 
 	@Override
 	public Item getItemById(int id) {

@@ -1,13 +1,14 @@
 package view;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.List;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.NumberFormatter;
 
 import controller.ItemController;
@@ -21,6 +22,14 @@ public class ModifyItemPanel extends JPanel {
 	// Define color constants
 	private static final Color REMOVE_BUTTON_COLOR = new Color(255, 105, 97); // Light red
 	private static final Color UPDATE_BUTTON_COLOR = new Color(144, 238, 144); // Light green
+
+	// Components used for the existing items representation
+	private DefaultTableModel itemTableModel;
+	private JTable itemTable;
+	private JScrollPane scrollPane;
+
+	// Panel that will be placed next to the table
+	private JPanel centerPanel;
 
 	// Components used for the "Item ID" field
 	private JPanel panelItemId;
@@ -47,7 +56,7 @@ public class ModifyItemPanel extends JPanel {
 	private JLabel lblCategory;
 	private JComboBox<ItemCategory> comboBoxCategory;
 
-	// Components used for the "Remove" and "Update" buttons
+	// Components used for the "Remove" and "Update" buttons section
 	private JPanel panelButtons;
 	private JButton btnRemove, btnUpdate;
 
@@ -56,11 +65,26 @@ public class ModifyItemPanel extends JPanel {
 	public ModifyItemPanel() {
 		itemController = ItemControllerImpl.getInstance();
 		initializeComponents();
-		setLayout(new GridLayout(6, 1, 0, 10)); // 6 rows, 1 column, 10px vertical gap
+		BorderLayout layout = new BorderLayout();
+		layout.setHgap(10); // Add a 10px horizontal gap between components
+		setLayout(layout);
 		layoutComponents();
 	}
 
 	private void initializeComponents() {
+		// Define the existing items table's model
+		itemTableModel = new DefaultTableModel(new Object[] { "ID", "Name", "Quantity", "Unit Price", "Category" }, 0);
+		itemTable = new JTable(itemTableModel);
+		itemTable.setFillsViewportHeight(true);
+
+		// Center the content of all columns
+		for (int i = 0; i < itemTable.getColumnCount(); i++) {
+			itemTable.getColumnModel().getColumn(i).setCellRenderer(new CenterAlignedTableCellRenderer());
+		}
+
+		itemTable.setRowHeight(20); // Set row height for vertical "centering"
+		scrollPane = new JScrollPane(itemTable);
+
 		// Define the "Item ID" field to be selected
 		panelItemId = new JPanel(new GridLayout(2, 1));
 		lblItemId = new JLabel("Item ID *");
@@ -108,14 +132,16 @@ public class ModifyItemPanel extends JPanel {
 		comboBoxCategory.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		panelCategory.add(comboBoxCategory);
 
-		// Define the "Remove" and the "Update" buttons
+		// Define the "Remove" and the "Update" buttons section
 		panelButtons = new JPanel(new GridLayout(1, 2, 10, 0));
 		btnRemove = new JButton("Remove");
 		btnRemove.setBackground(REMOVE_BUTTON_COLOR);
 		btnRemove.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		btnRemove.addActionListener(e -> {
 			itemController.removeItemById((Integer) comboBoxItemId.getSelectedItem());
+			populateItemTable();
 			populateComboBoxItemId(comboBoxItemId);
+			clearFields();
 			fillItemFields(comboBoxItemId, fieldName, fieldQuantity, fieldUnitPrice, comboBoxCategory);
 			JOptionPane.showMessageDialog(null, "Item removed successfully!", "Success",
 					JOptionPane.INFORMATION_MESSAGE);
@@ -124,14 +150,66 @@ public class ModifyItemPanel extends JPanel {
 		btnUpdate = new JButton("Update");
 		btnUpdate.setBackground(UPDATE_BUTTON_COLOR);
 		btnUpdate.setFont(new Font("Segoe UI", Font.BOLD, 16));
-		btnUpdate.addActionListener(e -> updateItem(fieldName, fieldQuantity, fieldUnitPrice, comboBoxCategory));
+		btnUpdate.addActionListener(e -> {
+			updateItem(fieldName, fieldQuantity, fieldUnitPrice, comboBoxCategory);
+			populateItemTable();
+			populateComboBoxItemId(comboBoxItemId);
+			clearFields();
+			fillItemFields(comboBoxItemId, fieldName, fieldQuantity, fieldUnitPrice, comboBoxCategory);
+		});
 		panelButtons.add(btnUpdate);
 
+		// Create a panel to hold the six previous sections vertically
+		centerPanel = new JPanel();
+		centerPanel.setLayout(new GridLayout(6, 1, 0, 10)); // 6 rows, 1 column, 10px vertical gap
+		centerPanel.add(panelItemId);
+		centerPanel.add(panelName);
+		centerPanel.add(panelQuantity);
+		centerPanel.add(panelUnitPrice);
+		centerPanel.add(panelCategory);
+		centerPanel.add(panelButtons);
+
+		// Add all the items in the database to the corresponding table
+		populateItemTable();
+		
 		// Add all the ids in the database to the corresponding JComboBox
 		populateComboBoxItemId(comboBoxItemId);
 
 		// Populate the fields for the initially selected item
 		fillItemFields(comboBoxItemId, fieldName, fieldQuantity, fieldUnitPrice, comboBoxCategory);
+	}
+	
+	/**
+	 * Orchestrates the data fetching and table population.
+	 */
+	private void populateItemTable() {
+		// Fetch data from the database using Hibernate
+        List<Item> items = itemController.getAllItems(); 
+
+        // Clear any existing data in the table model
+        itemTableModel.setRowCount(0); 
+
+        // Populate the table model with fetched items
+        for (Item item : items) {
+            Object[] rowData = {
+                    item.getId(),
+                    item.getName(),
+                    item.getQuantity(),
+                    item.getUnitPrice(),
+                    item.getCategory()
+            };
+            itemTableModel.addRow(rowData);
+        }
+	}
+
+	public class CenterAlignedTableCellRenderer extends DefaultTableCellRenderer {
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			setHorizontalAlignment(SwingConstants.CENTER); // Center align the text
+			return cell;
+		}
 	}
 
 	private JFormattedTextField createQuantityFormattedTextField() {
@@ -168,7 +246,6 @@ public class ModifyItemPanel extends JPanel {
 				double unitPrice = Double.parseDouble(unitPriceString);
 				itemController.updateItem((Integer) comboBoxItemId.getSelectedItem(), name, quantity, unitPrice,
 						category);
-				clearFields();
 				JOptionPane.showMessageDialog(null, "Item updated successfully!", "Success",
 						JOptionPane.INFORMATION_MESSAGE);
 			} else {
@@ -189,12 +266,8 @@ public class ModifyItemPanel extends JPanel {
 	}
 
 	private void layoutComponents() {
-		add(panelItemId);
-		add(panelName);
-        add(panelQuantity);
-        add(panelUnitPrice);
-        add(panelCategory);
-        add(panelButtons);
+		add(scrollPane, BorderLayout.WEST);
+		add(centerPanel, BorderLayout.CENTER);
 	}
 
 	private void populateComboBoxItemId(JComboBox<Integer> comboBoxItemId) {

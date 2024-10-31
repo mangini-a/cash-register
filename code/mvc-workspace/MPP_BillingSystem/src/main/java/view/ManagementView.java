@@ -64,7 +64,9 @@ public class ManagementView extends JFrame {
 	}
 	
 	private JPanel createModifyItemPanel(User user) {
-        return new ModifyItemPanel();
+		JPanel modifyItemPanel = new ModifyItemPanel(); 
+        modifyItemPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
+        return modifyItemPanel;
 	}
 
 	private JTabbedPane createStaffTabbedPane(User user) {

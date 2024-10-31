@@ -12,7 +12,7 @@ import model.ItemCategory;
 public class AddItemPanel extends JPanel {
 	
 	// Define color constants
-    private static final Color BUTTON_COLOR = new Color(144, 238, 144); // Light green
+    private static final Color ADD_BUTTON_COLOR = new Color(144, 238, 144); // Light green
     
     // Components used for the "Name" field
  	private JPanel panelName;
@@ -85,7 +85,7 @@ public class AddItemPanel extends JPanel {
 
 		// Define the "Add" button
 		btnAdd = new JButton("Add");
-		btnAdd.setBackground(BUTTON_COLOR);
+		btnAdd.setBackground(ADD_BUTTON_COLOR);
 		btnAdd.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		btnAdd.addActionListener(e -> addItem(fieldName, fieldQuantity, fieldUnitPrice, comboBoxCategory));
 	}

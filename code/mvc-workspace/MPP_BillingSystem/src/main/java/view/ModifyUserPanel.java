@@ -196,13 +196,14 @@ public class ModifyUserPanel extends JPanel {
 	void populateUserTable() {
 		// Fetch data from the database using Hibernate
 		List<User> users = userController.getAllUsers();
-
+		
 		// Clear any existing data in the table model
 		userTableModel.setRowCount(0);
 
 		// Populate the table model with fetched items
 		for (User user : users) {
-			if (!userController.isManager(user) || userController.getId(user) == loggedManagerId) {
+			// Include cashiers and the logged manager
+			if (userController.getId(user) == loggedManagerId || !userController.isManager(user)) {
 				Object[] rowData = { userController.getId(user), userController.getFirstName(user), userController.getLastName(user), userController.getRole(user) };
 				userTableModel.addRow(rowData);
 			}
@@ -222,10 +223,11 @@ public class ModifyUserPanel extends JPanel {
 
 		// Fetch data from the database using Hibernate
 		List<User> users = userController.getAllUsers();
-
+		
 		// Populate the JComboBox with fetched items
 		for (User user : users) {
-			if (!userController.isManager(user) || userController.getId(user) == loggedManagerId) {
+			// Include cashiers and the logged manager
+			if (userController.getId(user) == loggedManagerId || !userController.isManager(user)) {
 				model.addElement(userController.getId(user));
 			}
 		}

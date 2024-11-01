@@ -50,7 +50,7 @@ public class ModifyUserPanel extends JPanel {
 	}
 
 	private void initializeComponents() {
-		// Define the existing users table's model
+		// Define the users table's model
 		userTableModel = new DefaultTableModel(new Object[] { "ID", "Name", "Surname", "Role" }, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -91,6 +91,8 @@ public class ModifyUserPanel extends JPanel {
 		panelFirstName.add(lblFirstName);
 		fieldFirstName = new JTextField();
 		fieldFirstName.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		fieldFirstName.setEditable(false);
+		fieldFirstName.setBackground(Color.LIGHT_GRAY);
 		panelFirstName.add(fieldFirstName);
 
 		// Define the "Last Name" field to be filled in
@@ -100,6 +102,8 @@ public class ModifyUserPanel extends JPanel {
 		panelLastName.add(lblLastName);
 		fieldLastName = new JTextField();
 		fieldLastName.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		fieldLastName.setEditable(false);
+		fieldLastName.setBackground(Color.LIGHT_GRAY);
 		panelLastName.add(fieldLastName);
 
 		// Define the "Password" field to be filled in
@@ -125,23 +129,12 @@ public class ModifyUserPanel extends JPanel {
 		JButton btnRemove = new JButton("Remove");
 		btnRemove.setBackground(REMOVE_BUTTON_COLOR);
 		btnRemove.setFont(new Font("Segoe UI", Font.BOLD, 16));
-		btnRemove.addActionListener(e -> {
-			userController.removeUserById((Integer) comboBoxUserId.getSelectedItem());
-			listener.onItemChanged(); // Notify the listener
-			clearFields();
-			fillUserFields(comboBoxUserId, fieldFirstName, fieldLastName, fieldPassword, comboBoxRole);
-			JOptionPane.showMessageDialog(null, "Item removed successfully!", "Success",
-					JOptionPane.INFORMATION_MESSAGE);
-		});
+		btnRemove.addActionListener(e -> removeUser());
 		panelButtons.add(btnRemove);
 		JButton btnUpdate = new JButton("Update");
 		btnUpdate.setBackground(UPDATE_BUTTON_COLOR);
 		btnUpdate.setFont(new Font("Segoe UI", Font.BOLD, 16));
-		btnUpdate.addActionListener(e -> {
-			updateUser(fieldFirstName, fieldLastName, fieldPassword, comboBoxRole);
-			clearFields();
-			fillUserFields(comboBoxUserId, fieldFirstName, fieldLastName, fieldPassword, comboBoxRole);
-		});
+		btnUpdate.addActionListener(e -> updateUser(fieldFirstName, fieldLastName, fieldPassword, comboBoxRole));
 		panelButtons.add(btnUpdate);
 
 		// Create a panel to hold the six previous sections vertically
@@ -168,6 +161,29 @@ public class ModifyUserPanel extends JPanel {
 		add(tablePanel, BorderLayout.WEST);
 		add(formPanel, BorderLayout.CENTER);
 	}
+	
+	private void removeUser() {
+		try {
+			Integer selectedUserId = (Integer) comboBoxUserId.getSelectedItem();
+			
+			// Check if the logged manager is trying to remove itself
+		    if (selectedUserId.equals(loggedManagerId)) {
+		        JOptionPane.showMessageDialog(null, "You cannot remove yourself from the staff members!", "Operation not allowed",
+		                JOptionPane.WARNING_MESSAGE);
+		    } else {
+		        userController.removeUserById(selectedUserId);
+		        listener.onUserChanged(); // Notify the listener
+		        clearFields();
+		        fillUserFields(comboBoxUserId, fieldFirstName, fieldLastName, fieldPassword, comboBoxRole);
+		        JOptionPane.showMessageDialog(null, "User removed successfully!", "Operation completed",
+		                JOptionPane.INFORMATION_MESSAGE);
+		    }
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null, "The user could not be removed!", "Something went wrong",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
 
 	private void updateUser(JTextField fieldFirstName, JTextField fieldLastName, JTextField fieldPassword,
 			JComboBox<UserRole> comboBoxRole) {
@@ -180,7 +196,9 @@ public class ModifyUserPanel extends JPanel {
 			if (!firstName.isBlank() && !lastName.isBlank() && !password.isBlank()) {
 				userController.updateUser((Integer) comboBoxUserId.getSelectedItem(), password, role);
 				listener.onUserChanged(); // Notify the listener
-				JOptionPane.showMessageDialog(null, "User updated successfully!", "Success",
+				clearFields();
+		        fillUserFields(comboBoxUserId, fieldFirstName, fieldLastName, fieldPassword, comboBoxRole);
+				JOptionPane.showMessageDialog(null, "User updated successfully!", "Operation completed",
 						JOptionPane.INFORMATION_MESSAGE);
 			} else {
 				JOptionPane.showMessageDialog(null, "Fields with * must be filled to complete the operation!",
@@ -239,11 +257,21 @@ public class ModifyUserPanel extends JPanel {
 		try {
 			Integer selectedUserId = (Integer) comboBoxUserId.getSelectedItem();
 			User selectedUser = userController.getUserById(selectedUserId);
+			// Fill in the user fields
 			fieldFirstName.setText(userController.getFirstName(selectedUser));
 			fieldLastName.setText(userController.getLastName(selectedUser));
 			fieldPassword.setText(userController.getPassword(selectedUser));
 			UserRole selectedRole = userController.getRole(selectedUser);
 			comboBoxRole.setSelectedItem(selectedRole);
+			
+			// Check if the selected user is the logged manager
+	        if (selectedUserId.equals(loggedManagerId)) {
+	            comboBoxRole.setEnabled(false); // Disable the role combo box
+	            comboBoxRole.setBackground(Color.LIGHT_GRAY); // Change background color to indicate non-editable
+	        } else {
+	            comboBoxRole.setEnabled(true); // Enable the role combo box
+	            comboBoxRole.setBackground(Color.WHITE); // Reset background color
+	        }
 		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "The user details could not be loaded!", "Something went wrong",

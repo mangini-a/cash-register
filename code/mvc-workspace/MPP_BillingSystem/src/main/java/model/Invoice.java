@@ -65,10 +65,4 @@ public class Invoice {
 	public void setTotalPrice(double totalPrice) {
 		this.totalPrice = totalPrice;
 	}
-
-	@Override
-	public String toString() {
-		return "Invoice [id=" + id + ", user=" + user + ", issueInstant=" + issueInstant + ", totalPrice=" + totalPrice
-				+ "]";
-	}
 }

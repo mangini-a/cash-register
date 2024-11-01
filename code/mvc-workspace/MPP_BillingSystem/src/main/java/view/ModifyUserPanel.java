@@ -62,7 +62,7 @@ public class ModifyUserPanel extends JPanel {
 		JScrollPane scrollPane = new JScrollPane(userTable);
 
 		// Create a title label for the table
-		JLabel titleLabel = new JLabel("Current Staff", SwingConstants.CENTER);
+		JLabel titleLabel = new JLabel("Staff members you can edit", SwingConstants.CENTER);
 		titleLabel.setFont(new Font("Segoe UI", Font.ITALIC, 16));
 		titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0)); // Add some padding
 

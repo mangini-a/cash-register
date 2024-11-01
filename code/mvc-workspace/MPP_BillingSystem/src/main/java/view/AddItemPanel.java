@@ -63,7 +63,7 @@ public class AddItemPanel extends JPanel {
 		JScrollPane scrollPane = new JScrollPane(itemTable);
 		
 		// Create a title label for the table
-        JLabel titleLabel = new JLabel("Current Stock", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("Products currently in stock", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Segoe UI", Font.ITALIC, 16));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0)); // Add some padding
 		

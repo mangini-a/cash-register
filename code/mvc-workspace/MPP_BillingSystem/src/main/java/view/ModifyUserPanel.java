@@ -51,7 +51,7 @@ public class ModifyUserPanel extends JPanel {
 
 	private void initializeComponents() {
 		// Define the existing users table's model
-		userTableModel = new DefaultTableModel(new Object[] { "ID", "Name", "Surname", "Password", "Role" }, 0) {
+		userTableModel = new DefaultTableModel(new Object[] { "ID", "Name", "Surname", "Role" }, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false; // Make all cells non-editable
@@ -202,8 +202,7 @@ public class ModifyUserPanel extends JPanel {
 
 		// Populate the table model with fetched items
 		for (User user : users) {
-			Object[] rowData = { user.getId(), user.getFirstName(), user.getLastName(), user.getPassword(),
-					user.getRole() };
+			Object[] rowData = { user.getId(), user.getFirstName(), user.getLastName(), user.getRole() };
 			userTableModel.addRow(rowData);
 		}
 	}

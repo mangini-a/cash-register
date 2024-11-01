@@ -58,7 +58,7 @@ public class ModifyItemPanel extends JPanel {
 
 		// Center the content of all columns
 		for (int i = 0; i < itemTable.getColumnCount(); i++) {
-			itemTable.getColumnModel().getColumn(i).setCellRenderer(new CenterAlignedTableCellRenderer());
+			itemTable.getColumnModel().getColumn(i).setCellRenderer(new StockTableCellRenderer());
 		}
 
 		itemTable.setRowHeight(20); // Set row height for vertical "centering"

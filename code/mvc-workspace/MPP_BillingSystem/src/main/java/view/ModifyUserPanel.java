@@ -19,6 +19,8 @@ public class ModifyUserPanel extends JPanel {
 
 	private JPanel tablePanel; // Container for the title label and the table itself
 	private DefaultTableModel userTableModel;
+	private JTable userTable;
+	private StaffTableCellRenderer renderer;
 
 	private JPanel formPanel; // Container for the form
 
@@ -32,10 +34,15 @@ public class ModifyUserPanel extends JPanel {
 
 	private PanelChangeListener listener;
 
-	public ModifyUserPanel(PanelChangeListener listener) {
+	private int loggedManagerId;
+
+	public ModifyUserPanel(PanelChangeListener listener, User user) {
 		this.listener = listener;
 		userController = UserControllerImpl.getInstance();
 		initializeComponents();
+		loggedManagerId = user.getId();
+		renderer = new StaffTableCellRenderer(loggedManagerId);
+		userTable.setDefaultRenderer(Object.class, renderer); // Apply the renderer to all columns
 		BorderLayout layout = new BorderLayout();
 		layout.setHgap(10); // Add a 10px horizontal gap between components
 		setLayout(layout);
@@ -46,16 +53,16 @@ public class ModifyUserPanel extends JPanel {
 		// Define the existing users table's model
 		userTableModel = new DefaultTableModel(new Object[] { "ID", "Name", "Surname", "Password", "Role" }, 0) {
 			@Override
-	        public boolean isCellEditable(int row, int column) {
-	            return false; // Make all cells non-editable
-	        }
+			public boolean isCellEditable(int row, int column) {
+				return false; // Make all cells non-editable
+			}
 		};
-		JTable userTable = new JTable(userTableModel);
+		userTable = new JTable(userTableModel);
 		userTable.setFillsViewportHeight(true);
 
 		// Center the content of all columns
 		for (int i = 0; i < userTable.getColumnCount(); i++) {
-			userTable.getColumnModel().getColumn(i).setCellRenderer(new CenterAlignedTableCellRenderer());
+			userTable.getColumnModel().getColumn(i).setCellRenderer(renderer);
 		}
 
 		userTable.setRowHeight(20); // Set row height for vertical "centering"
@@ -191,7 +198,7 @@ public class ModifyUserPanel extends JPanel {
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
+
 	void populateUserTable() {
 		// Fetch data from the database using Hibernate
 		List<User> users = userController.getAllUsers();
@@ -206,7 +213,7 @@ public class ModifyUserPanel extends JPanel {
 			userTableModel.addRow(rowData);
 		}
 	}
-	
+
 	private void clearFields() {
 		comboBoxUserId.setSelectedIndex(0);
 		fieldFirstName.setText("");
@@ -214,7 +221,7 @@ public class ModifyUserPanel extends JPanel {
 		fieldPassword.setText("");
 		comboBoxRole.setSelectedIndex(0);
 	}
-	
+
 	void populateComboBoxUserId(JComboBox<Integer> comboBoxUserId) {
 		DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
 		for (Integer id : userController.getAllUserIds()) {
@@ -222,10 +229,9 @@ public class ModifyUserPanel extends JPanel {
 		}
 		comboBoxUserId.setModel(model);
 	}
-	
-	private void fillUserFields(JComboBox<Integer> comboBoxUserId, JTextField fieldFirstName,
-			JTextField fieldLastName, JTextField fieldPassword,
-			JComboBox<UserRole> comboBoxRole) {
+
+	private void fillUserFields(JComboBox<Integer> comboBoxUserId, JTextField fieldFirstName, JTextField fieldLastName,
+			JTextField fieldPassword, JComboBox<UserRole> comboBoxRole) {
 		try {
 			Integer selectedUserId = (Integer) comboBoxUserId.getSelectedItem();
 			User selectedUser = userController.getUserById(selectedUserId);
@@ -236,8 +242,8 @@ public class ModifyUserPanel extends JPanel {
 			comboBoxRole.setSelectedItem(selectedRole);
 		} catch (Exception e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "The user details could not be loaded!",
-					"Something went wrong", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "The user details could not be loaded!", "Something went wrong",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

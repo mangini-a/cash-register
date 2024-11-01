@@ -30,6 +30,8 @@ public class AddUserPanel extends JPanel {
 
 	private JPanel tablePanel; // Container for the title label and the table itself
 	private DefaultTableModel userTableModel;
+	private JTable userTable;
+	private StaffTableCellRenderer renderer;
 
 	private JPanel formPanel; // Container for the form
 
@@ -41,11 +43,16 @@ public class AddUserPanel extends JPanel {
 	private UserController userController;
 
 	private PanelChangeListener listener;
+	
+	private int loggedManagerId;
 
-	public AddUserPanel(PanelChangeListener listener) {
+	public AddUserPanel(PanelChangeListener listener, User user) {
 		this.listener = listener;
 		userController = UserControllerImpl.getInstance();
 		initializeComponents();
+	    loggedManagerId = user.getId();
+	    renderer = new StaffTableCellRenderer(loggedManagerId);
+	    userTable.setDefaultRenderer(Object.class, renderer); // Apply the renderer to all columns
 		BorderLayout layout = new BorderLayout();
 		layout.setHgap(10); // Add a 10px horizontal gap between components
 		setLayout(layout);
@@ -60,12 +67,12 @@ public class AddUserPanel extends JPanel {
 	            return false; // Make all cells non-editable
 	        }
 		};
-		JTable userTable = new JTable(userTableModel);
+		userTable = new JTable(userTableModel);
 		userTable.setFillsViewportHeight(true);
 
 		// Center the content of all columns
 		for (int i = 0; i < userTable.getColumnCount(); i++) {
-			userTable.getColumnModel().getColumn(i).setCellRenderer(new CenterAlignedTableCellRenderer());
+			userTable.getColumnModel().getColumn(i).setCellRenderer(renderer);
 		}
 
 		userTable.setRowHeight(20); // Set row height for vertical "centering"

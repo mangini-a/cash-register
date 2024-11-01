@@ -30,7 +30,7 @@ public interface ItemController {
 	void updateItem(int id, String newName, int newQuantity, double newUnitPrice, ItemCategory newCategory);
 	
 	/**
-	 * Gets all items in the database.
+	 * Gets all the items in the database.
 	 *
 	 * @return all the items currently in the database
 	 */

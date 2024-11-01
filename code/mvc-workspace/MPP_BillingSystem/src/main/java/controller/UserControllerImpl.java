@@ -22,10 +22,11 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public void addUser(User user) {
+	public void addUser(String firstName, String lastName, String password, UserRole role) {
 		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			try {
+				User user = new User(firstName, lastName, password, role);
 				session.persist(user);
 				session.getTransaction().commit();
 			} catch (Exception e) {
@@ -33,6 +34,21 @@ public class UserControllerImpl implements UserController {
 				throw e; // Re-throw the exception to propagate it up the call stack
 			}
 		}
+	}
+	
+	@Override
+	public List<User> getAllUsers() {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+            try {
+                List<User> users = session.createQuery("FROM User", User.class).list();
+                session.getTransaction().commit();
+                return users;
+            } catch (Exception e) {
+            	session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+            }
+        }
 	}
 
 	@Override

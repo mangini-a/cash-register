@@ -3,7 +3,14 @@ package view;
 public interface PanelChangeListener {
 	
 	/**
-	 * Ensures that panels can notify each other of changes, allowing them to refresh their data accordingly.
+	 * Ensures that the Stock tab's panels can notify each other of changes.
+	 * This allows them to refresh their data accordingly.
 	 */
 	void onItemChanged();
+	
+	/**
+	 * Ensures that the Staff tab's panels can notify each other of changes.
+	 * This allows them to refresh their data accordingly.
+	 */
+	void onUserChanged();
 }

@@ -71,10 +71,10 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 
 	private JTabbedPane createStaffTabbedPane(User user) {
 		JTabbedPane staffTabbedPane = new JTabbedPane();
-		addUserPanel = new AddUserPanel();
+		addUserPanel = new AddUserPanel(this);
 		addUserPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
 		staffTabbedPane.addTab("Add a new user", addUserPanel);
-		modifyUserPanel = new ModifyUserPanel();
+		modifyUserPanel = new ModifyUserPanel(this);
 		modifyUserPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
 		staffTabbedPane.addTab("Modify an existing user's credentials", modifyUserPanel);
 		return staffTabbedPane;

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.NumberFormatter;
 
@@ -134,16 +133,6 @@ public class AddItemPanel extends JPanel {
 		add(formPanel, BorderLayout.CENTER);
 	}
 	
-	public class CenterAlignedTableCellRenderer extends DefaultTableCellRenderer {
-		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-				int row, int column) {
-			Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-			setHorizontalAlignment(SwingConstants.CENTER); // Center align the text
-			return cell;
-		}
-	}
-	
 	private JFormattedTextField createQuantityFormattedTextField() {
 		// Create a NumberFormatter for integers
         NumberFormat format = NumberFormat.getIntegerInstance();
@@ -202,9 +191,6 @@ public class AddItemPanel extends JPanel {
 		}
 	}
 
-	/**
-	 * Orchestrates the data fetching and table population.
-	 */
 	void populateItemTable() {
 		// Fetch data from the database using Hibernate
 		List<Item> items = itemController.getAllItems(); 

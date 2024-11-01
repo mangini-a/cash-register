@@ -3,15 +3,26 @@ package controller;
 import java.util.List;
 
 import model.User;
+import model.UserRole;
 
 public interface UserController {
 
 	/**
 	 * Adds a new user to the database.
 	 *
-	 * @param user the user to be added to the database
+	 * @param firstName the user's first name
+	 * @param lastName the user's last name
+	 * @param password the user's password
+	 * @param role the user's role
 	 */
-	void addUser(User user);
+	void addUser(String firstName, String lastName, String password, UserRole role);
+	
+	/**
+	 * Gets all the users in the database.
+	 *
+	 * @return all the users currently in the database
+	 */
+	List<User> getAllUsers();
 	
 	/**
 	 * Gets a user from the database by its id.

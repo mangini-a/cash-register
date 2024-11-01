@@ -8,7 +8,6 @@ import java.util.Set;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import controller.InvoiceController;
@@ -77,7 +76,7 @@ public class CashRegisterView extends JFrame {
 
 		// Center the content of all columns
 		for (int i = 0; i < cartTable.getColumnCount(); i++) {
-			cartTable.getColumnModel().getColumn(i).setCellRenderer(new CenterAlignedTableCellRenderer());
+			cartTable.getColumnModel().getColumn(i).setCellRenderer(new StockTableCellRenderer());
 		}
 
 		// Set row height for vertical "centering"
@@ -171,16 +170,6 @@ public class CashRegisterView extends JFrame {
 		contentPane.setBorder(new EmptyBorder(15, 15, 15, 15)); // 15px border on all sides
 
 		setContentPane(contentPane);
-	}
-
-	public class CenterAlignedTableCellRenderer extends DefaultTableCellRenderer {
-		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-				int row, int column) {
-			Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-			setHorizontalAlignment(SwingConstants.CENTER); // Center align the text
-			return cell;
-		}
 	}
 
 	private void addToCart() {

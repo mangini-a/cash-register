@@ -47,7 +47,12 @@ public class ModifyItemPanel extends JPanel {
 
 	private void initializeComponents() {
 		// Define the existing items table's model
-		itemTableModel = new DefaultTableModel(new Object[] { "ID", "Name", "Quantity", "Unit Price", "Category" }, 0);
+		itemTableModel = new DefaultTableModel(new Object[] { "ID", "Name", "Quantity", "Unit Price", "Category" }, 0) {
+			@Override
+	        public boolean isCellEditable(int row, int column) {
+	            return false; // Make all cells non-editable
+	        }
+		};
 		JTable itemTable = new JTable(itemTableModel);
 		itemTable.setFillsViewportHeight(true);
 

@@ -66,7 +66,12 @@ public class CashRegisterView extends JFrame {
 		invoiceController = InvoiceControllerImpl.getInstance();
 
 		// Define the cart composition table's model
-		cartTableModel = new DefaultTableModel(new Object[] { "ID", "Name", "Quantity", "Unit Price" }, 0);
+		cartTableModel = new DefaultTableModel(new Object[] { "ID", "Name", "Quantity", "Unit Price" }, 0) {
+			@Override
+	        public boolean isCellEditable(int row, int column) {
+	            return false; // Make all cells non-editable
+	        }
+		};
 		cartTable = new JTable(cartTableModel);
 		cartTable.setFillsViewportHeight(true);
 

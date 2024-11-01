@@ -4,6 +4,8 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import controller.UserController;
+import controller.UserControllerImpl;
 import model.User;
 
 @SuppressWarnings("serial")
@@ -11,6 +13,8 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 
 	private JTabbedPane mainTabbedPane;
 	private JPanel mainPanel;
+	
+	private int loggedManagerId;
 	
 	// Components of the first tab (Stock)
 	private AddItemPanel addItemPanel;
@@ -22,16 +26,22 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 	
 	private JPanel btnBackToHomePanel;
 	private JButton btnBackToHome;
+	
+	private UserController userController;
 
 	public ManagementView(User user) {
 		// Configure the frame
 		setTitle("Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		// Get the logged manager's ID
+		userController = UserControllerImpl.getInstance();
+		loggedManagerId = userController.getId(user);
+		
 		// Create the main tabbed pane, to which three tabs are added
 		mainTabbedPane = new JTabbedPane();
 		mainTabbedPane.addTab("Stock", createStockTabbedPane());
-		mainTabbedPane.addTab("Staff", createStaffTabbedPane(user));
+		mainTabbedPane.addTab("Staff", createStaffTabbedPane(loggedManagerId));
 		mainTabbedPane.addTab("Accounting", createAccountingTabbedPane(user)); 
 
 		// Add the "Back to Home" button
@@ -69,12 +79,12 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 		return stockTabbedPane;
 	}
 
-	private JTabbedPane createStaffTabbedPane(User user) {
+	private JTabbedPane createStaffTabbedPane(int loggedManagerId) {
 		JTabbedPane staffTabbedPane = new JTabbedPane();
-		addUserPanel = new AddUserPanel(this, user);
+		addUserPanel = new AddUserPanel(this, loggedManagerId);
 		addUserPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
 		staffTabbedPane.addTab("Add a new user", addUserPanel);
-		modifyUserPanel = new ModifyUserPanel(this, user);
+		modifyUserPanel = new ModifyUserPanel(this, loggedManagerId);
 		modifyUserPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
 		staffTabbedPane.addTab("Modify an existing user's credentials", modifyUserPanel);
 		return staffTabbedPane;

@@ -36,11 +36,11 @@ public class ModifyUserPanel extends JPanel {
 
 	private int loggedManagerId;
 
-	public ModifyUserPanel(PanelChangeListener listener, User user) {
+	public ModifyUserPanel(PanelChangeListener listener, int loggedManagerId) {
 		this.listener = listener;
+		this.loggedManagerId = loggedManagerId;
 		userController = UserControllerImpl.getInstance();
 		initializeComponents();
-		loggedManagerId = userController.getId(user);
 		renderer = new StaffTableCellRenderer(loggedManagerId);
 		userTable.setDefaultRenderer(Object.class, renderer); // Apply the renderer to all columns
 		BorderLayout layout = new BorderLayout();
@@ -150,7 +150,8 @@ public class ModifyUserPanel extends JPanel {
 		// Add all the cashiers in the database and the logged manager to the table
 		populateUserTable();
 
-		// Add the cashiers' ids and the logged manager's id to the corresponding JComboBox
+		// Add the cashiers' ids and the logged manager's id to the corresponding
+		// JComboBox
 		populateComboBoxUserId(comboBoxUserId);
 
 		// Populate the fields for the initially selected item
@@ -161,23 +162,23 @@ public class ModifyUserPanel extends JPanel {
 		add(tablePanel, BorderLayout.WEST);
 		add(formPanel, BorderLayout.CENTER);
 	}
-	
+
 	private void removeUser() {
 		try {
 			Integer selectedUserId = (Integer) comboBoxUserId.getSelectedItem();
-			
+
 			// Check if the logged manager is trying to remove itself
-		    if (selectedUserId.equals(loggedManagerId)) {
-		        JOptionPane.showMessageDialog(null, "You cannot remove yourself from the staff members!", "Operation not allowed",
-		                JOptionPane.WARNING_MESSAGE);
-		    } else {
-		        userController.removeUserById(selectedUserId);
-		        listener.onUserChanged(); // Notify the listener
-		        clearFields();
-		        fillUserFields(comboBoxUserId, fieldFirstName, fieldLastName, fieldPassword, comboBoxRole);
-		        JOptionPane.showMessageDialog(null, "User removed successfully!", "Operation completed",
-		                JOptionPane.INFORMATION_MESSAGE);
-		    }
+			if (selectedUserId.equals(loggedManagerId)) {
+				JOptionPane.showMessageDialog(null, "You cannot remove yourself from the staff members!",
+						"Operation not allowed", JOptionPane.WARNING_MESSAGE);
+			} else {
+				userController.removeUserById(selectedUserId);
+				listener.onUserChanged(); // Notify the listener
+				clearFields();
+				fillUserFields(comboBoxUserId, fieldFirstName, fieldLastName, fieldPassword, comboBoxRole);
+				JOptionPane.showMessageDialog(null, "User removed successfully!", "Operation completed",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			JOptionPane.showMessageDialog(null, "The user could not be removed!", "Something went wrong",
@@ -197,7 +198,7 @@ public class ModifyUserPanel extends JPanel {
 				userController.updateUser((Integer) comboBoxUserId.getSelectedItem(), password, role);
 				listener.onUserChanged(); // Notify the listener
 				clearFields();
-		        fillUserFields(comboBoxUserId, fieldFirstName, fieldLastName, fieldPassword, comboBoxRole);
+				fillUserFields(comboBoxUserId, fieldFirstName, fieldLastName, fieldPassword, comboBoxRole);
 				JOptionPane.showMessageDialog(null, "User updated successfully!", "Operation completed",
 						JOptionPane.INFORMATION_MESSAGE);
 			} else {
@@ -214,15 +215,16 @@ public class ModifyUserPanel extends JPanel {
 	void populateUserTable() {
 		// Fetch data from the database using Hibernate
 		List<User> users = userController.getAllUsers();
-		
+
 		// Clear any existing data in the table model
 		userTableModel.setRowCount(0);
 
 		// Populate the table model with fetched items
 		for (User user : users) {
-			// Include cashiers and the logged manager
+			// Include the logged manager and all the cashiers
 			if (userController.getId(user) == loggedManagerId || !userController.isManager(user)) {
-				Object[] rowData = { userController.getId(user), userController.getFirstName(user), userController.getLastName(user), userController.getRole(user) };
+				Object[] rowData = { userController.getId(user), userController.getFirstName(user),
+						userController.getLastName(user), userController.getRole(user) };
 				userTableModel.addRow(rowData);
 			}
 		}
@@ -241,15 +243,17 @@ public class ModifyUserPanel extends JPanel {
 
 		// Fetch data from the database using Hibernate
 		List<User> users = userController.getAllUsers();
-		
-		// Populate the JComboBox with fetched items
-		for (User user : users) {
-			// Include cashiers and the logged manager
-			if (userController.getId(user) == loggedManagerId || !userController.isManager(user)) {
-				model.addElement(userController.getId(user));
-			}
-		}
-		comboBoxUserId.setModel(model);
+	    
+		// Populate the combo box with fetched items
+	    for (User user : users) {
+	    	// Include the logged manager and all the cashiers
+	        if (userController.getId(user) == loggedManagerId || !userController.isManager(user)) {
+	            model.addElement(userController.getId(user));
+	        }
+	    }
+
+	    // Set the model to the JComboBox
+	    comboBoxUserId.setModel(model);
 	}
 
 	private void fillUserFields(JComboBox<Integer> comboBoxUserId, JTextField fieldFirstName, JTextField fieldLastName,
@@ -263,15 +267,15 @@ public class ModifyUserPanel extends JPanel {
 			fieldPassword.setText(userController.getPassword(selectedUser));
 			UserRole selectedRole = userController.getRole(selectedUser);
 			comboBoxRole.setSelectedItem(selectedRole);
-			
+
 			// Check if the selected user is the logged manager
-	        if (selectedUserId.equals(loggedManagerId)) {
-	            comboBoxRole.setEnabled(false); // Disable the role combo box
-	            comboBoxRole.setBackground(Color.LIGHT_GRAY); // Change background color to indicate non-editable
-	        } else {
-	            comboBoxRole.setEnabled(true); // Enable the role combo box
-	            comboBoxRole.setBackground(Color.WHITE); // Reset background color
-	        }
+			if (selectedUserId.equals(loggedManagerId)) {
+				comboBoxRole.setEnabled(false); // Disable the role combo box
+				comboBoxRole.setBackground(Color.LIGHT_GRAY); // Change background color to indicate non-editable
+			} else {
+				comboBoxRole.setEnabled(true); // Enable the role combo box
+				comboBoxRole.setBackground(Color.WHITE); // Reset background color
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "The user details could not be loaded!", "Something went wrong",

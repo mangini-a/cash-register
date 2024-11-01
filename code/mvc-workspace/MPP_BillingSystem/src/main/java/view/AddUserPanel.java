@@ -44,13 +44,10 @@ public class AddUserPanel extends JPanel {
 
 	private PanelChangeListener listener;
 	
-	private int loggedManagerId;
-
-	public AddUserPanel(PanelChangeListener listener, User user) {
+	public AddUserPanel(PanelChangeListener listener, int loggedManagerId) {
 		this.listener = listener;
 		userController = UserControllerImpl.getInstance();
 		initializeComponents();
-	    loggedManagerId = userController.getId(user);
 	    renderer = new StaffTableCellRenderer(loggedManagerId);
 	    userTable.setDefaultRenderer(Object.class, renderer); // Apply the renderer to all columns
 		BorderLayout layout = new BorderLayout();
@@ -124,10 +121,7 @@ public class AddUserPanel extends JPanel {
 		JButton btnAdd = new JButton("Add");
 		btnAdd.setBackground(ADD_BUTTON_COLOR);
 		btnAdd.setFont(new Font("Segoe UI", Font.BOLD, 16));
-		btnAdd.addActionListener(e -> {
-			addUser(fieldFirstName, fieldLastName, fieldPassword, comboBoxRole);
-			clearFields();
-		});
+		btnAdd.addActionListener(e -> addUser(fieldFirstName, fieldLastName, fieldPassword, comboBoxRole));
 		panelButton.add(btnAdd);
 
 		// Create a panel to hold the five previous sections vertically
@@ -159,6 +153,7 @@ public class AddUserPanel extends JPanel {
 			if (!firstName.isBlank() && !lastName.isBlank() && !password.isBlank()) {
 				int generatedId = userController.addUser(firstName, lastName, password, role);
 				listener.onUserChanged(); // Notify the listener
+				clearFields();
 				JOptionPane.showMessageDialog(null, "User added successfully with generated ID: " + generatedId + "!", "Success",
 						JOptionPane.INFORMATION_MESSAGE);
 			} else {

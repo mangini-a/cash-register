@@ -30,7 +30,7 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 		
 		// Create the main tabbed pane, to which three tabs are added
 		mainTabbedPane = new JTabbedPane();
-		mainTabbedPane.addTab("Stock", createStockTabbedPane(user));
+		mainTabbedPane.addTab("Stock", createStockTabbedPane());
 		mainTabbedPane.addTab("Staff", createStaffTabbedPane(user));
 		mainTabbedPane.addTab("Accounting", createAccountingTabbedPane(user)); 
 
@@ -58,7 +58,7 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 		add(mainPanel);
 	}
 
-	private JTabbedPane createStockTabbedPane(User user) {
+	private JTabbedPane createStockTabbedPane() {
 		JTabbedPane stockTabbedPane = new JTabbedPane();
 		addItemPanel = new AddItemPanel(this);
 		addItemPanel.setBorder(new EmptyBorder(15, 15, 0, 15));

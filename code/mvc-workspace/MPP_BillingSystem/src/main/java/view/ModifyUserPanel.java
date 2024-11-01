@@ -40,7 +40,7 @@ public class ModifyUserPanel extends JPanel {
 		this.listener = listener;
 		userController = UserControllerImpl.getInstance();
 		initializeComponents();
-		loggedManagerId = user.getId();
+		loggedManagerId = userController.getId(user);
 		renderer = new StaffTableCellRenderer(loggedManagerId);
 		userTable.setDefaultRenderer(Object.class, renderer); // Apply the renderer to all columns
 		BorderLayout layout = new BorderLayout();
@@ -154,10 +154,10 @@ public class ModifyUserPanel extends JPanel {
 		formPanel.add(panelRole);
 		formPanel.add(panelButtons);
 
-		// Add all the users in the database to the corresponding table
+		// Add all the cashiers in the database and the logged manager to the table
 		populateUserTable();
 
-		// Add all the ids in the database to the corresponding JComboBox
+		// Add the cashiers' ids and the logged manager's id to the corresponding JComboBox
 		populateComboBoxUserId(comboBoxUserId);
 
 		// Populate the fields for the initially selected item
@@ -202,8 +202,10 @@ public class ModifyUserPanel extends JPanel {
 
 		// Populate the table model with fetched items
 		for (User user : users) {
-			Object[] rowData = { user.getId(), user.getFirstName(), user.getLastName(), user.getRole() };
-			userTableModel.addRow(rowData);
+			if (!userController.isManager(user) || userController.getId(user) == loggedManagerId) {
+				Object[] rowData = { userController.getId(user), userController.getFirstName(user), userController.getLastName(user), userController.getRole(user) };
+				userTableModel.addRow(rowData);
+			}
 		}
 	}
 
@@ -217,8 +219,15 @@ public class ModifyUserPanel extends JPanel {
 
 	void populateComboBoxUserId(JComboBox<Integer> comboBoxUserId) {
 		DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
-		for (Integer id : userController.getAllUserIds()) {
-			model.addElement(id);
+
+		// Fetch data from the database using Hibernate
+		List<User> users = userController.getAllUsers();
+
+		// Populate the JComboBox with fetched items
+		for (User user : users) {
+			if (!userController.isManager(user) || userController.getId(user) == loggedManagerId) {
+				model.addElement(userController.getId(user));
+			}
 		}
 		comboBoxUserId.setModel(model);
 	}

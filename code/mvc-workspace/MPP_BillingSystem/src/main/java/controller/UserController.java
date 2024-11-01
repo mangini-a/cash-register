@@ -57,12 +57,20 @@ public interface UserController {
 	List<Integer> getAllUserIds();
 
 	/**
-	 * Checks if a user is a manager.
+	 * Checks if the specified user is a manager.
 	 *
 	 * @param user the user to be checked
 	 * @return true, if the user is actually a manager
 	 */
-	boolean isUserManager(User user);
+	boolean isManager(User user);
+	
+	/**
+	 * Gets the specified user's id.
+	 *
+	 * @param user the user
+	 * @return the user's id
+	 */
+	int getId(User user);
 	
 	/**
 	 * Gets the specified user's first name.

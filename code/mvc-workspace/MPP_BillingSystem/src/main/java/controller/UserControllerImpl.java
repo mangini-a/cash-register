@@ -123,8 +123,13 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public boolean isUserManager(User user) {
+	public boolean isManager(User user) {
 		return user.getRole().equals(UserRole.MANAGER);
+	}
+	
+	@Override
+	public int getId(User user) {
+		return user.getId();
 	}
 
 	@Override

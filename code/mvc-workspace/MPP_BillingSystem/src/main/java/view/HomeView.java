@@ -103,7 +103,7 @@ public class HomeView extends JFrame {
 
 		// Make the "Management" screen accessible only to managers
 		JButton btnManagement = (JButton) contentPane.getComponent(2);
-		boolean isManager = userController.isUserManager(user);
+		boolean isManager = userController.isManager(user);
 		btnManagement.setEnabled(isManager);
 		btnManagement.addActionListener(e -> {
 			dispose();

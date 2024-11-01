@@ -50,7 +50,7 @@ public class AddUserPanel extends JPanel {
 		this.listener = listener;
 		userController = UserControllerImpl.getInstance();
 		initializeComponents();
-	    loggedManagerId = user.getId();
+	    loggedManagerId = userController.getId(user);
 	    renderer = new StaffTableCellRenderer(loggedManagerId);
 	    userTable.setDefaultRenderer(Object.class, renderer); // Apply the renderer to all columns
 		BorderLayout layout = new BorderLayout();
@@ -181,7 +181,7 @@ public class AddUserPanel extends JPanel {
 
 		// Populate the table model with fetched items
 		for (User user : users) {
-			Object[] rowData = { user.getId(), user.getFirstName(), user.getLastName(), user.getRole() };
+			Object[] rowData = { userController.getId(user), userController.getFirstName(user), userController.getLastName(user), userController.getRole(user) };
 			userTableModel.addRow(rowData);
 		}
 	}

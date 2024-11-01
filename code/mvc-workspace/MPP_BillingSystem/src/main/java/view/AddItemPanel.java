@@ -206,11 +206,11 @@ public class AddItemPanel extends JPanel {
 		// Populate the table model with fetched items
 		for (Item item : items) {
 			Object[] rowData = {
-					item.getId(),
-					item.getName(),
-					item.getQuantity(),
-					item.getUnitPrice(),
-					item.getCategory()
+					itemController.getId(item),
+					itemController.getName(item),
+					itemController.getQuantity(item),
+					itemController.getUnitPrice(item),
+					itemController.getCategory(item)
 			};
 			itemTableModel.addRow(rowData);
 		}

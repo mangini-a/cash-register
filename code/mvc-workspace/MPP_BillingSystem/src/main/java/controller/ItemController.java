@@ -66,6 +66,14 @@ public interface ItemController {
 	Set<Integer> showOneToQuantity(Item item);
 	
 	void updateItemQuantityById(int id, int newQuantity);
+	
+	/**
+	 * Gets the specified item's id.
+	 *
+	 * @param item the item
+	 * @return the item's id
+	 */
+	int getId(Item item);
 
 	/**
 	 * Gets the specified item's name.

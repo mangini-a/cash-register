@@ -155,6 +155,11 @@ public class ItemControllerImpl implements ItemController {
 	}
 
 	@Override
+	public int getId(Item item) {
+		return item.getId();
+	}
+	
+	@Override
 	public String getName(Item item) {
 		return item.getName();
 	}

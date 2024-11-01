@@ -32,7 +32,9 @@ public class UserControllerImpl implements UserController {
 				return user.getId(); // Return the new user's generated ID
 			} catch (Exception e) {
 				session.getTransaction().rollback();
-				throw e; // Re-throw the exception to propagate it up the call stack
+			    System.err.println("Error adding user: " + e.getMessage());
+			    e.printStackTrace();
+			    throw e; // Re-throw the exception to propagate it up the call stack
 			}
 		}
 	}

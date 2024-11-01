@@ -22,13 +22,14 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public void addUser(String firstName, String lastName, String password, UserRole role) {
+	public int addUser(String firstName, String lastName, String password, UserRole role) {
 		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			try {
 				User user = new User(firstName, lastName, password, role);
 				session.persist(user);
 				session.getTransaction().commit();
+				return user.getId(); // Return the new user's generated ID
 			} catch (Exception e) {
 				session.getTransaction().rollback();
 				throw e; // Re-throw the exception to propagate it up the call stack
@@ -79,7 +80,7 @@ public class UserControllerImpl implements UserController {
 			try {
 				User user = session.get(User.class, id);
 				session.getTransaction().commit();
-				return user; // Returns the user if found, or null if not found
+				return user; // Return the user if found, or null if not found
 			} catch (Exception e) {
 				session.getTransaction().rollback();
 				throw e; // Re-throw the exception to propagate it up the call stack

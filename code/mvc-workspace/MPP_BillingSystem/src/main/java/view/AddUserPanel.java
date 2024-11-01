@@ -151,9 +151,9 @@ public class AddUserPanel extends JPanel {
 			UserRole role = (UserRole) comboBoxRole.getSelectedItem();
 
 			if (!firstName.isBlank() && !lastName.isBlank() && !password.isBlank()) {
-				userController.addUser(firstName, lastName, password, role);
+				int generatedId = userController.addUser(firstName, lastName, password, role);
 				listener.onUserChanged(); // Notify the listener
-				JOptionPane.showMessageDialog(null, "User added successfully!", "Success",
+				JOptionPane.showMessageDialog(null, "User added successfully with generated ID: " + generatedId + "!", "Success",
 						JOptionPane.INFORMATION_MESSAGE);
 			} else {
 				JOptionPane.showMessageDialog(null, "Fields with * must be filled to complete the operation!",

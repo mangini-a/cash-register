@@ -14,8 +14,9 @@ public interface UserController {
 	 * @param lastName the user's last name
 	 * @param password the user's password
 	 * @param role the user's role
+	 * @return the new user's generated ID
 	 */
-	void addUser(String firstName, String lastName, String password, UserRole role);
+	int addUser(String firstName, String lastName, String password, UserRole role);
 	
 	/**
 	 * Updates an existing user in the database.

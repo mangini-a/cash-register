@@ -69,12 +69,6 @@ public class AddUserPanel extends JPanel {
 		};
 		userTable = new JTable(userTableModel);
 		userTable.setFillsViewportHeight(true);
-
-		// Center the content of all columns
-		for (int i = 0; i < userTable.getColumnCount(); i++) {
-			userTable.getColumnModel().getColumn(i).setCellRenderer(renderer);
-		}
-
 		userTable.setRowHeight(20); // Set row height for vertical "centering"
 		JScrollPane scrollPane = new JScrollPane(userTable);
 

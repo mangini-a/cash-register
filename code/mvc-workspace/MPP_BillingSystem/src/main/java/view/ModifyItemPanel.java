@@ -225,9 +225,6 @@ public class ModifyItemPanel extends JPanel {
 		}
 	}
 	
-	/**
-	 * Orchestrates the data fetching and table population.
-	 */
 	void populateItemTable() {
 		// Fetch data from the database using Hibernate
         List<Item> items = itemController.getAllItems(); 

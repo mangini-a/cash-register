@@ -67,11 +67,35 @@ public interface ItemController {
 	
 	void updateItemQuantityById(int id, int newQuantity);
 
-	String getName(Item selectedItem);
+	/**
+	 * Gets the specified item's name.
+	 *
+	 * @param item the item
+	 * @return the item's name
+	 */
+	String getName(Item item);
 
-	int getQuantity(Item selectedItem);
+	/**
+	 * Gets the specified item's quantity.
+	 *
+	 * @param item the item
+	 * @return the item's quantity
+	 */
+	int getQuantity(Item item);
 
-	double getUnitPrice(Item selectedItem);
+	/**
+	 * Gets the specified item's unit price.
+	 *
+	 * @param item the item
+	 * @return the item's unit price
+	 */
+	double getUnitPrice(Item item);
 
-	ItemCategory getCategory(Item selectedItem);
+	/**
+	 * Gets the specified item's category.
+	 *
+	 * @param item the item
+	 * @return the item's category
+	 */
+	ItemCategory getCategory(Item item);
 }

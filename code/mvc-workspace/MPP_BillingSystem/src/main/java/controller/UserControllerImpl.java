@@ -37,6 +37,27 @@ public class UserControllerImpl implements UserController {
 	}
 	
 	@Override
+	public void updateUser(int id, String newPassword, UserRole newRole) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				User user = session.get(User.class, id);
+				if (user != null) {
+					user.setPassword(newPassword);
+					user.setRole(newRole);
+					session.persist(user);
+					session.getTransaction().commit();
+				} else {
+					throw new IllegalArgumentException("User not found with ID: " + id);
+				}
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
+	}
+	
+	@Override
 	public List<User> getAllUsers() {
 		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
 			session.beginTransaction();
@@ -64,12 +85,6 @@ public class UserControllerImpl implements UserController {
 				throw e; // Re-throw the exception to propagate it up the call stack
 			}
 		}
-	}
-
-	@Override
-	public void updateUser(User user) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -110,7 +125,21 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
+	public String getFirstName(User user) {
+		return user.getFirstName();
+	}
+
+	@Override
+	public String getLastName(User user) {
+		return user.getLastName();
+	}
+	@Override
 	public String getPassword(User user) {
 		return user.getPassword();
+	}
+
+	@Override
+	public UserRole getRole(User user) {
+		return user.getRole();
 	}
 }

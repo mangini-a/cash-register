@@ -94,6 +94,14 @@ public class ManagementView extends JFrame implements PanelChangeListener {
         modifyItemPanel.populateComboBoxItemId(modifyItemPanel.getComboBoxItemId());
 	}
 	
+	@Override
+	public void onUserChanged() {
+		// Refresh both panels when a user is added, updated, or removed
+        addUserPanel.populateUserTable();
+        modifyUserPanel.populateUserTable();
+        modifyUserPanel.populateComboBoxUserId(modifyUserPanel.getComboBoxUserId());
+	}
+	
 	public void display() {
 		setMinimumSize(new Dimension(800, 600));
 		setResizable(true);

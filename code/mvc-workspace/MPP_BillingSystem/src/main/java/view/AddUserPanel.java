@@ -166,7 +166,7 @@ public class AddUserPanel extends JPanel {
 		}
 	}
 
-	private void populateUserTable() {
+	void populateUserTable() {
 		// Fetch data from the database using Hibernate
 		List<User> users = userController.getAllUsers();
 

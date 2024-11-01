@@ -155,22 +155,22 @@ public class ItemControllerImpl implements ItemController {
 	}
 
 	@Override
-	public String getName(Item selectedItem) {
-		return selectedItem.getName();
+	public String getName(Item item) {
+		return item.getName();
 	}
 
 	@Override
-	public int getQuantity(Item selectedItem) {
-		return selectedItem.getQuantity();
+	public int getQuantity(Item item) {
+		return item.getQuantity();
 	}
 
 	@Override
-	public double getUnitPrice(Item selectedItem) {
-		return selectedItem.getUnitPrice();
+	public double getUnitPrice(Item item) {
+		return item.getUnitPrice();
 	}
 
 	@Override
-	public ItemCategory getCategory(Item selectedItem) {
-		return selectedItem.getCategory();
+	public ItemCategory getCategory(Item item) {
+		return item.getCategory();
 	}
 }

@@ -18,6 +18,15 @@ public interface UserController {
 	void addUser(String firstName, String lastName, String password, UserRole role);
 	
 	/**
+	 * Updates an existing user in the database.
+	 *
+	 * @param id the user's id
+	 * @param newPassword the user's new password
+	 * @param newRole the user's new role (only if it switches from being a CASHIER to a MANAGER)
+	 */
+	void updateUser(int id, String newPassword, UserRole newRole);
+	
+	/**
 	 * Gets all the users in the database.
 	 *
 	 * @return all the users currently in the database
@@ -31,8 +40,6 @@ public interface UserController {
 	 * @return the user
 	 */
 	User getUserById(int id);
-	
-	void updateUser(User user);
 	
 	/**
 	 * Removes a user from the database by its id.
@@ -57,10 +64,34 @@ public interface UserController {
 	boolean isUserManager(User user);
 	
 	/**
+	 * Gets the specified user's first name.
+	 *
+	 * @param user the user
+	 * @return the user's first name
+	 */
+	String getFirstName(User user);
+	
+	/**
+	 * Gets the specified user's last name.
+	 *
+	 * @param user the user
+	 * @return the user's last name
+	 */
+	String getLastName(User user);
+	
+	/**
 	 * Gets the specified user's password.
 	 *
 	 * @param user the user
 	 * @return the user's password
 	 */
 	String getPassword(User user);
+	
+	/**
+	 * Gets the specified user's role.
+	 *
+	 * @param user the user
+	 * @return the user's role
+	 */
+	UserRole getRole(User user);
 }

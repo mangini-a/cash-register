@@ -39,7 +39,7 @@ public class LoginView extends JFrame {
 
 	public LoginView() {
 		// Configure the frame
-		setTitle("Login Procedure");
+		setTitle("Login");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		contentPane = new JPanel(new GridLayout(4, 1, 0, 10)); // 4 rows, 1 column, 10px vertical gap
 		contentPane.setBorder(new EmptyBorder(15, 15, 15, 15)); // 15px border on all sides

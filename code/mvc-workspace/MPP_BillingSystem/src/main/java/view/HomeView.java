@@ -16,14 +16,14 @@ public class HomeView extends JFrame {
 	private UserController userController;
 
 	/**
-	 * Instantiates a new home view when the application is first launched.
+	 * Instantiates a new home page when the application is first launched.
 	 */
 	public HomeView() {
 		initialize();
 	}
 
 	/**
-	 * Instantiates a new home view after a user has logged in.
+	 * Instantiates a new home page after a user has logged in.
 	 *
 	 * @param user the user who logged in
 	 */
@@ -35,7 +35,7 @@ public class HomeView extends JFrame {
 
 	private void initialize() {
 		// Configure the frame
-		setTitle("Main Menu");
+		setTitle("Home Page");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		contentPane = new JPanel();
 		setContentPane(contentPane);

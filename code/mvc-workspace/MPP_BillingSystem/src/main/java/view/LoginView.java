@@ -6,7 +6,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import controller.UserController;
-import controller.UserControllerImpl;
 
 @SuppressWarnings("serial")
 public class LoginView extends JFrame {
@@ -35,7 +34,12 @@ public class LoginView extends JFrame {
 
 	private UserController userController;
 
-	public LoginView() {
+	/**
+	 * Instantiates a new login page in order to let the user access the system.
+	 *
+	 * @param userController the only instance of UserControllerImpl
+	 */
+	public LoginView(UserController userController) {
 		// Configure the frame
 		setTitle("Login");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -44,7 +48,7 @@ public class LoginView extends JFrame {
 		setContentPane(contentPane);
 
 		// Get the only instance of UserController to perform user-related operations on the DB
-		userController = UserControllerImpl.getInstance();
+		this.userController = userController;
 
 		// Define the "User ID" field to be filled in
 		panelUserId = new JPanel(new GridLayout(2, 1));
@@ -106,7 +110,7 @@ public class LoginView extends JFrame {
 					if (userPassword.equals(inputUserPassword)) {
 						dispose();
 						SwingUtilities.invokeLater(() -> {
-							new HomeView(userId).display();
+							new HomeView(userController, userId).display();
 						});
 					} else {
 						JOptionPane.showMessageDialog(null, "You entered a wrong password!", "Access denied",

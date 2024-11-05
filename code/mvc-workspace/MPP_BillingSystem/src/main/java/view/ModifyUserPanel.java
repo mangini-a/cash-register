@@ -7,7 +7,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 import controller.UserController;
-import controller.UserControllerImpl;
 import model.UserRole;
 
 @SuppressWarnings("serial")
@@ -35,10 +34,10 @@ public class ModifyUserPanel extends JPanel {
 
 	private int loggedManagerId;
 
-	public ModifyUserPanel(PanelChangeListener listener, int loggedManagerId) {
+	public ModifyUserPanel(PanelChangeListener listener, int loggedManagerId, UserController userController) {
 		this.listener = listener;
 		this.loggedManagerId = loggedManagerId;
-		userController = UserControllerImpl.getInstance();
+		this.userController = userController;
 		initializeComponents();
 		renderer = new StaffTableCellRenderer(loggedManagerId);
 		userTable.setDefaultRenderer(Object.class, renderer); // Apply the renderer to all columns

@@ -8,6 +8,9 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.hibernate.Session;
 
 import com.formdev.flatlaf.FlatIntelliJLaf;
+
+import controller.UserController;
+import controller.UserControllerImpl;
 import jakarta.persistence.TypedQuery;
 import utils.HibernateSessionFactory;
 import view.HomeView;
@@ -19,7 +22,8 @@ public class DesktopApp {
 			UIManager.setLookAndFeel(new FlatIntelliJLaf());
 			warmUpDatabase();
 			SwingUtilities.invokeLater(() -> {
-				new HomeView().display();
+				UserController userController = UserControllerImpl.getInstance(); // Get the singleton instance
+				new HomeView(userController).display(); // Pass it to HomeView
 			});
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();

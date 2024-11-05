@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 import controller.UserController;
-import controller.UserControllerImpl;
 
 @SuppressWarnings("serial")
 public class HomeView extends JFrame {
@@ -15,19 +14,22 @@ public class HomeView extends JFrame {
 
 	/**
 	 * Instantiates a new home page when the application is first launched.
+	 * @param userController the only instance of UserControllerImpl
 	 */
-	public HomeView() {
+	public HomeView(UserController userController) {
+		this.userController = userController;
 		initialize();
 	}
 
 	/**
 	 * Instantiates a new home page after a user has logged in.
 	 *
+	 * @param userController the the only instance of UserControllerImpl
 	 * @param userId the user who logged in
 	 */
-	public HomeView(int userId) {
+	public HomeView(UserController userController, int userId) {
+		this.userController = userController;
 		initialize();
-		userController = UserControllerImpl.getInstance();
 		setupUserButtons(userId);
 	}
 
@@ -43,7 +45,7 @@ public class HomeView extends JFrame {
 		JButton btnLogin = createButton("Login", "Log into the system with your credentials", e -> {
 			dispose();
 			SwingUtilities.invokeLater(() -> {
-				new LoginView().display();
+				new LoginView(userController).display();
 			});
 		});
 		contentPane.add(btnLogin);
@@ -95,7 +97,7 @@ public class HomeView extends JFrame {
 		btnCashRegister.addActionListener(e -> {
 			dispose();
 			SwingUtilities.invokeLater(() -> {
-				new CashRegisterView(userId).display();
+				new CashRegisterView(userController, userId).display();
 			});
 		});
 
@@ -106,7 +108,7 @@ public class HomeView extends JFrame {
 		btnManagement.addActionListener(e -> {
 			dispose();
 			SwingUtilities.invokeLater(() -> {
-				new ManagementView(userId).display();
+				new ManagementView(userController, userId).display();
 			});
 		});
 	}

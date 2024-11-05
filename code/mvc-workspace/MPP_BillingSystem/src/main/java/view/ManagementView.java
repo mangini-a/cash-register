@@ -4,6 +4,8 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import controller.UserController;
+
 @SuppressWarnings("serial")
 public class ManagementView extends JFrame implements PanelChangeListener {
 
@@ -21,7 +23,7 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 	private JPanel btnBackToHomePanel;
 	private JButton btnBackToHome;
 	
-	public ManagementView(int userId) {
+	public ManagementView(UserController userController, int userId) {
 		// Configure the frame
 		setTitle("Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,7 +31,7 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 		// Create the main tabbed pane, to which three tabs are added
 		mainTabbedPane = new JTabbedPane();
 		mainTabbedPane.addTab("Stock", createStockTabbedPane());
-		mainTabbedPane.addTab("Staff", createStaffTabbedPane(userId));
+		mainTabbedPane.addTab("Staff", createStaffTabbedPane(userController, userId));
 		mainTabbedPane.addTab("Accounting", createAccountingTabbedPane(userId)); 
 
 		// Add the "Back to Home" button
@@ -39,7 +41,7 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 		btnBackToHome.addActionListener(e -> {
 			dispose();
 			SwingUtilities.invokeLater(() -> {
-				new HomeView(userId).display();
+				new HomeView(userController, userId).display();
 			});
 		});
 		btnBackToHomePanel.add(btnBackToHome);
@@ -67,12 +69,12 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 		return stockTabbedPane;
 	}
 
-	private JTabbedPane createStaffTabbedPane(int userId) {
+	private JTabbedPane createStaffTabbedPane(UserController userController, int userId) {
 		JTabbedPane staffTabbedPane = new JTabbedPane();
-		addUserPanel = new AddUserPanel(this, userId);
+		addUserPanel = new AddUserPanel(this, userId, userController);
 		addUserPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
 		staffTabbedPane.addTab("Add a new user", addUserPanel);
-		modifyUserPanel = new ModifyUserPanel(this, userId);
+		modifyUserPanel = new ModifyUserPanel(this, userId, userController);
 		modifyUserPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
 		staffTabbedPane.addTab("Modify an existing user's credentials", modifyUserPanel);
 		return staffTabbedPane;

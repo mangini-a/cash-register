@@ -15,6 +15,7 @@ import controller.InvoiceControllerImpl;
 import controller.ItemController;
 import controller.ItemControllerImpl;
 import controller.StockExceededException;
+import controller.UserController;
 
 @SuppressWarnings("serial")
 public class CashRegisterView extends JFrame {
@@ -54,7 +55,7 @@ public class CashRegisterView extends JFrame {
 
 	private Set<Integer> quantityModel;
 
-	public CashRegisterView(int userId) {
+	public CashRegisterView(UserController userController, int userId) {
 		// Setup the frame
 		setTitle("Cash Register");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -152,7 +153,7 @@ public class CashRegisterView extends JFrame {
 		btnBackToHome.addActionListener(e -> {
 			dispose();
 			SwingUtilities.invokeLater(() -> {
-				new HomeView(userId).display();
+				new HomeView(userController, userId).display();
 			});
 		});
 		btnBackToHomePanel.add(btnBackToHome);

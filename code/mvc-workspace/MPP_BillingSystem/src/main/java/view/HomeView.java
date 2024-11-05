@@ -11,7 +11,6 @@ import controller.UserControllerImpl;
 public class HomeView extends JFrame {
 
 	private JPanel contentPane;
-
 	private UserController userController;
 
 	/**

@@ -11,7 +11,6 @@ import javax.swing.text.NumberFormatter;
 
 import controller.ItemController;
 import controller.ItemControllerImpl;
-import model.Item;
 import model.ItemCategory;
 
 @SuppressWarnings("serial")
@@ -32,7 +31,7 @@ public class ModifyItemPanel extends JPanel {
 	private JComboBox<ItemCategory> comboBoxCategory;
 
 	private ItemController itemController;
-	
+
 	private PanelChangeListener listener;
 
 	public ModifyItemPanel(PanelChangeListener listener) {
@@ -49,9 +48,9 @@ public class ModifyItemPanel extends JPanel {
 		// Define the existing items table's model
 		itemTableModel = new DefaultTableModel(new Object[] { "ID", "Name", "Quantity", "Unit Price", "Category" }, 0) {
 			@Override
-	        public boolean isCellEditable(int row, int column) {
-	            return false; // Make all cells non-editable
-	        }
+			public boolean isCellEditable(int row, int column) {
+				return false; // Make all cells non-editable
+			}
 		};
 		JTable itemTable = new JTable(itemTableModel);
 		itemTable.setFillsViewportHeight(true);
@@ -63,17 +62,17 @@ public class ModifyItemPanel extends JPanel {
 
 		itemTable.setRowHeight(20); // Set row height for vertical "centering"
 		JScrollPane scrollPane = new JScrollPane(itemTable);
-		
+
 		// Create a title label for the table
-        JLabel titleLabel = new JLabel("Products currently in stock", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Segoe UI", Font.ITALIC, 16));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0)); // Add some padding
-		
+		JLabel titleLabel = new JLabel("Products currently in stock", SwingConstants.CENTER);
+		titleLabel.setFont(new Font("Segoe UI", Font.ITALIC, 16));
+		titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0)); // Add some padding
+
 		// Create a panel to hold the title label and the table itself
 		tablePanel = new JPanel();
 		tablePanel.setLayout(new BorderLayout());
-        tablePanel.add(titleLabel, BorderLayout.NORTH);
-        tablePanel.add(scrollPane, BorderLayout.CENTER);
+		tablePanel.add(titleLabel, BorderLayout.NORTH);
+		tablePanel.add(scrollPane, BorderLayout.CENTER);
 
 		// Define the "Item ID" field to be selected
 		JPanel panelItemId = new JPanel(new GridLayout(2, 1));
@@ -158,14 +157,14 @@ public class ModifyItemPanel extends JPanel {
 
 		// Add all the items in the database to the corresponding table
 		populateItemTable();
-		
+
 		// Add all the ids in the database to the corresponding JComboBox
 		populateComboBoxItemId(comboBoxItemId);
 
 		// Populate the fields for the initially selected item
 		fillItemFields(comboBoxItemId, fieldName, fieldQuantity, fieldUnitPrice, comboBoxCategory);
 	}
-	
+
 	private void layoutComponents() {
 		add(tablePanel, BorderLayout.WEST);
 		add(formPanel, BorderLayout.CENTER);
@@ -173,14 +172,14 @@ public class ModifyItemPanel extends JPanel {
 
 	private JFormattedTextField createQuantityFormattedTextField() {
 		// Create a NumberFormatter for integers
-        NumberFormat format = NumberFormat.getIntegerInstance();
+		NumberFormat format = NumberFormat.getIntegerInstance();
 		NumberFormatter intFormatter = new NumberFormatter(format);
 		intFormatter.setValueClass(Integer.class);
 		intFormatter.setMinimum(1); // Set minimum to 1 for positive integers
 		intFormatter.setMaximum(Integer.MAX_VALUE);
 		intFormatter.setAllowsInvalid(false); // Prevent invalid input
 		intFormatter.setCommitsOnValidEdit(true); // Commit on valid edit
-		
+
 		// Create the JFormattedTextField with the formatter
 		JFormattedTextField quantityField = new JFormattedTextField(intFormatter);
 		quantityField.setValue(1); // Set a default value
@@ -189,17 +188,17 @@ public class ModifyItemPanel extends JPanel {
 
 	private JFormattedTextField createUnitPriceFormattedTextField() {
 		// Create a NumberFormatter for currency (€)
-        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.ITALY);
+		NumberFormat format = NumberFormat.getCurrencyInstance(Locale.ITALY);
 		NumberFormatter decFormatter = new NumberFormatter(format);
 		decFormatter.setValueClass(Double.class);
 		decFormatter.setMinimum(0.0);
 		decFormatter.setMaximum(Double.MAX_VALUE);
 		decFormatter.setAllowsInvalid(false); // Prevent invalid input
 		decFormatter.setCommitsOnValidEdit(true); // Commit on valid edit
-		
+
 		// Create the JFormattedTextField with the formatter
-        JFormattedTextField priceField = new JFormattedTextField(decFormatter);
-        priceField.setValue(0.0); // Set a default value
+		JFormattedTextField priceField = new JFormattedTextField(decFormatter);
+		priceField.setValue(0.0); // Set a default value
 		return priceField;
 	}
 
@@ -225,29 +224,25 @@ public class ModifyItemPanel extends JPanel {
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			JOptionPane.showMessageDialog(null, "The item could not be updated!",
-					"Something went wrong", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "The item could not be updated!", "Something went wrong",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
+
 	void populateItemTable() {
 		// Fetch data from the database using Hibernate
-        List<Item> items = itemController.getAllItems(); 
+		List<Integer> itemIds = itemController.getAllItemIds();
 
-        // Clear any existing data in the table model
-        itemTableModel.setRowCount(0); 
+		// Clear any existing data in the table model
+		itemTableModel.setRowCount(0);
 
-        // Populate the table model with fetched items
-        for (Item item : items) {
-            Object[] rowData = {
-            		itemController.getId(item),
-					itemController.getName(item),
-					itemController.getQuantity(item),
-					itemController.getUnitPrice(item),
-					itemController.getCategory(item)
-            };
-            itemTableModel.addRow(rowData);
-        }
+		// Populate the table model with fetched items
+		for (Integer itemId : itemIds) {
+			Object[] rowData = { itemId, itemController.getItemNameById(itemId),
+					itemController.getItemQuantityById(itemId), itemController.getItemUnitPriceById(itemId),
+					itemController.getItemCategoryById(itemId) };
+			itemTableModel.addRow(rowData);
+		}
 	}
 
 	private void clearFields() {
@@ -260,8 +255,8 @@ public class ModifyItemPanel extends JPanel {
 
 	void populateComboBoxItemId(JComboBox<Integer> comboBoxItemId) {
 		DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
-		for (Integer id : itemController.getAllItemIds()) {
-			model.addElement(id);
+		for (Integer itemId : itemController.getAllItemIds()) {
+			model.addElement(itemId);
 		}
 		comboBoxItemId.setModel(model);
 	}
@@ -271,16 +266,17 @@ public class ModifyItemPanel extends JPanel {
 			JComboBox<ItemCategory> comboBoxCategory) {
 		try {
 			Integer selectedItemId = (Integer) comboBoxItemId.getSelectedItem();
-			Item selectedItem = itemController.getItemById(selectedItemId);
-			textFieldName.setText(itemController.getName(selectedItem));
-			textFieldQuantity.setValue(itemController.getQuantity(selectedItem));
-			textFieldUnitPrice.setValue(itemController.getUnitPrice(selectedItem));
-			ItemCategory selectedCategory = itemController.getCategory(selectedItem);
+			
+			// Fill in the user fields
+			textFieldName.setText(itemController.getItemNameById(selectedItemId));
+			textFieldQuantity.setValue(itemController.getItemQuantityById(selectedItemId));
+			textFieldUnitPrice.setValue(itemController.getItemUnitPriceById(selectedItemId));
+			ItemCategory selectedCategory = itemController.getItemCategoryById(selectedItemId);
 			comboBoxCategory.setSelectedItem(selectedCategory);
 		} catch (Exception e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "The item details could not be loaded!",
-					"Something went wrong", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "The item details could not be loaded!", "Something went wrong",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

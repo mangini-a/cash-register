@@ -5,32 +5,16 @@ public interface InvoiceController {
 	/**
 	 * Adds a cart line to the associated HashMap.
 	 *
-	 * @param itemId the item ID selected by the user
+	 * @param itemId the item id selected by the user
 	 * @param itemQty the item quantity selected by the user
 	 * @throws StockExceededException 
 	 */
 	void addCartLine(Integer itemId, Integer itemQty) throws StockExceededException;
 	
 	/**
-	 * Gets the item name by its id.
+	 * Calculates the cart price step by step.
 	 *
-	 * @param itemId the item ID selected by the user
-	 * @return the item name
-	 */
-	String getItemNameById(Integer itemId);
-	
-	/**
-	 * Gets the item unit price by its id.
-	 *
-	 * @param itemId the item ID selected by the user
-	 * @return the item unit price
-	 */
-	double getItemUnitPriceById(Integer itemId);
-	
-	/**
-	 * Calculates the partial cart price step by step.
-	 *
-	 * @param itemId the item ID selected by the user
+	 * @param itemId the item id selected by the user
 	 * @param itemQty the item quantity selected by the user
 	 * @return a double representing the cumulative sum of the cart items' price
 	 */
@@ -47,7 +31,7 @@ public interface InvoiceController {
 	 * @param userId the id of the user who generated it
 	 * @param totalPrice the total cart amount
 	 */
-	void addInvoice(int userId, Double totalPrice);
+	void addInvoice(int userId, double totalPrice);
 
 	/**
 	 * Updates the available quantity of each sold item.

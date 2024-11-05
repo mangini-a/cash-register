@@ -66,9 +66,9 @@ public class CashRegisterView extends JFrame {
 		// Define the cart composition table's model
 		cartTableModel = new DefaultTableModel(new Object[] { "ID", "Name", "Quantity", "Unit Price" }, 0) {
 			@Override
-	        public boolean isCellEditable(int row, int column) {
-	            return false; // Make all cells non-editable
-	        }
+			public boolean isCellEditable(int row, int column) {
+				return false; // Make all cells non-editable
+			}
 		};
 		cartTable = new JTable(cartTableModel);
 		cartTable.setFillsViewportHeight(true);
@@ -172,13 +172,18 @@ public class CashRegisterView extends JFrame {
 	}
 
 	private void addToCart() {
+		// Acquire data selected by the user
 		Integer selectedItemId = (Integer) comboBoxItemId.getSelectedItem();
 		Integer selectedItemQty = (Integer) comboBoxItemQty.getSelectedItem();
+
 		try {
+			// Add a product line to the cart, both back-end and front-end
 			invoiceController.addCartLine(selectedItemId, selectedItemQty);
-			Object[] rowData = { selectedItemId, invoiceController.getItemNameById(selectedItemId), selectedItemQty,
-					invoiceController.getItemUnitPriceById(selectedItemId) };
+			Object[] rowData = { selectedItemId, itemController.getItemNameById(selectedItemId), selectedItemQty,
+					itemController.getItemUnitPriceById(selectedItemId) };
 			cartTableModel.addRow(rowData);
+
+			// Calculate the updated partial price and show it to the user
 			String partialPrice = String.valueOf(invoiceController.calculatePartial(selectedItemId, selectedItemQty));
 			textFieldTotalPrice.setText(partialPrice);
 		} catch (StockExceededException ex) {
@@ -188,22 +193,14 @@ public class CashRegisterView extends JFrame {
 	}
 
 	private void checkout(int userId) {
-		String strTot = textFieldTotalPrice.getText();
-		if (!strTot.isBlank()) {
-			Double totalPrice = Double.parseDouble(strTot);
+		// Acquire the string representing the amount reached
+		String stringTotalPrice = textFieldTotalPrice.getText();
 
-			// Add a new invoice to the database
-			invoiceController.addInvoice(userId, totalPrice);
-
-			// Update the stock by decreasing the sold quantities
-			invoiceController.updateInventory();
-
-			// Clear the cart and reset UI
-			invoiceController.emptyCartLines();
-			comboBoxItemId.setSelectedIndex(0);
-			comboBoxItemQty.setSelectedIndex(0);
-			textFieldTotalPrice.setText("");
-			cartTableModel.setRowCount(0); // Clear the table
+		if (!stringTotalPrice.isBlank()) {
+			double totalPrice = Double.parseDouble(stringTotalPrice);
+			invoiceController.addInvoice(userId, totalPrice); // Add a new invoice to the database
+			invoiceController.updateInventory(); // Update the stock by decreasing the sold quantities
+			clearCart(); // Clear the cart and reset the UI
 		} else {
 			JOptionPane.showMessageDialog(null, "Start by adding some items to the cart!", "Empty cart",
 					JOptionPane.WARNING_MESSAGE);
@@ -235,8 +232,8 @@ public class CashRegisterView extends JFrame {
 
 	private void populateComboBoxItemId(JComboBox<Integer> comboBoxItemId) {
 		DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
-		for (Integer id : itemController.getAllItemIds()) {
-			model.addElement(id);
+		for (Integer itemId : itemController.getAllItemIds()) {
+			model.addElement(itemId);
 		}
 		comboBoxItemId.setModel(model);
 	}
@@ -244,12 +241,8 @@ public class CashRegisterView extends JFrame {
 	private void updateComboBoxItemQty(JComboBox<Integer> comboBoxItemId, JComboBox<Integer> comboBoxItemQty) {
 		try {
 			Integer selectedItemId = (Integer) comboBoxItemId.getSelectedItem();
-			if (selectedItemId != null) {
-				quantityModel = itemController.showOneToQuantity(itemController.getItemById(selectedItemId));
-				comboBoxItemQty.setModel(new DefaultComboBoxModel<>(quantityModel.toArray(new Integer[0])));
-			} else {
-				comboBoxItemQty.setModel(new DefaultComboBoxModel<>(new Integer[0])); // Clear if no selection
-			}
+			quantityModel = itemController.showOneToQuantity(selectedItemId);
+			comboBoxItemQty.setModel(new DefaultComboBoxModel<>(quantityModel.toArray(new Integer[0])));
 		} catch (Exception e) {
 			e.printStackTrace();
 			comboBoxItemQty.setModel(new DefaultComboBoxModel<>(new Integer[0])); // Clear on error

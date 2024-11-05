@@ -2,7 +2,6 @@ package controller;
 
 import java.util.List;
 
-import model.User;
 import model.UserRole;
 
 public interface UserController {
@@ -28,21 +27,6 @@ public interface UserController {
 	void updateUser(int id, String newPassword, UserRole newRole);
 	
 	/**
-	 * Gets all the users in the database.
-	 *
-	 * @return all the users currently in the database
-	 */
-	List<User> getAllUsers();
-	
-	/**
-	 * Gets a user from the database by its id.
-	 *
-	 * @param userId the user's id
-	 * @return the user
-	 */
-	User getUserById(int userId);
-	
-	/**
 	 * Removes a user from the database by its id.
 	 *
 	 * @param id the user's id
@@ -65,28 +49,20 @@ public interface UserController {
 	boolean isUserManager(int userId);
 	
 	/**
-	 * Gets the specified user's id.
+	 * Gets a user's first name by its id.
 	 *
-	 * @param user the user
-	 * @return the user's id
-	 */
-	int getId(User user);
-	
-	/**
-	 * Gets the specified user's first name.
-	 *
-	 * @param user the user
+	 * @param userId the user's id
 	 * @return the user's first name
 	 */
-	String getFirstName(User user);
+	String getUserFirstNameById(Integer userId);
 	
 	/**
-	 * Gets the specified user's last name.
+	 * Gets a user's last name by its id.
 	 *
-	 * @param user the user
+	 * @param userId the user's id
 	 * @return the user's last name
 	 */
-	String getLastName(User user);
+	String getUserLastNameById(Integer userId);
 	
 	/**
 	 * Gets a user's password by its id.
@@ -94,13 +70,13 @@ public interface UserController {
 	 * @param userId the user's id
 	 * @return the user's password
 	 */
-	String getUserPasswordById(int userId);
+	String getUserPasswordById(Integer userId);
 	
 	/**
-	 * Gets the specified user's role.
+	 * Gets a user's role by its id.
 	 *
-	 * @param user the user
+	 * @param userId the user's id
 	 * @return the user's role
 	 */
-	UserRole getRole(User user);
+	UserRole getUserRoleById(Integer userId);
 }

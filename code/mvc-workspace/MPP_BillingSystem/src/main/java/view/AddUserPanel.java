@@ -1,26 +1,13 @@
 package view;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 import controller.UserController;
 import controller.UserControllerImpl;
-import model.User;
 import model.UserRole;
 
 @SuppressWarnings("serial")
@@ -169,14 +156,15 @@ public class AddUserPanel extends JPanel {
 
 	void populateUserTable() {
 		// Fetch data from the database using Hibernate
-		List<User> users = userController.getAllUsers();
+		List<Integer> userIds = userController.getAllUserIds();
 
 		// Clear any existing data in the table model
 		userTableModel.setRowCount(0);
 
 		// Populate the table model with fetched items
-		for (User user : users) {
-			Object[] rowData = { userController.getId(user), userController.getFirstName(user), userController.getLastName(user), userController.getRole(user) };
+		for (Integer userId : userIds) {
+			Object[] rowData = { userId, userController.getUserFirstNameById(userId), 
+					userController.getUserLastNameById(userId), userController.getUserRoleById(userId) };
 			userTableModel.addRow(rowData);
 		}
 	}

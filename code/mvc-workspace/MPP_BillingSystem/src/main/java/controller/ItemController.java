@@ -3,7 +3,6 @@ package controller;
 import java.util.List;
 import java.util.Set;
 
-import model.Item;
 import model.ItemCategory;
 
 public interface ItemController {
@@ -30,21 +29,6 @@ public interface ItemController {
 	void updateItem(int id, String newName, int newQuantity, double newUnitPrice, ItemCategory newCategory);
 	
 	/**
-	 * Gets all the items in the database.
-	 *
-	 * @return all the items currently in the database
-	 */
-	List<Item> getAllItems();
-	
-	/**
-	 * Gets an item from the database by its id.
-	 *
-	 * @param id the item's id
-	 * @return the item
-	 */
-	Item getItemById(int id);
-	
-	/**
 	 * Removes an item from the database by its id.
 	 *
 	 * @param id the item's id
@@ -59,51 +43,49 @@ public interface ItemController {
 	List<Integer> getAllItemIds();
 	
 	/**
-	 * Get quantity and all the numbers from one to argument
-	 * @param item
+	 * Captures an item's quantity and all the numbers from one to the former.
+	 * @param itemId the item id
 	 * @return an array of all the values till quantity
 	 */
-	Set<Integer> showOneToQuantity(Item item);
-	
-	void updateItemQuantityById(int id, int newQuantity);
+	Set<Integer> showOneToQuantity(Integer itemId);
 	
 	/**
-	 * Gets the specified item's id.
+	 * Update an item's quantity by its id.
 	 *
-	 * @param item the item
-	 * @return the item's id
+	 * @param itemId the item id
+	 * @param newQuantity the new quantity (given by previous quantity minus sold quantity)
 	 */
-	int getId(Item item);
+	void updateItemQuantityById(Integer itemId, int newQuantity);
 
 	/**
-	 * Gets the specified item's name.
+	 * Gets an item's name by its id.
 	 *
-	 * @param item the item
+	 * @param itemId the item's id
 	 * @return the item's name
 	 */
-	String getName(Item item);
+	String getItemNameById(Integer itemId);
 
 	/**
-	 * Gets the specified item's quantity.
+	 * Gets an item's quantity by its id.
 	 *
-	 * @param item the item
+	 * @param itemId the item's id
 	 * @return the item's quantity
 	 */
-	int getQuantity(Item item);
+	int getItemQuantityById(Integer itemId);
 
 	/**
-	 * Gets the specified item's unit price.
+	 * Gets an item's unit price by its id.
 	 *
-	 * @param item the item
+	 * @param itemId the item's id
 	 * @return the item's unit price
 	 */
-	double getUnitPrice(Item item);
+	double getItemUnitPriceById(Integer itemId);
 
 	/**
-	 * Gets the specified item's category.
+	 * Gets an item's category by its id.
 	 *
-	 * @param item the item
+	 * @param itemId the item's id
 	 * @return the item's category
 	 */
-	ItemCategory getCategory(Item item);
+	ItemCategory getItemCategoryById(Integer itemId);
 }

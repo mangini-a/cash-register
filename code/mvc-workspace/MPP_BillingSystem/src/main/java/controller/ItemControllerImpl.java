@@ -13,8 +13,7 @@ import utils.HibernateSessionFactory;
 public class ItemControllerImpl implements ItemController {
 
 	// Private constructor to prevent instantiation
-	private ItemControllerImpl() {
-	}
+	private ItemControllerImpl() {}
 
 	private static class SingletonHelper {
 		private static final ItemControllerImpl singleInstance = new ItemControllerImpl();
@@ -61,49 +60,19 @@ public class ItemControllerImpl implements ItemController {
 			}
 		}
 	}
-	
-	@Override
-	public List<Item> getAllItems() {
-		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
-			session.beginTransaction();
-            try {
-                List<Item> items = session.createQuery("FROM Item", Item.class).list();
-                session.getTransaction().commit();
-                return items;
-            } catch (Exception e) {
-            	session.getTransaction().rollback();
-				throw e; // Re-throw the exception to propagate it up the call stack
-            }
-        }
-	}
 
 	@Override
-	public Item getItemById(int id) {
+	public void updateItemQuantityById(Integer itemId, int newQuantity) {
 		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			try {
-				Item item = session.get(Item.class, id);
-				session.getTransaction().commit();
-				return item; // Returns the item if found, or null if not found
-			} catch (Exception e) {
-				session.getTransaction().rollback();
-				throw e; // Re-throw the exception to propagate it up the call stack
-			}
-		}
-	}
-
-	@Override
-	public void updateItemQuantityById(int id, int newQuantity) {
-		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
-			session.beginTransaction();
-			try {
-				Item item = session.get(Item.class, id);
+				Item item = session.get(Item.class, itemId);
 				if (item != null) {
 					item.setQuantity(newQuantity);
 					session.persist(item);
 					session.getTransaction().commit();
 				} else {
-					throw new IllegalArgumentException("Item not found with ID: " + id);
+					throw new IllegalArgumentException("Item not found with ID: " + itemId);
 				}
 			} catch (Exception e) {
 				session.getTransaction().rollback();
@@ -145,37 +114,72 @@ public class ItemControllerImpl implements ItemController {
 	}
 
 	@Override
-	public Set<Integer> showOneToQuantity(Item item) {
-		Set<Integer> qtys = new HashSet<>();
-		int quantity = item.getQuantity();
+	public Set<Integer> showOneToQuantity(Integer itemId) {
+		Set<Integer> quantityScale = new HashSet<>();
+		int quantity = getItemQuantityById(itemId);
 		for (int i = 1; i <= quantity; i++) {
-			qtys.add(i);
+			quantityScale.add(i);
 		}
-		return qtys;
-	}
-
-	@Override
-	public int getId(Item item) {
-		return item.getId();
+		return quantityScale;
 	}
 	
 	@Override
-	public String getName(Item item) {
-		return item.getName();
+	public String getItemNameById(Integer itemId) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				Item item = session.get(Item.class, itemId);
+				session.getTransaction().commit();
+				return item.getName();
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
 	}
 
 	@Override
-	public int getQuantity(Item item) {
-		return item.getQuantity();
+	public int getItemQuantityById(Integer itemId) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				Item item = session.get(Item.class, itemId);
+				session.getTransaction().commit();
+				return item.getQuantity();
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
 	}
 
 	@Override
-	public double getUnitPrice(Item item) {
-		return item.getUnitPrice();
+	public double getItemUnitPriceById(Integer itemId) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				Item item = session.get(Item.class, itemId);
+				session.getTransaction().commit();
+				return item.getUnitPrice();
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
 	}
 
 	@Override
-	public ItemCategory getCategory(Item item) {
-		return item.getCategory();
+	public ItemCategory getItemCategoryById(Integer itemId) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				Item item = session.get(Item.class, itemId);
+				session.getTransaction().commit();
+				return item.getCategory();
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
 	}
 }

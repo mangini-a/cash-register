@@ -59,36 +59,6 @@ public class UserControllerImpl implements UserController {
 			}
 		}
 	}
-	
-	@Override
-	public List<User> getAllUsers() {
-		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
-			session.beginTransaction();
-            try {
-                List<User> users = session.createQuery("FROM User", User.class).list();
-                session.getTransaction().commit();
-                return users;
-            } catch (Exception e) {
-            	session.getTransaction().rollback();
-				throw e; // Re-throw the exception to propagate it up the call stack
-            }
-        }
-	}
-
-	@Override
-	public User getUserById(int userId) {
-		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
-			session.beginTransaction();
-			try {
-				User user = session.get(User.class, userId);
-				session.getTransaction().commit();
-				return user; // Return the user if found, or null if not found
-			} catch (Exception e) {
-				session.getTransaction().rollback();
-				throw e; // Re-throw the exception to propagate it up the call stack
-			}
-		}
-	}
 
 	@Override
 	public void removeUserById(int id) {
@@ -136,23 +106,39 @@ public class UserControllerImpl implements UserController {
 			}
 		}
 	}
+
+	@Override
+	public String getUserFirstNameById(Integer userId) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				User user = session.get(User.class, userId);
+				session.getTransaction().commit();
+				return user.getFirstName();
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
+	}
+
+	@Override
+	public String getUserLastNameById(Integer userId) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				User user = session.get(User.class, userId);
+				session.getTransaction().commit();
+				return user.getLastName();
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
+	}
 	
 	@Override
-	public int getId(User user) {
-		return user.getId();
-	}
-
-	@Override
-	public String getFirstName(User user) {
-		return user.getFirstName();
-	}
-
-	@Override
-	public String getLastName(User user) {
-		return user.getLastName();
-	}
-	@Override
-	public String getUserPasswordById(int userId) {
+	public String getUserPasswordById(Integer userId) {
 		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			try {
@@ -167,7 +153,17 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public UserRole getRole(User user) {
-		return user.getRole();
+	public UserRole getUserRoleById(Integer userId) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				User user = session.get(User.class, userId);
+				session.getTransaction().commit();
+				return user.getRole();
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
 	}
 }

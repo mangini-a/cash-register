@@ -213,17 +213,17 @@ public class ModifyUserPanel extends JPanel {
 
 	void populateUserTable() {
 		// Fetch data from the database using Hibernate
-		List<User> users = userController.getAllUsers();
-
+		List<Integer> userIds = userController.getAllUserIds();
+		
 		// Clear any existing data in the table model
 		userTableModel.setRowCount(0);
-
+		
 		// Populate the table model with fetched items
-		for (User user : users) {
+		for (Integer userId : userIds) {
 			// Include the logged manager and all the cashiers
-			if (userController.getId(user) == loggedManagerId || !userController.isUserManager(user)) {
-				Object[] rowData = { userController.getId(user), userController.getFirstName(user),
-						userController.getLastName(user), userController.getRole(user) };
+			if (userId == loggedManagerId || !userController.isUserManager(userId)) {
+				Object[] rowData = { userId, userController.getUserFirstNameById(userId), 
+						userController.getUserLastNameById(userId), userController.getUserRoleById(userId) };
 				userTableModel.addRow(rowData);
 			}
 		}
@@ -241,13 +241,13 @@ public class ModifyUserPanel extends JPanel {
 		DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
 
 		// Fetch data from the database using Hibernate
-		List<User> users = userController.getAllUsers();
+		List<Integer> userIds = userController.getAllUserIds();
 	    
 		// Populate the combo box with fetched items
-	    for (User user : users) {
+	    for (Integer userId : userIds) {
 	    	// Include the logged manager and all the cashiers
-	        if (userController.getId(user) == loggedManagerId || !userController.isUserManager(user)) {
-	            model.addElement(userController.getId(user));
+	        if (userId == loggedManagerId || !userController.isUserManager(userId)) {
+	            model.addElement(userId);
 	        }
 	    }
 
@@ -259,12 +259,12 @@ public class ModifyUserPanel extends JPanel {
 			JTextField fieldPassword, JComboBox<UserRole> comboBoxRole) {
 		try {
 			Integer selectedUserId = (Integer) comboBoxUserId.getSelectedItem();
-			User selectedUser = userController.getUserById(selectedUserId);
+			
 			// Fill in the user fields
-			fieldFirstName.setText(userController.getFirstName(selectedUser));
-			fieldLastName.setText(userController.getLastName(selectedUser));
-			fieldPassword.setText(userController.getUserPasswordById(selectedUser));
-			UserRole selectedRole = userController.getRole(selectedUser);
+			fieldFirstName.setText(userController.getUserFirstNameById(selectedUserId));
+			fieldLastName.setText(userController.getUserLastNameById(selectedUserId));
+			fieldPassword.setText(userController.getUserPasswordById(selectedUserId));
+			UserRole selectedRole = userController.getUserRoleById(selectedUserId);
 			comboBoxRole.setSelectedItem(selectedRole);
 
 			// Check if the selected user is the logged manager

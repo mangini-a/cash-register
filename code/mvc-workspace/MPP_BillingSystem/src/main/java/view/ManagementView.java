@@ -9,6 +9,7 @@ import controller.InvoiceControllerImpl;
 import controller.ItemController;
 import controller.ItemControllerImpl;
 import controller.UserController;
+import view.listeners.PanelChangeListener;
 
 @SuppressWarnings("serial")
 public class ManagementView extends JFrame implements PanelChangeListener {

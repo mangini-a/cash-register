@@ -1,4 +1,4 @@
-package view;
+package view.renderers;
 
 import java.awt.Component;
 

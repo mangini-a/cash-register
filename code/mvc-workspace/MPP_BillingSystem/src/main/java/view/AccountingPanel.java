@@ -14,6 +14,7 @@ import javax.swing.table.DefaultTableModel;
 
 import controller.InvoiceController;
 import controller.UserController;
+import view.renderers.AccountingTableCellRenderer;
 
 @SuppressWarnings("serial")
 public class AccountingPanel extends JPanel {

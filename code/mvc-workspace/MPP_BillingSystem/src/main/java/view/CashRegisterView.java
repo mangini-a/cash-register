@@ -18,6 +18,7 @@ import controller.ItemController;
 import controller.ItemControllerImpl;
 import controller.StockExceededException;
 import controller.UserController;
+import view.renderers.StockTableCellRenderer;
 
 @SuppressWarnings("serial")
 public class CashRegisterView extends JFrame {

@@ -8,6 +8,8 @@ import javax.swing.table.DefaultTableModel;
 
 import controller.UserController;
 import model.UserRole;
+import view.listeners.PanelChangeListener;
+import view.renderers.StaffTableCellRenderer;
 
 @SuppressWarnings("serial")
 public class AddUserPanel extends JPanel {

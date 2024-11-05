@@ -11,6 +11,8 @@ import javax.swing.text.NumberFormatter;
 
 import controller.ItemController;
 import model.ItemCategory;
+import view.listeners.PanelChangeListener;
+import view.renderers.StockTableCellRenderer;
 
 @SuppressWarnings("serial")
 public class AddItemPanel extends JPanel {

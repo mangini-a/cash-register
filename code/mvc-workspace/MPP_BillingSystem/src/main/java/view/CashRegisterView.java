@@ -18,7 +18,7 @@ import controller.ItemController;
 import controller.ItemControllerImpl;
 import controller.StockExceededException;
 import controller.UserController;
-import view.renderers.StockTableCellRenderer;
+import view.renderers.CartTableCellRenderer;
 
 @SuppressWarnings("serial")
 public class CashRegisterView extends JFrame {
@@ -79,7 +79,7 @@ public class CashRegisterView extends JFrame {
 		
 		// Center the content of all columns
 		for (int i = 0; i < cartTable.getColumnCount(); i++) {
-			cartTable.getColumnModel().getColumn(i).setCellRenderer(new StockTableCellRenderer());
+			cartTable.getColumnModel().getColumn(i).setCellRenderer(new CartTableCellRenderer());
 		}
 		
 		// Set row height for vertical "centering"

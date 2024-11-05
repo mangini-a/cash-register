@@ -2,6 +2,9 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -33,6 +36,7 @@ public class AccountingPanel extends JPanel {
 		initializeComponents();
 		renderer = new AccountingTableCellRenderer(userId);
 		invoiceTable.setDefaultRenderer(Object.class, renderer); // Apply the renderer to all columns
+		setLayout(new BorderLayout());
 		layoutComponents();
 	}
 
@@ -47,8 +51,9 @@ public class AccountingPanel extends JPanel {
 		invoiceTable = new JTable(invoiceTableModel);
 		invoiceTable.setFillsViewportHeight(true);
 		invoiceTable.setRowHeight(20); // Set row height for vertical "centering"
+		
+		// Create a JScrollPane and add the table to it
 		JScrollPane scrollPane = new JScrollPane(invoiceTable);
-		scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0)); // Remove default border
 
 		// Create a title label for the table
 		JLabel titleLabel = new JLabel("Transaction history", SwingConstants.CENTER);
@@ -66,7 +71,7 @@ public class AccountingPanel extends JPanel {
 	}
 
 	private void layoutComponents() {
-		add(tablePanel);
+		add(tablePanel, BorderLayout.CENTER);
 	}
 
 	private void populateInvoiceTable() {
@@ -75,15 +80,23 @@ public class AccountingPanel extends JPanel {
 
 		// Clear any existing data in the table model
 		invoiceTableModel.setRowCount(0);
+		
+		// Create a DateTimeFormatter for formatting the Instant
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").withZone(ZoneId.systemDefault());
 
 		// Populate the table model with fetched items
 		for (Integer invoiceId : invoiceIds) {
-			Object[] rowData = { invoiceController.getInvoiceIssueInstantById(invoiceId), 
+			Instant issueInstant = invoiceController.getInvoiceIssueInstantById(invoiceId);
+	        String formattedDate = formatter.format(issueInstant); // Format the Instant
+	        
+			Object[] rowData = { 
+					formattedDate, 
 					invoiceController.getInvoiceOperatorById(invoiceId),
 					userController.getUserFirstNameById(invoiceController.getInvoiceOperatorById(invoiceId)),
 					userController.getUserLastNameById(invoiceController.getInvoiceOperatorById(invoiceId)),
 					userController.getUserRoleById(invoiceController.getInvoiceOperatorById(invoiceId)),
-					invoiceController.getInvoiceTotalPriceById(invoiceId)};
+					invoiceController.getInvoiceTotalPriceById(invoiceId)
+			};
 			invoiceTableModel.addRow(rowData);
 		}
 	}

@@ -10,13 +10,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
 @SuppressWarnings("serial")
-public class AccountingTableCellRenderer extends DefaultTableCellRenderer {
-
-	private final int loggedManagerId;
-
-	public AccountingTableCellRenderer(int loggedManagerId) {
-        this.loggedManagerId = loggedManagerId;
-    }
+public class CartTableCellRenderer extends DefaultTableCellRenderer {
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
@@ -26,7 +20,7 @@ public class AccountingTableCellRenderer extends DefaultTableCellRenderer {
 		// Center align the text
 		setHorizontalAlignment(SwingConstants.CENTER); 
 		
-		// Check if the current column is the "Amount" column
+		// Check if the current column is the "Unit Price" column
         if (column == table.getColumnCount() - 1 && value instanceof Number) {
             // Format the value as currency in €
             NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.ITALY);
@@ -37,23 +31,15 @@ public class AccountingTableCellRenderer extends DefaultTableCellRenderer {
             setText(value != null ? value.toString() : "");
         }
 
-        // Customize selected rows' color
+        // Set the background color for selected rows
         if (isSelected) {
-        	cell.setForeground(Color.BLACK);
+            cell.setBackground(Color.YELLOW);
+            cell.setForeground(Color.BLACK);
         } else {
-        	cell.setBackground(row % 2 == 0 ? Color.WHITE : new Color(240, 240, 240)); // Alternate row colors
+            cell.setBackground(row % 2 == 0 ? Color.WHITE : new Color(240, 240, 240)); // Alternate row colors
+            cell.setForeground(Color.BLACK);
         }
-        
-		// Get the user ID from the table model
-		Integer userId = (Integer) table.getValueAt(row, 1); // The ID is in the second column
-
-		// Highlight the row if it matches the logged-in manager's ID
-		if (userId != null && userId == loggedManagerId) {
-			cell.setBackground(new Color(173, 216, 230)); // Light blue for highlighting
-		} else {
-			cell.setBackground(Color.WHITE); // Default background
-		}
-
+		
 		return cell;
 	}
 }

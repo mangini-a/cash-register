@@ -20,7 +20,16 @@ public class StaffTableCellRenderer extends DefaultTableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 			int row, int column) {
 		Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-		setHorizontalAlignment(SwingConstants.CENTER); // Center align the text
+		
+		// Center align the text
+		setHorizontalAlignment(SwingConstants.CENTER); 
+		
+		// Customize selected rows' color
+        if (isSelected) {
+        	cell.setForeground(Color.BLACK);
+        } else {
+        	cell.setBackground(row % 2 == 0 ? Color.WHITE : new Color(240, 240, 240)); // Alternate row colors
+        }
 		
 		// Get the user ID from the table model
         Integer userId = (Integer) table.getValueAt(row, 0); // The ID is in the first column

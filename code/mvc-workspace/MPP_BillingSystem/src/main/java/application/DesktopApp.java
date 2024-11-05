@@ -22,8 +22,8 @@ public class DesktopApp {
 			UIManager.setLookAndFeel(new FlatIntelliJLaf());
 			warmUpDatabase();
 			SwingUtilities.invokeLater(() -> {
-				UserController userController = UserControllerImpl.getInstance(); // Get the singleton instance
-				new HomeView(userController).display(); // Pass it to HomeView
+				UserController userController = UserControllerImpl.getInstance();
+				new HomeView(userController).display();
 			});
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();

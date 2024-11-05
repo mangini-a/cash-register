@@ -45,6 +45,10 @@ public class Invoice {
 	public User getUser() {
 		return user;
 	}
+	
+	public int getOperator() {
+		return user.getId();
+	}
 
 	public void setUser(User user) {
 		this.user = user;

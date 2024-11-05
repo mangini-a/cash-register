@@ -4,6 +4,10 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import controller.InvoiceController;
+import controller.InvoiceControllerImpl;
+import controller.ItemController;
+import controller.ItemControllerImpl;
 import controller.UserController;
 
 @SuppressWarnings("serial")
@@ -19,6 +23,9 @@ public class ManagementView extends JFrame implements PanelChangeListener {
     // Components of the second tab (Staff)
     private AddUserPanel addUserPanel;
     private ModifyUserPanel modifyUserPanel;
+    
+    // Component of the third tab (Accounting)
+    private AccountingPanel accountingPanel;
 	
 	private JPanel btnBackToHomePanel;
 	private JButton btnBackToHome;
@@ -28,11 +35,15 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 		setTitle("Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		// Get the singleton instances of the controllers used in the first and last tab
+		ItemController itemController = ItemControllerImpl.getInstance();
+		InvoiceController invoiceController = InvoiceControllerImpl.getInstance();
+		
 		// Create the main tabbed pane, to which three tabs are added
 		mainTabbedPane = new JTabbedPane();
-		mainTabbedPane.addTab("Stock", createStockTabbedPane());
+		mainTabbedPane.addTab("Stock", createStockTabbedPane(itemController));
 		mainTabbedPane.addTab("Staff", createStaffTabbedPane(userController, userId));
-		mainTabbedPane.addTab("Accounting", createAccountingTabbedPane(userId)); 
+		mainTabbedPane.addTab("Accounting", createAccountingPanel(userController, invoiceController, userId)); 
 
 		// Add the "Back to Home" button
 		btnBackToHomePanel = new JPanel();
@@ -58,12 +69,12 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 		add(mainPanel);
 	}
 
-	private JTabbedPane createStockTabbedPane() {
+	private JTabbedPane createStockTabbedPane(ItemController itemController) {
 		JTabbedPane stockTabbedPane = new JTabbedPane();
-		addItemPanel = new AddItemPanel(this);
+		addItemPanel = new AddItemPanel(this, itemController);
 		addItemPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
 		stockTabbedPane.addTab("Add a new item", addItemPanel);
-		modifyItemPanel = new ModifyItemPanel(this); 
+		modifyItemPanel = new ModifyItemPanel(this, itemController); 
 		modifyItemPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
 		stockTabbedPane.addTab("Modify an existing item's details", modifyItemPanel);
 		return stockTabbedPane;
@@ -80,10 +91,10 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 		return staffTabbedPane;
 	}
 
-	private JTabbedPane createAccountingTabbedPane(int userId) {
-		JTabbedPane accountingTabbedPane = new JTabbedPane();
-		// ...
-		return accountingTabbedPane;
+	private JPanel createAccountingPanel(UserController userController, InvoiceController invoiceController, int userId) {
+		accountingPanel = new AccountingPanel(userId, userController, invoiceController);
+		accountingPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
+		return accountingPanel;
 	}
 
 	@Override

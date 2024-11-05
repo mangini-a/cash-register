@@ -1,5 +1,8 @@
 package controller;
 
+import java.time.Instant;
+import java.util.List;
+
 public interface InvoiceController {
 
 	/**
@@ -37,4 +40,17 @@ public interface InvoiceController {
 	 * Updates the available quantity of each sold item.
 	 */
 	void updateInventory();
+
+	/**
+	 * Gets all the invoice identifiers from the database.
+	 *
+	 * @return a list with all the invoice identifiers
+	 */
+	List<Integer> getAllInvoiceIds();
+
+	Instant getInvoiceIssueInstantById(Integer invoiceId);
+
+	double getInvoiceTotalPriceById(Integer invoiceId);
+	
+	int getInvoiceOperatorById(Integer invoiceId);
 }

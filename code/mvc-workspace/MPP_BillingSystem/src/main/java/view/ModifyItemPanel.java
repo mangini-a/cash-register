@@ -10,7 +10,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.text.NumberFormatter;
 
 import controller.ItemController;
-import controller.ItemControllerImpl;
 import model.ItemCategory;
 
 @SuppressWarnings("serial")
@@ -34,9 +33,9 @@ public class ModifyItemPanel extends JPanel {
 
 	private PanelChangeListener listener;
 
-	public ModifyItemPanel(PanelChangeListener listener) {
+	public ModifyItemPanel(PanelChangeListener listener, ItemController itemController) {
 		this.listener = listener;
-		itemController = ItemControllerImpl.getInstance();
+		this.itemController = itemController;
 		initializeComponents();
 		BorderLayout layout = new BorderLayout();
 		layout.setHgap(10); // Add a 10px horizontal gap between components

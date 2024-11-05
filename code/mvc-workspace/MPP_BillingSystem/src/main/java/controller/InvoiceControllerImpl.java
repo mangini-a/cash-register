@@ -2,6 +2,7 @@ package controller;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Session;
@@ -83,6 +84,66 @@ public class InvoiceControllerImpl implements InvoiceController {
 	public void updateInventory() {
 		for (Integer itemId : cartLines.keySet()) {
 			itemController.updateItemQuantityById(itemId, itemController.getItemQuantityById(itemId) - cartLines.get(itemId));
+		}
+	}
+
+	@Override
+	public List<Integer> getAllInvoiceIds() {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				List<Integer> invoiceIds = session.createQuery("select i.id from Invoice i", Integer.class).list();
+				session.getTransaction().commit();
+				return invoiceIds;
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
+	}
+
+	@Override
+	public Instant getInvoiceIssueInstantById(Integer invoiceId) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				Invoice invoice = session.get(Invoice.class, invoiceId);
+				session.getTransaction().commit();
+				return invoice.getIssueInstant();
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
+	}
+
+	@Override
+	public double getInvoiceTotalPriceById(Integer invoiceId) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				Invoice invoice = session.get(Invoice.class, invoiceId);
+				session.getTransaction().commit();
+				return invoice.getTotalPrice();
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
+	}
+
+	@Override
+	public int getInvoiceOperatorById(Integer invoiceId) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				Invoice invoice = session.get(Invoice.class, invoiceId);
+				session.getTransaction().commit();
+				return invoice.getOperator();
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
 		}
 	}
 }

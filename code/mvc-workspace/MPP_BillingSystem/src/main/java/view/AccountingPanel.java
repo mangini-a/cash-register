@@ -1,19 +1,15 @@
 package view;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.time.Instant;
-import java.time.ZoneId;
+import java.awt.*;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import org.jfree.chart.*;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 import controller.InvoiceController;
 import controller.UserController;
@@ -26,6 +22,8 @@ public class AccountingPanel extends JPanel {
 	private DefaultTableModel invoiceTableModel;
 	private JTable invoiceTable;
 	private AccountingTableCellRenderer renderer;
+	
+	private ChartPanel chartPanel; // Container for the histogram created using JFreeChart
 
 	private UserController userController;
 	private InvoiceController invoiceController;
@@ -70,10 +68,6 @@ public class AccountingPanel extends JPanel {
 		populateInvoiceTable();
 	}
 
-	private void layoutComponents() {
-		add(tablePanel, BorderLayout.CENTER);
-	}
-
 	private void populateInvoiceTable() {
 		// Fetch data from the database using Hibernate
 		List<Integer> invoiceIds = invoiceController.getAllInvoiceIds();
@@ -99,5 +93,42 @@ public class AccountingPanel extends JPanel {
 			};
 			invoiceTableModel.addRow(rowData);
 		}
+		
+		// Create the histogram after populating the table
+	    createHistogram();
+	}
+	
+	private void createHistogram() {
+	    // Create a dataset for the histogram
+	    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+	    // Fetch data from the database
+	    for (Integer invoiceId : invoiceController.getAllInvoiceIds()) {
+	        Instant issueInstant = invoiceController.getInvoiceIssueInstantById(invoiceId);
+	        String date = DateTimeFormatter.ofPattern("dd-MM-yyyy").withZone(ZoneId.systemDefault()).format(issueInstant);
+	        double amount = invoiceController.getInvoiceTotalPriceById(invoiceId);
+
+	        // Add the amount to the dataset
+	        dataset.addValue(amount, "Amount", date);
+	    }
+
+	    // Create the chart
+	    JFreeChart chart = ChartFactory.createBarChart(
+	            "Cumulative Profit per Day", // Chart title
+	            "Date", // X-axis label
+	            "Profit (€)", // Y-axis label
+	            dataset // Dataset
+	    );
+
+	    // Create a ChartPanel and add it to the AccountingPanel
+	    chartPanel = new ChartPanel(chart);
+	}
+	
+	private void layoutComponents() {
+		add(tablePanel, BorderLayout.CENTER);
+		chartPanel.setPreferredSize(new Dimension(800, 400)); // Set preferred size
+		add(chartPanel, BorderLayout.SOUTH); // Add the chart panel to the bottom of the AccountingPanel
+		revalidate(); // Refresh the panel to show the new chart
+		repaint(); // Repaint the panel
 	}
 }

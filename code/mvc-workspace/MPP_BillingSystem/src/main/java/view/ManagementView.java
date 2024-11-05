@@ -4,17 +4,11 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import controller.UserController;
-import controller.UserControllerImpl;
-import model.User;
-
 @SuppressWarnings("serial")
 public class ManagementView extends JFrame implements PanelChangeListener {
 
 	private JTabbedPane mainTabbedPane;
 	private JPanel mainPanel;
-	
-	private int loggedManagerId;
 	
 	// Components of the first tab (Stock)
 	private AddItemPanel addItemPanel;
@@ -27,22 +21,16 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 	private JPanel btnBackToHomePanel;
 	private JButton btnBackToHome;
 	
-	private UserController userController;
-
-	public ManagementView(User user) {
+	public ManagementView(int userId) {
 		// Configure the frame
 		setTitle("Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		// Get the logged manager's ID
-		userController = UserControllerImpl.getInstance();
-		loggedManagerId = userController.getId(user);
-		
 		// Create the main tabbed pane, to which three tabs are added
 		mainTabbedPane = new JTabbedPane();
 		mainTabbedPane.addTab("Stock", createStockTabbedPane());
-		mainTabbedPane.addTab("Staff", createStaffTabbedPane(loggedManagerId));
-		mainTabbedPane.addTab("Accounting", createAccountingTabbedPane(user)); 
+		mainTabbedPane.addTab("Staff", createStaffTabbedPane(userId));
+		mainTabbedPane.addTab("Accounting", createAccountingTabbedPane(userId)); 
 
 		// Add the "Back to Home" button
 		btnBackToHomePanel = new JPanel();
@@ -51,7 +39,7 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 		btnBackToHome.addActionListener(e -> {
 			dispose();
 			SwingUtilities.invokeLater(() -> {
-				new HomeView(user).display();
+				new HomeView(userId).display();
 			});
 		});
 		btnBackToHomePanel.add(btnBackToHome);
@@ -79,18 +67,18 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 		return stockTabbedPane;
 	}
 
-	private JTabbedPane createStaffTabbedPane(int loggedManagerId) {
+	private JTabbedPane createStaffTabbedPane(int userId) {
 		JTabbedPane staffTabbedPane = new JTabbedPane();
-		addUserPanel = new AddUserPanel(this, loggedManagerId);
+		addUserPanel = new AddUserPanel(this, userId);
 		addUserPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
 		staffTabbedPane.addTab("Add a new user", addUserPanel);
-		modifyUserPanel = new ModifyUserPanel(this, loggedManagerId);
+		modifyUserPanel = new ModifyUserPanel(this, userId);
 		modifyUserPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
 		staffTabbedPane.addTab("Modify an existing user's credentials", modifyUserPanel);
 		return staffTabbedPane;
 	}
 
-	private JTabbedPane createAccountingTabbedPane(User user) {
+	private JTabbedPane createAccountingTabbedPane(int userId) {
 		JTabbedPane accountingTabbedPane = new JTabbedPane();
 		// ...
 		return accountingTabbedPane;

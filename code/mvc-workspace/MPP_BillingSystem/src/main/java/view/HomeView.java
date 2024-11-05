@@ -6,7 +6,6 @@ import javax.swing.*;
 
 import controller.UserController;
 import controller.UserControllerImpl;
-import model.User;
 
 @SuppressWarnings("serial")
 public class HomeView extends JFrame {
@@ -25,12 +24,12 @@ public class HomeView extends JFrame {
 	/**
 	 * Instantiates a new home page after a user has logged in.
 	 *
-	 * @param user the user who logged in
+	 * @param userId the user who logged in
 	 */
-	public HomeView(User user) {
+	public HomeView(int userId) {
 		initialize();
 		userController = UserControllerImpl.getInstance();
-		setupUserButtons(user);
+		setupUserButtons(userId);
 	}
 
 	private void initialize() {
@@ -86,7 +85,7 @@ public class HomeView extends JFrame {
 		return button;
 	}
 
-	private void setupUserButtons(User user) {
+	private void setupUserButtons(int userId) {
 		// Make the "Login" screen not accessible
 		JButton btnLogin = (JButton) contentPane.getComponent(0);
 		btnLogin.setEnabled(false);
@@ -97,18 +96,18 @@ public class HomeView extends JFrame {
 		btnCashRegister.addActionListener(e -> {
 			dispose();
 			SwingUtilities.invokeLater(() -> {
-				new CashRegisterView(user).display();
+				new CashRegisterView(userId).display();
 			});
 		});
 
 		// Make the "Management" screen accessible only to managers
 		JButton btnManagement = (JButton) contentPane.getComponent(2);
-		boolean isManager = userController.isManager(user);
+		boolean isManager = userController.isUserManager(userId);
 		btnManagement.setEnabled(isManager);
 		btnManagement.addActionListener(e -> {
 			dispose();
 			SwingUtilities.invokeLater(() -> {
-				new ManagementView(user).display();
+				new ManagementView(userId).display();
 			});
 		});
 	}

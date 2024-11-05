@@ -37,10 +37,10 @@ public interface UserController {
 	/**
 	 * Gets a user from the database by its id.
 	 *
-	 * @param id the user's id
+	 * @param userId the user's id
 	 * @return the user
 	 */
-	User getUserById(int id);
+	User getUserById(int userId);
 	
 	/**
 	 * Removes a user from the database by its id.
@@ -57,12 +57,12 @@ public interface UserController {
 	List<Integer> getAllUserIds();
 
 	/**
-	 * Checks if the specified user is a manager.
+	 * Checks if a user is a manager by its id.
 	 *
-	 * @param user the user to be checked
+	 * @param userId the user's id to be checked
 	 * @return true, if the user is actually a manager
 	 */
-	boolean isManager(User user);
+	boolean isUserManager(int userId);
 	
 	/**
 	 * Gets the specified user's id.
@@ -89,12 +89,12 @@ public interface UserController {
 	String getLastName(User user);
 	
 	/**
-	 * Gets the specified user's password.
+	 * Gets a user's password by its id.
 	 *
-	 * @param user the user
+	 * @param userId the user's id
 	 * @return the user's password
 	 */
-	String getPassword(User user);
+	String getUserPasswordById(int userId);
 	
 	/**
 	 * Gets the specified user's role.

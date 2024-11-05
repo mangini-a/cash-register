@@ -76,11 +76,11 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public User getUserById(int id) {
+	public User getUserById(int userId) {
 		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			try {
-				User user = session.get(User.class, id);
+				User user = session.get(User.class, userId);
 				session.getTransaction().commit();
 				return user; // Return the user if found, or null if not found
 			} catch (Exception e) {
@@ -123,8 +123,18 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public boolean isManager(User user) {
-		return user.getRole().equals(UserRole.MANAGER);
+	public boolean isUserManager(int userId) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				User user = session.get(User.class, userId);
+				session.getTransaction().commit();
+				return user.getRole().equals(UserRole.MANAGER);
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
 	}
 	
 	@Override
@@ -142,8 +152,18 @@ public class UserControllerImpl implements UserController {
 		return user.getLastName();
 	}
 	@Override
-	public String getPassword(User user) {
-		return user.getPassword();
+	public String getUserPasswordById(int userId) {
+		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+			session.beginTransaction();
+			try {
+				User user = session.get(User.class, userId);
+				session.getTransaction().commit();
+				return user.getPassword();
+			} catch (Exception e) {
+				session.getTransaction().rollback();
+				throw e; // Re-throw the exception to propagate it up the call stack
+			}
+		}
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package controller;
 
-import model.User;
-
 public interface InvoiceController {
 
 	/**
@@ -46,10 +44,10 @@ public interface InvoiceController {
 	/**
 	 * Adds a new invoice to the database.
 	 *
-	 * @param user the user which generated it
+	 * @param userId the id of the user who generated it
 	 * @param totalPrice the total cart amount
 	 */
-	void addInvoice(User user, Double totalPrice);
+	void addInvoice(int userId, Double totalPrice);
 
 	/**
 	 * Updates the available quantity of each sold item.

@@ -15,7 +15,6 @@ import controller.InvoiceControllerImpl;
 import controller.ItemController;
 import controller.ItemControllerImpl;
 import controller.StockExceededException;
-import model.User;
 
 @SuppressWarnings("serial")
 public class CashRegisterView extends JFrame {
@@ -55,7 +54,7 @@ public class CashRegisterView extends JFrame {
 
 	private Set<Integer> quantityModel;
 
-	public CashRegisterView(User user) {
+	public CashRegisterView(int userId) {
 		// Setup the frame
 		setTitle("Cash Register");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -112,7 +111,7 @@ public class CashRegisterView extends JFrame {
 		textFieldTotalPrice.setEditable(false);
 		btnCheckout = new JButton("Checkout");
 		btnCheckout.setBackground(BUTTON_COLOR);
-		btnCheckout.addActionListener(e -> checkout(user));
+		btnCheckout.addActionListener(e -> checkout(userId));
 
 		// Create a panel for the Checkout section
 		JPanel panelCheckout = new JPanel();
@@ -153,7 +152,7 @@ public class CashRegisterView extends JFrame {
 		btnBackToHome.addActionListener(e -> {
 			dispose();
 			SwingUtilities.invokeLater(() -> {
-				new HomeView(user).display();
+				new HomeView(userId).display();
 			});
 		});
 		btnBackToHomePanel.add(btnBackToHome);
@@ -188,13 +187,13 @@ public class CashRegisterView extends JFrame {
 		}
 	}
 
-	private void checkout(User user) {
+	private void checkout(int userId) {
 		String strTot = textFieldTotalPrice.getText();
 		if (!strTot.isBlank()) {
 			Double totalPrice = Double.parseDouble(strTot);
 
 			// Add a new invoice to the database
-			invoiceController.addInvoice(user, totalPrice);
+			invoiceController.addInvoice(userId, totalPrice);
 
 			// Update the stock by decreasing the sold quantities
 			invoiceController.updateInventory();

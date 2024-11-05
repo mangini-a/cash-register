@@ -8,7 +8,6 @@ import javax.swing.table.DefaultTableModel;
 
 import controller.UserController;
 import controller.UserControllerImpl;
-import model.User;
 import model.UserRole;
 
 @SuppressWarnings("serial")
@@ -222,7 +221,7 @@ public class ModifyUserPanel extends JPanel {
 		// Populate the table model with fetched items
 		for (User user : users) {
 			// Include the logged manager and all the cashiers
-			if (userController.getId(user) == loggedManagerId || !userController.isManager(user)) {
+			if (userController.getId(user) == loggedManagerId || !userController.isUserManager(user)) {
 				Object[] rowData = { userController.getId(user), userController.getFirstName(user),
 						userController.getLastName(user), userController.getRole(user) };
 				userTableModel.addRow(rowData);
@@ -247,7 +246,7 @@ public class ModifyUserPanel extends JPanel {
 		// Populate the combo box with fetched items
 	    for (User user : users) {
 	    	// Include the logged manager and all the cashiers
-	        if (userController.getId(user) == loggedManagerId || !userController.isManager(user)) {
+	        if (userController.getId(user) == loggedManagerId || !userController.isUserManager(user)) {
 	            model.addElement(userController.getId(user));
 	        }
 	    }
@@ -264,7 +263,7 @@ public class ModifyUserPanel extends JPanel {
 			// Fill in the user fields
 			fieldFirstName.setText(userController.getFirstName(selectedUser));
 			fieldLastName.setText(userController.getLastName(selectedUser));
-			fieldPassword.setText(userController.getPassword(selectedUser));
+			fieldPassword.setText(userController.getUserPasswordById(selectedUser));
 			UserRole selectedRole = userController.getRole(selectedUser);
 			comboBoxRole.setSelectedItem(selectedRole);
 

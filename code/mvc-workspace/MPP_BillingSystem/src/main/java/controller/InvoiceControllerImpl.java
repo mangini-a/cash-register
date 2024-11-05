@@ -8,7 +8,6 @@ import org.hibernate.Session;
 
 import model.Invoice;
 import model.Item;
-import model.User;
 import utils.HibernateSessionFactory;
 
 public class InvoiceControllerImpl implements InvoiceController {
@@ -79,9 +78,9 @@ public class InvoiceControllerImpl implements InvoiceController {
 	}
 
 	@Override
-	public void addInvoice(User user, Double totalPrice) {
+	public void addInvoice(int userId, Double totalPrice) {
 		
-		Invoice invoice = new Invoice(user, Instant.now(), totalPrice);
+		Invoice invoice = new Invoice(userId, Instant.now(), totalPrice);
 		
 		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
 			session.beginTransaction();

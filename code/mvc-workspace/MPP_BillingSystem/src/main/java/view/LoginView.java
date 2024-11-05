@@ -8,7 +8,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import controller.UserController;
 import controller.UserControllerImpl;
-import model.User;
 
 @SuppressWarnings("serial")
 public class LoginView extends JFrame {
@@ -106,12 +105,12 @@ public class LoginView extends JFrame {
 					for (int userId : userIds) {
 						if (userId == inputUserId) {
 							isIdPresent = true;
-							User user = userController.getUserById(userId);
-							String userPassword = userController.getPassword(user);
+							// User user = userController.getUserById(userId);
+							String userPassword = userController.getUserPasswordById(userId);
 							if (userPassword.equals(inputUserPassword)) {
 								dispose();
 								SwingUtilities.invokeLater(() -> {
-									new HomeView(user).display();
+									new HomeView(userId).display();
 								});
 							} else {
 								JOptionPane.showMessageDialog(null, "You entered a wrong password!", "Access denied", JOptionPane.WARNING_MESSAGE);

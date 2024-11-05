@@ -3,6 +3,8 @@ package view;
 import java.awt.*;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.swing.*;
@@ -73,12 +75,12 @@ public class CashRegisterView extends JFrame {
 		};
 		cartTable = new JTable(cartTableModel);
 		cartTable.setFillsViewportHeight(true);
-
+		
 		// Center the content of all columns
 		for (int i = 0; i < cartTable.getColumnCount(); i++) {
 			cartTable.getColumnModel().getColumn(i).setCellRenderer(new StockTableCellRenderer());
 		}
-
+		
 		// Set row height for vertical "centering"
 		cartTable.setRowHeight(20);
 
@@ -89,9 +91,9 @@ public class CashRegisterView extends JFrame {
 		comboBoxItemId = new JComboBox<>();
 		lblItemQty = new JLabel("Quantity:");
 		comboBoxItemQty = new JComboBox<>();
-		populateComboBoxItemId(comboBoxItemId);
-		updateComboBoxItemQty(comboBoxItemId, comboBoxItemQty);
-		comboBoxItemId.addActionListener(e -> updateComboBoxItemQty(comboBoxItemId, comboBoxItemQty));
+		populateComboBoxItemId();
+		updateComboBoxItemQty();
+		comboBoxItemId.addActionListener(e -> updateComboBoxItemQty());
 		btnAddToCart = new JButton("Add to Cart");
 		btnAddToCart.setBackground(BUTTON_COLOR);
 		btnAddToCart.addActionListener(e -> addToCart());
@@ -172,6 +174,10 @@ public class CashRegisterView extends JFrame {
 		setContentPane(contentPane);
 	}
 
+	/**
+	 * Adds a product to the shopping cart, in the quantities selected by the user.
+	 * Also keeps track of the total price due.
+	 */
 	private void addToCart() {
 		// Acquire data selected by the user
 		Integer selectedItemId = (Integer) comboBoxItemId.getSelectedItem();
@@ -184,15 +190,35 @@ public class CashRegisterView extends JFrame {
 					itemController.getItemUnitPriceById(selectedItemId) };
 			cartTableModel.addRow(rowData);
 
-			// Calculate the updated partial price and show it to the user
-			String partialPrice = String.valueOf(invoiceController.calculatePartial(selectedItemId, selectedItemQty));
-			textFieldTotalPrice.setText(partialPrice);
+			// Calculate the updated partial price
+			double partialPrice = invoiceController.calculatePartial(selectedItemId, selectedItemQty);
+			
+			// Format the price in €
+	        String formattedPrice = formatPrice(partialPrice);
+			textFieldTotalPrice.setText(formattedPrice);
 		} catch (StockExceededException ex) {
 			JOptionPane.showMessageDialog(null, "The item's current stock is limited to " + ex.getItemQty() + " pcs!",
 					"Required quantity exceeds quantity in stock", JOptionPane.ERROR_MESSAGE);
 		}
 	}
+	
+	/**
+	 * Formats a price as a currency in €.
+	 *
+	 * @param price the price to be formatted
+	 * @return a string representing the formatted price
+	 */
+    private String formatPrice(double price) {
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.ITALY);
+        return currencyFormat.format(price);
+    }
 
+	/**
+	 * Generates a receipt consisting of the products added to the cart.
+	 * Their available stock quantities are updated accordingly.
+	 * 
+	 * @param userId the identifier of the user who issues the receipt
+	 */
 	private void checkout(int userId) {
 		// Acquire the string representing the amount reached
 		String stringTotalPrice = textFieldTotalPrice.getText();
@@ -208,6 +234,9 @@ public class CashRegisterView extends JFrame {
 		}
 	}
 
+	/**
+	 * Clears the shopping cart, both logically and graphically.
+	 */
 	private void clearCart() {
 		invoiceController.emptyCartLines();
 		comboBoxItemId.setSelectedIndex(0);
@@ -216,6 +245,9 @@ public class CashRegisterView extends JFrame {
 		cartTableModel.setRowCount(0); // Clear the table
 	}
 
+	/**
+	 * Prints a page (or a set of pages) representing the shopping cart table.
+	 */
 	private void printCart() {
 		PrinterJob printerJob = PrinterJob.getPrinterJob();
 		printerJob.setPrintable(cartTable.getPrintable(JTable.PrintMode.FIT_WIDTH, null, null));
@@ -231,7 +263,10 @@ public class CashRegisterView extends JFrame {
 		}
 	}
 
-	private void populateComboBoxItemId(JComboBox<Integer> comboBoxItemId) {
+	/**
+	 * Populates the JComboBox that allows you to select the ID of the product you want to choose.
+	 */
+	private void populateComboBoxItemId() {
 		DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
 		for (Integer itemId : itemController.getAllItemIds()) {
 			model.addElement(itemId);
@@ -239,7 +274,10 @@ public class CashRegisterView extends JFrame {
 		comboBoxItemId.setModel(model);
 	}
 
-	private void updateComboBoxItemQty(JComboBox<Integer> comboBoxItemId, JComboBox<Integer> comboBoxItemQty) {
+	/**
+	 * Updates the selectable quantity of an item depending on which of them is selected.
+	 */
+	private void updateComboBoxItemQty() {
 		try {
 			Integer selectedItemId = (Integer) comboBoxItemId.getSelectedItem();
 			quantityModel = itemController.showOneToQuantity(selectedItemId);
@@ -250,6 +288,9 @@ public class CashRegisterView extends JFrame {
 		}
 	}
 
+	/**
+	 * Displays the window in the center of the screen.
+	 */
 	public void display() {
 		setMinimumSize(new Dimension(800, 600));
 		setResizable(true);

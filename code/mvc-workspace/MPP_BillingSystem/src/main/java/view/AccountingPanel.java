@@ -35,7 +35,6 @@ public class AccountingPanel extends JPanel {
 		layoutComponents();
 	}
 
-	@SuppressWarnings("serial")
 	private void initializeComponents() {
 		// Define the invoices table's model
 		invoiceTableModel = new DefaultTableModel(new Object[] { "Date", "Operator ID", "Name", "Surname", "Role", "Amount" }, 0) {
@@ -48,6 +47,7 @@ public class AccountingPanel extends JPanel {
 		invoiceTable.setFillsViewportHeight(true);
 		invoiceTable.setRowHeight(20); // Set row height for vertical "centering"
 		JScrollPane scrollPane = new JScrollPane(invoiceTable);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0)); // Remove default border
 
 		// Create a title label for the table
 		JLabel titleLabel = new JLabel("Transaction history", SwingConstants.CENTER);

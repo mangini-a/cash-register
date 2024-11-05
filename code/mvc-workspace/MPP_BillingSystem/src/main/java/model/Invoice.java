@@ -12,9 +12,8 @@ public class Invoice {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "user_id", referencedColumnName = "id", 
-				foreignKey = @ForeignKey(name = "InvoicesToUserById"))
+	@ManyToOne
+	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private User user;
 	
 	@Column(name = "issue_instant")
@@ -27,9 +26,10 @@ public class Invoice {
 		super();
 	}
 
-	public Invoice(User user, Instant issueInstant, Double totalPrice) {
+	public Invoice(int userId, Instant issueInstant, Double totalPrice) {
 		super();
-		this.user = user;
+		this.user = new User(); // Create a proxy object
+		this.user.setId(userId);
 		this.issueInstant = issueInstant;
 		this.totalPrice = totalPrice;
 	}

@@ -233,15 +233,36 @@ public class CashRegisterView extends JFrame {
 	private void checkout(int userId) {
 		// Acquire the string representing the amount reached
 		String stringTotalPrice = textFieldTotalPrice.getText();
+		
+		// Debug: Print the original string
+	    System.out.println("Original total price string: " + stringTotalPrice);
 
 		if (!stringTotalPrice.isBlank()) {
-			double totalPrice = Double.parseDouble(stringTotalPrice);
-			invoiceController.addInvoice(userId, totalPrice); // Add a new invoice to the database
-			invoiceController.updateInventory(); // Update the stock by decreasing the sold quantities
-			clearCart(); // Clear the cart and reset the UI
+			try {
+				// Remove the currency symbol and any whitespace
+				String sanitizedPrice = stringTotalPrice.replaceAll("[^\\d,\\.]", "").trim();
+				
+				// Debug: Print the sanitized string
+	            System.out.println("Sanitized total price string: " + sanitizedPrice);
+
+	            // Replace comma with dot for decimal point
+	            sanitizedPrice = sanitizedPrice.replace(",", ".");
+
+	            // Parse the sanitized string to double
+	            double totalPrice = Double.parseDouble(sanitizedPrice);
+	            
+	            invoiceController.addInvoice(userId, totalPrice); // Add a new invoice to the database
+	            invoiceController.updateInventory(); // Update the stock by decreasing the sold quantities
+	            clearCart(); // Clear the cart and reset the UI
+	            JOptionPane.showMessageDialog(null, "Receipt generated and stock availability updated!", 
+	            		"Checkout done", JOptionPane.INFORMATION_MESSAGE);
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(null, "Invalid total price format!", 
+	                    "Error", JOptionPane.ERROR_MESSAGE);
+			}
 		} else {
-			JOptionPane.showMessageDialog(null, "Start by adding some items to the cart!", "Empty cart",
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Start by adding some items to the cart!", 
+					"Empty cart", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 

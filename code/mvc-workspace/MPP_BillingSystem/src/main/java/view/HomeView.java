@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 import controller.UserController;
+import view.colors.AppColors;
 
 @SuppressWarnings("serial")
 public class HomeView extends JFrame {
@@ -62,17 +63,19 @@ public class HomeView extends JFrame {
 	}
 
 	private JButton createButton(String text, String toolTipText, ActionListener actionListener) {
+		// Create a button with the text specified as parameter
 		JButton button = new JButton(text);
 
 		// Set the background color based on the button text
-		if (text.equals("Cash Register")) {
-			button.setBackground(new Color(173, 216, 230)); // Light blue
+		if (text.equals("Login")) {
+			button.setBackground(AppColors.LOGIN_COLOR);
+		} else if (text.equals("Cash Register")) {
+			button.setBackground(AppColors.CASH_REGISTER_COLOR);
 		} else if (text.equals("Management")) {
-			button.setBackground(new Color(144, 238, 144)); // Light green
-		} else if (text.equals("Login")) {
-			button.setBackground(new Color(211, 211, 211)); // Light gray
+			button.setBackground(AppColors.MANAGEMENT_COLOR);
 		}
 
+		button.setForeground(Color.WHITE);
 		button.setToolTipText(toolTipText);
 		button.setPreferredSize(new Dimension(200, 150));
 		button.setFont(new Font("Segoe UI", Font.BOLD, 18));

@@ -16,6 +16,7 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import controller.InvoiceController;
+import view.colors.AppColors;
 
 @SuppressWarnings("serial")
 public class ViewEarningsPanel extends JPanel {
@@ -100,7 +101,7 @@ public class ViewEarningsPanel extends JPanel {
 	    
 	    // Customize the renderer
 	    BarRenderer renderer = (BarRenderer) plot.getRenderer();
-	    renderer.setSeriesPaint(0, new Color(0, 102, 204)); // Set bar color
+	    renderer.setSeriesPaint(0, AppColors.MANAGEMENT_COLOR); // Set bar color
 	    renderer.setDrawBarOutline(true);
 	    renderer.setSeriesOutlinePaint(0, Color.BLACK);
 	    renderer.setSeriesOutlineStroke(0, new BasicStroke(1.0f));

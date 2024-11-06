@@ -18,15 +18,13 @@ import controller.ItemController;
 import controller.ItemControllerImpl;
 import controller.StockExceededException;
 import controller.UserController;
+import view.colors.AppColors;
 import view.renderers.CartTableCellRenderer;
 
 @SuppressWarnings("serial")
 public class CashRegisterView extends JFrame {
 
 	private JPanel contentPane;
-
-	// Define color constants
-	private static final Color BUTTON_COLOR = new Color(173, 216, 230); // Light blue
 
 	// Components used for the cart composition representation
 	private DefaultTableModel cartTableModel;
@@ -96,7 +94,10 @@ public class CashRegisterView extends JFrame {
 		updateComboBoxItemQty();
 		comboBoxItemId.addActionListener(e -> updateComboBoxItemQty());
 		btnAddToCart = new JButton("Add to Cart");
-		btnAddToCart.setBackground(BUTTON_COLOR);
+		btnAddToCart.setBackground(AppColors.CASH_REGISTER_COLOR);
+		btnAddToCart.setForeground(Color.WHITE);
+		btnAddToCart.setToolTipText("Add the selected quantity of the chosen item to the shopping cart");
+		btnAddToCart.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		btnAddToCart.addActionListener(e -> addToCart());
 
 		// Create a panel for the Item Selection section
@@ -114,7 +115,10 @@ public class CashRegisterView extends JFrame {
 		textFieldTotalPrice = new JTextField();
 		textFieldTotalPrice.setEditable(false);
 		btnCheckout = new JButton("Checkout");
-		btnCheckout.setBackground(BUTTON_COLOR);
+		btnCheckout.setBackground(AppColors.CASH_REGISTER_COLOR);
+		btnCheckout.setForeground(Color.WHITE);
+		btnCheckout.setToolTipText("Issue receipt and update purchased items' stock availability");
+		btnCheckout.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		btnCheckout.addActionListener(e -> checkout(userId));
 
 		// Create a panel for the Checkout section
@@ -127,10 +131,16 @@ public class CashRegisterView extends JFrame {
 
 		// Instantiate the Other Actions section's components
 		btnClearCart = new JButton("Clear Cart");
-		btnClearCart.setBackground(BUTTON_COLOR);
+		btnClearCart.setBackground(AppColors.CASH_REGISTER_COLOR);
+		btnClearCart.setForeground(Color.WHITE);
+		btnClearCart.setToolTipText("Reset the cart to restart the selection of a customer's desired items");
+		btnClearCart.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		btnClearCart.addActionListener(e -> clearCart());
 		btnPrintCart = new JButton("Print Cart");
-		btnPrintCart.setBackground(BUTTON_COLOR);
+		btnPrintCart.setBackground(AppColors.CASH_REGISTER_COLOR);
+		btnPrintCart.setForeground(Color.WHITE);
+		btnPrintCart.setToolTipText("Print a page (or a PDF document) representing the shopping cart");
+		btnPrintCart.setFont(new Font("Segoe UI", Font.BOLD, 12));
 		btnPrintCart.addActionListener(e -> printCart());
 
 		// Create a panel for the Other Actions section

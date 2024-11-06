@@ -6,14 +6,12 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import controller.UserController;
+import view.colors.AppColors;
 
 @SuppressWarnings("serial")
 public class LoginView extends JFrame {
 
 	private JPanel contentPane;
-
-	// Define color constants
-	private static final Color BUTTON_COLOR = new Color(211, 211, 211); // Light gray
 
 	// Components used for the "User ID" field
 	private JPanel panelUserId;
@@ -86,7 +84,9 @@ public class LoginView extends JFrame {
 
 		// Define the "Sign In" button
 		btnSignIn = new JButton("Sign In");
-		btnSignIn.setBackground(BUTTON_COLOR);
+		btnSignIn.setBackground(AppColors.LOGIN_COLOR);
+		btnSignIn.setForeground(Color.WHITE);
+		btnSignIn.setToolTipText("Access the system using your credentials");
 		btnSignIn.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		btnSignIn.addActionListener(e -> signIn());
 		contentPane.add(btnSignIn);

@@ -11,13 +11,12 @@ import javax.swing.text.NumberFormatter;
 
 import controller.ItemController;
 import model.ItemCategory;
+import view.colors.AppColors;
 import view.listeners.PanelChangeListener;
 import view.renderers.StockTableCellRenderer;
 
 @SuppressWarnings("serial")
 public class AddItemPanel extends JPanel {
-
-	private static final Color ADD_BUTTON_COLOR = new Color(144, 238, 144); // Light green
 
 	private JPanel tablePanel; // Container for the title label and the table itself
 	private DefaultTableModel itemTableModel;
@@ -112,7 +111,8 @@ public class AddItemPanel extends JPanel {
 		// Define the "Add" button section
 		JPanel panelButton = new JPanel(new GridLayout(1, 1));
 		JButton btnAdd = new JButton("Add");
-		btnAdd.setBackground(ADD_BUTTON_COLOR);
+		btnAdd.setBackground(AppColors.ADD_BUTTON_COLOR);
+		btnAdd.setToolTipText("Insert the item among those in stock");
 		btnAdd.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		btnAdd.addActionListener(e -> {
 			addItem(fieldName, fieldQuantity, fieldUnitPrice, comboBoxCategory);

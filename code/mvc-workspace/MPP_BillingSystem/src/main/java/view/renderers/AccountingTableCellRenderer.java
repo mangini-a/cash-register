@@ -9,6 +9,8 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import view.colors.AppColors;
+
 @SuppressWarnings("serial")
 public class AccountingTableCellRenderer extends DefaultTableCellRenderer {
 
@@ -49,7 +51,7 @@ public class AccountingTableCellRenderer extends DefaultTableCellRenderer {
 
 		// Highlight the row if it matches the logged-in manager's ID
 		if (userId != null && userId == loggedManagerId) {
-			cell.setBackground(new Color(173, 216, 230)); // Light blue for highlighting
+			cell.setBackground(AppColors.HIGHLIGHT_COLOR); // Light teal for highlighting
 		} else {
 			cell.setBackground(Color.WHITE); // Default background
 		}

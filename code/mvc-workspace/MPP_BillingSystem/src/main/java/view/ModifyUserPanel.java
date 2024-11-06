@@ -8,14 +8,12 @@ import javax.swing.table.DefaultTableModel;
 
 import controller.UserController;
 import model.UserRole;
+import view.colors.AppColors;
 import view.listeners.PanelChangeListener;
 import view.renderers.StaffTableCellRenderer;
 
 @SuppressWarnings("serial")
 public class ModifyUserPanel extends JPanel {
-
-	private static final Color REMOVE_BUTTON_COLOR = new Color(255, 105, 97); // Light red
-	private static final Color UPDATE_BUTTON_COLOR = new Color(144, 238, 144); // Light green
 
 	private JPanel tablePanel; // Container for the title label and the table itself
 	private DefaultTableModel userTableModel;
@@ -127,12 +125,14 @@ public class ModifyUserPanel extends JPanel {
 		// Define the "Remove" and the "Update" buttons section
 		JPanel panelButtons = new JPanel(new GridLayout(1, 2, 10, 0));
 		JButton btnRemove = new JButton("Remove");
-		btnRemove.setBackground(REMOVE_BUTTON_COLOR);
+		btnRemove.setBackground(AppColors.REMOVE_BUTTON_COLOR);
+		btnRemove.setToolTipText("Make the user no longer part of the staff");
 		btnRemove.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		btnRemove.addActionListener(e -> removeUser());
 		panelButtons.add(btnRemove);
 		JButton btnUpdate = new JButton("Update");
-		btnUpdate.setBackground(UPDATE_BUTTON_COLOR);
+		btnUpdate.setBackground(AppColors.UPDATE_BUTTON_COLOR);
+		btnUpdate.setToolTipText("Change the user's credentials");
 		btnUpdate.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		btnUpdate.addActionListener(e -> updateUser(fieldFirstName, fieldLastName, fieldPassword, comboBoxRole));
 		panelButtons.add(btnUpdate);

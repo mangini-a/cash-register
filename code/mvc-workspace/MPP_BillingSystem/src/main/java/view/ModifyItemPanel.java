@@ -11,14 +11,12 @@ import javax.swing.text.NumberFormatter;
 
 import controller.ItemController;
 import model.ItemCategory;
+import view.colors.AppColors;
 import view.listeners.PanelChangeListener;
 import view.renderers.StockTableCellRenderer;
 
 @SuppressWarnings("serial")
 public class ModifyItemPanel extends JPanel {
-
-	private static final Color REMOVE_BUTTON_COLOR = new Color(255, 105, 97); // Light red
-	private static final Color UPDATE_BUTTON_COLOR = new Color(144, 238, 144); // Light green
 
 	private JPanel tablePanel; // Container for the title label and the table itself
 	private DefaultTableModel itemTableModel;
@@ -125,7 +123,8 @@ public class ModifyItemPanel extends JPanel {
 		// Define the "Remove" and the "Update" buttons section
 		JPanel panelButtons = new JPanel(new GridLayout(1, 2, 10, 0));
 		JButton btnRemove = new JButton("Remove");
-		btnRemove.setBackground(REMOVE_BUTTON_COLOR);
+		btnRemove.setBackground(AppColors.REMOVE_BUTTON_COLOR);
+		btnRemove.setToolTipText("Delete the item from the stock");
 		btnRemove.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		btnRemove.addActionListener(e -> {
 			itemController.removeItemById((Integer) comboBoxItemId.getSelectedItem());
@@ -137,7 +136,8 @@ public class ModifyItemPanel extends JPanel {
 		});
 		panelButtons.add(btnRemove);
 		JButton btnUpdate = new JButton("Update");
-		btnUpdate.setBackground(UPDATE_BUTTON_COLOR);
+		btnUpdate.setBackground(AppColors.UPDATE_BUTTON_COLOR);
+		btnUpdate.setToolTipText("Modify the item's parameters");
 		btnUpdate.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		btnUpdate.addActionListener(e -> {
 			updateItem(fieldName, fieldQuantity, fieldUnitPrice, comboBoxCategory);

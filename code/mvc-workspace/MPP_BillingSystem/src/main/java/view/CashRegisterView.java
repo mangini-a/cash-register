@@ -233,17 +233,11 @@ public class CashRegisterView extends JFrame {
 	private void checkout(int userId) {
 		// Acquire the string representing the amount reached
 		String stringTotalPrice = textFieldTotalPrice.getText();
-		
-		// Debug: Print the original string
-	    System.out.println("Original total price string: " + stringTotalPrice);
 
 		if (!stringTotalPrice.isBlank()) {
 			try {
 				// Remove the currency symbol and any whitespace
 				String sanitizedPrice = stringTotalPrice.replaceAll("[^\\d,\\.]", "").trim();
-				
-				// Debug: Print the sanitized string
-	            System.out.println("Sanitized total price string: " + sanitizedPrice);
 
 	            // Replace comma with dot for decimal point
 	            sanitizedPrice = sanitizedPrice.replace(",", ".");

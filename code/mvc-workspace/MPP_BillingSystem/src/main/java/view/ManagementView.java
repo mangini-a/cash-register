@@ -25,9 +25,11 @@ public class ManagementView extends JFrame implements PanelChangeListener {
     private AddUserPanel addUserPanel;
     private ModifyUserPanel modifyUserPanel;
     
-    // Component of the third tab (Accounting)
-    private AccountingPanel accountingPanel;
+    // Components of the third tab (Accounting)
+    private ViewTransactionsPanel viewTransactionsPanel;
+    private ViewEarningsPanel viewEarningsPanel;
 	
+    // Components of the bottom section
 	private JPanel btnBackToHomePanel;
 	private JButton btnBackToHome;
 	
@@ -44,7 +46,7 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 		mainTabbedPane = new JTabbedPane();
 		mainTabbedPane.addTab("Stock", createStockTabbedPane(itemController));
 		mainTabbedPane.addTab("Staff", createStaffTabbedPane(userController, userId));
-		mainTabbedPane.addTab("Accounting", createAccountingPanel(userController, invoiceController, userId)); 
+		mainTabbedPane.addTab("Accounting", createAccountingTabbedPane(userController, invoiceController, userId)); 
 
 		// Add the "Back to Home" button
 		btnBackToHomePanel = new JPanel();
@@ -92,10 +94,15 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 		return staffTabbedPane;
 	}
 
-	private JPanel createAccountingPanel(UserController userController, InvoiceController invoiceController, int userId) {
-		accountingPanel = new AccountingPanel(userId, userController, invoiceController);
-		accountingPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
-		return accountingPanel;
+	private JTabbedPane createAccountingTabbedPane(UserController userController, InvoiceController invoiceController, int userId) {
+		JTabbedPane accountingTabbedPane = new JTabbedPane();
+		viewTransactionsPanel = new ViewTransactionsPanel(userId, userController, invoiceController);
+		viewTransactionsPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
+		accountingTabbedPane.addTab("View the past transactions list", viewTransactionsPanel);
+		viewEarningsPanel = new ViewEarningsPanel(invoiceController);
+		viewEarningsPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
+		accountingTabbedPane.addTab("Quantify the day-to-day profit", viewEarningsPanel);
+		return accountingTabbedPane;
 	}
 
 	@Override

@@ -136,7 +136,7 @@ public class ModifyItemPanel extends JPanel {
 		});
 		panelButtons.add(btnRemove);
 		JButton btnUpdate = new JButton("Update");
-		btnUpdate.setBackground(AppColors.UPDATE_BUTTON_COLOR);
+		btnUpdate.setBackground(AppColors.ADD_BUTTON_COLOR);
 		btnUpdate.setToolTipText("Modify the item's parameters");
 		btnUpdate.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		btnUpdate.addActionListener(e -> {

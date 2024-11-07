@@ -26,30 +26,14 @@ public class CashRegisterView extends JFrame {
 
 	private JPanel contentPane;
 
-	// Components used for the cart composition representation
+	private JPanel tablePanel; // Container for the title label and the table itself
 	private DefaultTableModel cartTableModel;
 	private JTable cartTable;
-	private JScrollPane scrollPane;
 
-	// Components used in the "Item Selection" section
-	private JLabel lblItemId;
 	private JComboBox<Integer> comboBoxItemId;
-	private JLabel lblItemQty;
 	private JComboBox<Integer> comboBoxItemQty;
-	private JButton btnAddToCart;
 
-	// Components used in the "Checkout" section
-	private JLabel lblTotalPrice;
 	private JTextField textFieldTotalPrice;
-	private JButton btnCheckout;
-
-	// Components used in the "Other Actions" section
-	private JButton btnClearCart;
-	private JButton btnPrintCart;
-
-	// Components used in the bottom panel
-	private JPanel btnBackToHomePanel;
-	private JButton btnBackToHome;
 
 	private ItemController itemController;
 	private InvoiceController invoiceController;
@@ -66,7 +50,7 @@ public class CashRegisterView extends JFrame {
 		invoiceController = InvoiceControllerImpl.getInstance();
 
 		// Define the cart composition table's model
-		cartTableModel = new DefaultTableModel(new Object[] { "ID", "Name", "Quantity", "Unit Price" }, 0) {
+		cartTableModel = new DefaultTableModel(new Object[] { "Item ID", "Name", "Quantity", "Unit Price" }, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false; // Make all cells non-editable
@@ -74,115 +58,168 @@ public class CashRegisterView extends JFrame {
 		};
 		cartTable = new JTable(cartTableModel);
 		cartTable.setFillsViewportHeight(true);
-		
+
 		// Center the content of all columns
 		for (int i = 0; i < cartTable.getColumnCount(); i++) {
 			cartTable.getColumnModel().getColumn(i).setCellRenderer(new CartTableCellRenderer());
 		}
-		
+
 		// Set row height for vertical "centering"
 		cartTable.setRowHeight(20);
+		JScrollPane scrollPane = new JScrollPane(cartTable);
 
-		scrollPane = new JScrollPane(cartTable);
+		// Create a title label for the table
+		JLabel titleLabel = new JLabel("Shopping cart", SwingConstants.CENTER);
+		titleLabel.setFont(new Font("Segoe UI", Font.ITALIC, 16));
+		titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0)); // Add some padding
 
-		// Instantiate and populate the Item Selection section's components
-		lblItemId = new JLabel("Item ID:");
-		comboBoxItemId = new JComboBox<>();
-		lblItemQty = new JLabel("Quantity:");
-		comboBoxItemQty = new JComboBox<>();
+		// Create a panel to hold the title label and the table itself
+		tablePanel = new JPanel();
+		tablePanel.setLayout(new BorderLayout());
+		tablePanel.add(titleLabel, BorderLayout.NORTH);
+		tablePanel.add(scrollPane, BorderLayout.CENTER);
+		
+		// Create panels for each section
+        JPanel panelItemSelection = createPanel("Item selection", 3);
+        addItemSelectionComponents(panelItemSelection);
+
+        JPanel panelCheckout = createPanel("Checkout", 2);
+        addCheckoutComponents(panelCheckout, userId);
+
+        JPanel panelOtherButtons = createPanel("Other actions", 2);
+        addOtherActionComponents(panelOtherButtons);
+
+        // Create a panel to hold the three previous sections vertically
+        JPanel interactionPanel = new JPanel();
+        interactionPanel.setLayout(new BoxLayout(interactionPanel, BoxLayout.Y_AXIS));
+        interactionPanel.add(panelItemSelection);
+        interactionPanel.add(Box.createVerticalStrut(10)); // Add a 10px vertical space
+        interactionPanel.add(panelCheckout);
+        interactionPanel.add(Box.createVerticalStrut(10)); // Add a 10px vertical space
+        interactionPanel.add(panelOtherButtons);
+        
+        // Add the "Back to Home" button separately
+        JPanel btnBackToHomePanel = new JPanel();
+        JButton btnBackToHome = new JButton("Back to Home");
+        btnBackToHome.setToolTipText("Go back to the home page");
+        btnBackToHome.addActionListener(e -> {
+        	dispose();
+        	SwingUtilities.invokeLater(() -> {
+        		new HomeView(userController, userId).display();
+        	});
+        });
+        btnBackToHomePanel.add(btnBackToHome);
+        
+        // Set up the content pane with the BorderLayout
+        BorderLayout layout = new BorderLayout();
+        layout.setHgap(10); // Add a 10px horizontal gap between components
+        layout.setVgap(10); // Add a 10px vertical gap between components
+        
+        contentPane = new JPanel(layout);
+        contentPane.add(tablePanel, BorderLayout.WEST);
+        contentPane.add(interactionPanel, BorderLayout.CENTER);
+        contentPane.add(btnBackToHomePanel, BorderLayout.SOUTH);
+        contentPane.setBorder(new EmptyBorder(15, 15, 15, 15)); // 15px border on all sides
+        
+        setContentPane(contentPane);
+        
+		// Populate the Item Selection section's components
 		populateComboBoxItemId();
 		updateComboBoxItemQty();
+	}
+
+	private JPanel createPanel(String title, int rows) {
+		JPanel panel = new JPanel();
+        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), 
+        		title, TitledBorder.LEADING, TitledBorder.TOP, 
+        		new Font("Segoe UI", Font.ITALIC, 16)));
+        panel.setLayout(new GridLayout(rows, 1, 0, 5)); // no horizontal gap, 5px vertical gap
+        return panel;
+	}
+	
+	private void addItemSelectionComponents(JPanel panel) {
+		// Define the "Item ID" field to be selected and add it to the panel
+		JPanel panelItemId = new JPanel(new GridLayout(1, 2));
+		JLabel lblItemId = new JLabel("Item ID: ");
+		lblItemId.setFont(new Font("Segoe UI", Font.BOLD, 14));
+		panelItemId.add(lblItemId);
+		comboBoxItemId = new JComboBox<>();
+		comboBoxItemId.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		comboBoxItemId.addActionListener(e -> updateComboBoxItemQty());
-		btnAddToCart = new JButton("Add to Cart");
-		btnAddToCart.setBackground(AppColors.CASH_REGISTER_COLOR);
-		btnAddToCart.setForeground(Color.WHITE);
-		btnAddToCart.setToolTipText("Add the selected quantity of the chosen item to the shopping cart");
-		btnAddToCart.setFont(new Font("Segoe UI", Font.BOLD, 12));
-		btnAddToCart.addActionListener(e -> addToCart());
-
-		// Create a panel for the Item Selection section
-		JPanel panelItemSelection = new JPanel();
-		panelItemSelection.setBorder(new TitledBorder("Item Selection"));
-		panelItemSelection.setLayout(new FlowLayout());
-		panelItemSelection.add(lblItemId);
-		panelItemSelection.add(comboBoxItemId);
-		panelItemSelection.add(lblItemQty);
-		panelItemSelection.add(comboBoxItemQty);
-		panelItemSelection.add(btnAddToCart);
-
-		// Instantiate the Checkout section's components
-		lblTotalPrice = new JLabel("Total price:");
-		textFieldTotalPrice = new JTextField();
-		textFieldTotalPrice.setEditable(false);
-		btnCheckout = new JButton("Checkout");
-		btnCheckout.setBackground(AppColors.CASH_REGISTER_COLOR);
-		btnCheckout.setForeground(Color.WHITE);
-		btnCheckout.setToolTipText("Issue receipt and update purchased items' stock availability");
-		btnCheckout.setFont(new Font("Segoe UI", Font.BOLD, 12));
-		btnCheckout.addActionListener(e -> checkout(userId));
-
-		// Create a panel for the Checkout section
-		JPanel panelCheckout = new JPanel();
-		panelCheckout.setBorder(new TitledBorder("Checkout"));
-		panelCheckout.setLayout(new FlowLayout());
-		panelCheckout.add(lblTotalPrice);
-		panelCheckout.add(textFieldTotalPrice);
-		panelCheckout.add(btnCheckout);
-
-		// Instantiate the Other Actions section's components
-		btnClearCart = new JButton("Clear Cart");
-		btnClearCart.setBackground(AppColors.CASH_REGISTER_COLOR);
-		btnClearCart.setForeground(Color.WHITE);
-		btnClearCart.setToolTipText("Reset the cart to restart the selection of a customer's desired items");
-		btnClearCart.setFont(new Font("Segoe UI", Font.BOLD, 12));
-		btnClearCart.addActionListener(e -> clearCart());
-		btnPrintCart = new JButton("Print Cart");
-		btnPrintCart.setBackground(AppColors.CASH_REGISTER_COLOR);
-		btnPrintCart.setForeground(Color.WHITE);
-		btnPrintCart.setToolTipText("Print a page (or a PDF document) representing the shopping cart");
-		btnPrintCart.setFont(new Font("Segoe UI", Font.BOLD, 12));
-		btnPrintCart.addActionListener(e -> printCart());
-
-		// Create a panel for the Other Actions section
-		JPanel panelOtherButtons = new JPanel();
-		panelOtherButtons.setBorder(new TitledBorder("Other Actions"));
-		panelOtherButtons.setLayout(new FlowLayout());
-		panelOtherButtons.add(btnClearCart);
-		panelOtherButtons.add(btnPrintCart);
-
-		// Create a panel to hold the three previous sections vertically
-		JPanel centerPanel = new JPanel();
-		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-		centerPanel.add(panelItemSelection);
-		centerPanel.add(Box.createVerticalStrut(10)); // Add a 10px vertical space
-		centerPanel.add(panelCheckout);
-		centerPanel.add(Box.createVerticalStrut(10)); // Add a 10px vertical space
-		centerPanel.add(panelOtherButtons);
-
-		// Add the "Back to Home" button separately
-		btnBackToHomePanel = new JPanel();
-		btnBackToHome = new JButton("Back to Home");
-		btnBackToHome.setToolTipText("Go back to the home page");
-		btnBackToHome.addActionListener(e -> {
-			dispose();
-			SwingUtilities.invokeLater(() -> {
-				new HomeView(userController, userId).display();
-			});
-		});
-		btnBackToHomePanel.add(btnBackToHome);
-
-		// Set up the content pane with the BorderLayout
-		BorderLayout layout = new BorderLayout();
-		layout.setHgap(10); // Add a 10px horizontal gap between components
-		layout.setVgap(10); // Add a 10px vertical gap between components
-
-		contentPane = new JPanel(layout);
-		contentPane.add(scrollPane, BorderLayout.WEST);
-		contentPane.add(centerPanel, BorderLayout.CENTER);
-		contentPane.add(btnBackToHomePanel, BorderLayout.SOUTH);
-		contentPane.setBorder(new EmptyBorder(15, 15, 15, 15)); // 15px border on all sides
-
-		setContentPane(contentPane);
+		panelItemId.add(comboBoxItemId);
+		panelItemId.setBorder(BorderFactory.createEmptyBorder(2, 5, 0, 5));
+		panel.add(panelItemId);  
+		
+		// Define the "Quantity" field to be selected and add it to the panel
+		JPanel panelQuantity = new JPanel(new GridLayout(1, 2));
+		JLabel lblQuantity = new JLabel("Quantity: ");
+		lblQuantity.setFont(new Font("Segoe UI", Font.BOLD, 14));
+		panelQuantity.add(lblQuantity);
+		comboBoxItemQty = new JComboBox<>();
+		comboBoxItemQty.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		panelQuantity.add(comboBoxItemQty);
+		panelQuantity.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+		panel.add(panelQuantity);
+		
+		// Define the "Add to Cart" button section and add it to the panel
+		JPanel panelButton = new JPanel(new GridLayout(1, 1));
+		JButton btnAddToCart = new JButton("Add to Cart");
+        btnAddToCart.setBackground(AppColors.ADD_BUTTON_COLOR);
+        btnAddToCart.setToolTipText("Add the selected quantity of the chosen item to the shopping cart");
+        btnAddToCart.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnAddToCart.addActionListener(e -> addToCart());
+		panelButton.add(btnAddToCart);
+		panelButton.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
+        panel.add(panelButton);
+	}
+	
+	private void addCheckoutComponents(JPanel panel, int userId) {
+		// Define the "Total Price" field to be shown and add it to the panel
+		JPanel panelTotalPrice = new JPanel(new GridLayout(1, 2));
+		JLabel lblTotalPrice = new JLabel("Total Price: ");
+		lblTotalPrice.setFont(new Font("Segoe UI", Font.BOLD, 14));
+		panelTotalPrice.add(lblTotalPrice);		
+        textFieldTotalPrice = new JTextField(10);
+        textFieldTotalPrice.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        textFieldTotalPrice.setEditable(false);
+        panelTotalPrice.add(textFieldTotalPrice);
+        panelTotalPrice.setBorder(BorderFactory.createEmptyBorder(2, 5, 0, 5));
+        panel.add(panelTotalPrice);
+        
+        // Define the "Checkout" button section and add it to the panel
+        JPanel panelButton = new JPanel(new GridLayout(1, 1));
+        JButton btnCheckout = new JButton("Checkout");
+        btnCheckout.setBackground(AppColors.CHECKOUT_BUTTON_COLOR);
+        btnCheckout.setToolTipText("Issue receipt and update purchased items' stock availability");
+        btnCheckout.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnCheckout.addActionListener(e -> checkout(userId));
+        panelButton.add(btnCheckout);
+        panelButton.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
+        panel.add(panelButton);
+	}
+	
+	private void addOtherActionComponents(JPanel panel) {
+		// Define the "Clear Cart" button section and add it to the panel
+		JPanel panelClear = new JPanel(new GridLayout(1, 1));
+		JButton btnClearCart = new JButton("Clear Cart");
+	    btnClearCart.setBackground(AppColors.ACTION_BUTTON_COLOR);
+	    btnClearCart.setToolTipText("Reset the cart to restart the selection of a customer's desired items");
+	    btnClearCart.setFont(new Font("Segoe UI", Font.BOLD, 16));
+	    btnClearCart.addActionListener(e -> clearCart());
+	    panelClear.add(btnClearCart);
+	    panelClear.setBorder(BorderFactory.createEmptyBorder(2, 5, 0, 5));
+	    panel.add(panelClear);
+	    
+	    // Define the "Clear Cart" button section and add it to the panel
+	 	JPanel panelPrint = new JPanel(new GridLayout(1, 1));
+	    JButton btnPrintCart = new JButton("Print Cart");
+	    btnPrintCart.setBackground(AppColors.ACTION_BUTTON_COLOR);
+	    btnPrintCart.setToolTipText("Print a page (or a PDF document) representing the shopping cart");
+	    btnPrintCart.setFont(new Font("Segoe UI", Font.BOLD, 16));
+	    btnPrintCart.addActionListener(e -> printCart());
+	    panelPrint.add(btnPrintCart);
+	    panelPrint.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
+	    panel.add(panelPrint);
 	}
 
 	/**
@@ -203,32 +240,32 @@ public class CashRegisterView extends JFrame {
 
 			// Calculate the updated partial price
 			double partialPrice = invoiceController.calculatePartial(selectedItemId, selectedItemQty);
-			
+
 			// Format the price in €
-	        String formattedPrice = formatPrice(partialPrice);
+			String formattedPrice = formatPrice(partialPrice);
 			textFieldTotalPrice.setText(formattedPrice);
 		} catch (StockExceededException ex) {
 			JOptionPane.showMessageDialog(null, "The item's current stock is limited to " + ex.getItemQty() + " pcs!",
 					"Required quantity exceeds quantity in stock", JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
+
 	/**
 	 * Formats a price as a currency in €.
 	 *
 	 * @param price the price to be formatted
 	 * @return a string representing the formatted price
 	 */
-    private String formatPrice(double price) {
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.ITALY);
-        currencyFormat.setMinimumFractionDigits(2); // Ensure at least 2 decimal places
-        currencyFormat.setMaximumFractionDigits(2); // Ensure at most 2 decimal places
-        return currencyFormat.format(price);
-    }
+	private String formatPrice(double price) {
+		NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.ITALY);
+		currencyFormat.setMinimumFractionDigits(2); // Ensure at least 2 decimal places
+		currencyFormat.setMaximumFractionDigits(2); // Ensure at most 2 decimal places
+		return currencyFormat.format(price);
+	}
 
 	/**
-	 * Generates a receipt consisting of the products added to the cart.
-	 * Their available stock quantities are updated accordingly.
+	 * Generates a receipt consisting of the products added to the cart. Their
+	 * available stock quantities are updated accordingly.
 	 * 
 	 * @param userId the identifier of the user who issues the receipt
 	 */
@@ -241,24 +278,23 @@ public class CashRegisterView extends JFrame {
 				// Remove the currency symbol and any whitespace
 				String sanitizedPrice = stringTotalPrice.replaceAll("[^\\d,\\.]", "").trim();
 
-	            // Replace comma with dot for decimal point
-	            sanitizedPrice = sanitizedPrice.replace(",", ".");
+				// Replace comma with dot for decimal point
+				sanitizedPrice = sanitizedPrice.replace(",", ".");
 
-	            // Parse the sanitized string to double
-	            double totalPrice = Double.parseDouble(sanitizedPrice);
-	            
-	            invoiceController.addInvoice(userId, totalPrice); // Add a new invoice to the database
-	            invoiceController.updateInventory(); // Update the stock by decreasing the sold quantities
-	            clearCart(); // Clear the cart and reset the UI
-	            JOptionPane.showMessageDialog(null, "Receipt generated and stock availability updated!", 
-	            		"Checkout done", JOptionPane.INFORMATION_MESSAGE);
+				// Parse the sanitized string to double
+				double totalPrice = Double.parseDouble(sanitizedPrice);
+
+				invoiceController.addInvoice(userId, totalPrice); // Add a new invoice to the database
+				invoiceController.updateInventory(); // Update the stock by decreasing the sold quantities
+				clearCart(); // Clear the cart and reset the UI
+				JOptionPane.showMessageDialog(null, "Receipt generated and stock availability updated!",
+						"Checkout done", JOptionPane.INFORMATION_MESSAGE);
 			} catch (NumberFormatException e) {
-				JOptionPane.showMessageDialog(null, "Invalid total price format!", 
-	                    "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Invalid total price format!", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		} else {
-			JOptionPane.showMessageDialog(null, "Start by adding some items to the cart!", 
-					"Empty cart", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Start by adding some items to the cart!", "Empty cart",
+					JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
@@ -292,7 +328,8 @@ public class CashRegisterView extends JFrame {
 	}
 
 	/**
-	 * Populates the JComboBox that allows you to select the ID of the product you want to choose.
+	 * Populates the JComboBox that allows you to select the ID of the product you
+	 * want to choose.
 	 */
 	private void populateComboBoxItemId() {
 		DefaultComboBoxModel<Integer> model = new DefaultComboBoxModel<>();
@@ -303,7 +340,8 @@ public class CashRegisterView extends JFrame {
 	}
 
 	/**
-	 * Updates the selectable quantity of an item depending on which of them is selected.
+	 * Updates the selectable quantity of an item depending on which of them is
+	 * selected.
 	 */
 	private void updateComboBoxItemQty() {
 		try {

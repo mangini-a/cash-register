@@ -131,7 +131,7 @@ public class ModifyUserPanel extends JPanel {
 		btnRemove.addActionListener(e -> removeUser());
 		panelButtons.add(btnRemove);
 		JButton btnUpdate = new JButton("Update");
-		btnUpdate.setBackground(AppColors.UPDATE_BUTTON_COLOR);
+		btnUpdate.setBackground(AppColors.ADD_BUTTON_COLOR);
 		btnUpdate.setToolTipText("Change the user's credentials");
 		btnUpdate.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		btnUpdate.addActionListener(e -> updateUser(fieldFirstName, fieldLastName, fieldPassword, comboBoxRole));

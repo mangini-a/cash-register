@@ -10,7 +10,7 @@ public interface InvoiceController {
 	 *
 	 * @param itemId the item id selected by the user
 	 * @param itemQty the item quantity selected by the user
-	 * @throws StockExceededException 
+	 * @throws StockExceededException to prevent more than the available quantity from being selected
 	 */
 	void addCartLine(Integer itemId, Integer itemQty) throws StockExceededException;
 	
@@ -34,7 +34,7 @@ public interface InvoiceController {
 	 * @param userId the id of the user who generated it
 	 * @param totalPrice the total cart amount
 	 */
-	void addInvoice(int userId, double totalPrice);
+	void addInvoice(Integer userId, double totalPrice);
 
 	/**
 	 * Updates the available quantity of each sold item.
@@ -48,9 +48,27 @@ public interface InvoiceController {
 	 */
 	List<Integer> getAllInvoiceIds();
 
+	/**
+	 * Gets an invoice's issue instant by its id.
+	 *
+	 * @param invoiceId the invoice's id
+	 * @return the invoice's issue instant
+	 */
 	Instant getInvoiceIssueInstantById(Integer invoiceId);
 
+	/**
+	 * Gets an invoice's total price by its id.
+	 *
+	 * @param invoiceId the invoice's id
+	 * @return the invoice's total price
+	 */
 	double getInvoiceTotalPriceById(Integer invoiceId);
 	
+	/**
+	 * Gets the id of the operator who issued an invoice from the latter's id.
+	 *
+	 * @param invoiceId the invoice's id
+	 * @return the identifier of the operator who issued the invoice
+	 */
 	int getInvoiceOperatorById(Integer invoiceId);
 }

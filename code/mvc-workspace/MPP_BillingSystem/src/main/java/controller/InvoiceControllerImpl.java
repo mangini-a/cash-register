@@ -29,19 +29,21 @@ public class InvoiceControllerImpl implements InvoiceController {
 	// Create a Map to store item IDs and their selected quantity
 	private Map<Integer, Integer> cartLines = new HashMap<>();
 
+	// Set the initial cart price
 	private double cartPrice = 0.0;
 
 	@Override
 	public void addCartLine(Integer itemId, Integer itemQty) throws StockExceededException {
-		
+		// Local variable used to process the selected quantity of an item
 		Integer localQty = 0;
 		
-		// Check if the key passed as a parameter already exists
+		// Check whether the selected item id was previously chosen
 		if (cartLines.containsKey(itemId)) {
-			Integer oldQty = cartLines.get(itemId);
-			localQty = oldQty + itemQty;
-			if (localQty > itemController.getItemQuantityById(itemId)) {
-				throw new StockExceededException(itemController.getItemQuantityById(itemId));
+			Integer oldQty = cartLines.get(itemId); // Retrieve the quantity previously added to the cart
+			localQty = oldQty + itemQty; // Sum the quantity selected at this time
+			Integer availableQty = itemController.getItemQuantityById(itemId); // Assess the current stock
+			if (localQty > availableQty) {
+				throw new StockExceededException(availableQty);
 			} else {
 				cartLines.put(itemId, localQty);
 			}
@@ -64,7 +66,7 @@ public class InvoiceControllerImpl implements InvoiceController {
 	}
 
 	@Override
-	public void addInvoice(int userId, double totalPrice) {
+	public void addInvoice(Integer userId, double totalPrice) {
 		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			try {
@@ -82,8 +84,16 @@ public class InvoiceControllerImpl implements InvoiceController {
 
 	@Override
 	public void updateInventory() {
+		// For each purchased item
 		for (Integer itemId : cartLines.keySet()) {
-			itemController.updateItemQuantityById(itemId, itemController.getItemQuantityById(itemId) - cartLines.get(itemId));
+			// Retrieve the previously available quantity
+			Integer previousQty = itemController.getItemQuantityById(itemId);
+			
+			// Get the amount that was sold
+			Integer soldQty = cartLines.get(itemId);
+			
+			// Update the stock with the quantity now on hand
+			itemController.updateItemQuantityById(itemId, previousQty - soldQty);
 		}
 	}
 

@@ -3,14 +3,13 @@ package controller;
 @SuppressWarnings("serial")
 public class StockExceededException extends Exception {
 	
-	private int itemQty;
+	private Integer availableQty;
 	
-	public StockExceededException(int itemQty) {
-		super();
-		this.itemQty = itemQty;
+	public StockExceededException(Integer availableQty) {
+		this.availableQty = availableQty;
 	}
 
-	public int getItemQty() {
-		return itemQty;
+	public Integer getAvailableQty() {
+		return availableQty;
 	}
 }

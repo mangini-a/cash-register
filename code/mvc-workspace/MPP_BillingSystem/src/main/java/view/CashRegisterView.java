@@ -245,7 +245,7 @@ public class CashRegisterView extends JFrame {
 			String formattedPrice = formatPrice(partialPrice);
 			textFieldTotalPrice.setText(formattedPrice);
 		} catch (StockExceededException ex) {
-			JOptionPane.showMessageDialog(null, "The item's current stock is limited to " + ex.getItemQty() + " pcs!",
+			JOptionPane.showMessageDialog(null, "The item's current stock is limited to " + ex.getAvailableQty() + " pcs!",
 					"Required quantity exceeds quantity in stock", JOptionPane.ERROR_MESSAGE);
 		}
 	}

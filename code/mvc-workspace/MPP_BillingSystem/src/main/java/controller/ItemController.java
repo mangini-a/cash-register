@@ -20,43 +20,44 @@ public interface ItemController {
 	/**
 	 * Updates an existing item in the database.
 	 *
-	 * @param id the item's id
+	 * @param itemId the item's id
 	 * @param newName the item's new name
 	 * @param newQuantity the item's new quantity
 	 * @param newUnitPrice the item's new unit price
 	 * @param newCategory the item's new category
 	 */
-	void updateItem(int id, String newName, int newQuantity, double newUnitPrice, ItemCategory newCategory);
+	void updateItem(Integer itemId, String newName, int newQuantity, double newUnitPrice, ItemCategory newCategory);
+	
+	/**
+	 * Updates an item's quantity by its id.
+	 *
+	 * @param itemId the item's id
+	 * @param newQuantity the new quantity (equal to the difference between the original quantity and the sold one)
+	 */
+	void updateItemQuantityById(Integer itemId, int newQuantity);
 	
 	/**
 	 * Removes an item from the database by its id.
 	 *
-	 * @param id the item's id
+	 * @param itemId the item's id
 	 */
-	void removeItemById(int id);
+	void removeItemById(Integer itemId);
 	
 	/**
-	 * Gets the all the item ids from the database.
+	 * Gets all the item identifiers from the database.
 	 *
-	 * @return a list with all the item ids
+	 * @return a list with all the item identifiers
 	 */
 	List<Integer> getAllItemIds();
 	
 	/**
-	 * Captures an item's quantity and all the numbers from one to the former.
-	 * @param itemId the item id
-	 * @return an array of all the values till quantity
+	 * Captures an item's available quantity and returns a set with values from one to the amount itself.
+	 * 
+	 * @param itemId the item's id
+	 * @return a set with all the values till quantity
 	 */
 	Set<Integer> showOneToQuantity(Integer itemId);
 	
-	/**
-	 * Update an item's quantity by its id.
-	 *
-	 * @param itemId the item id
-	 * @param newQuantity the new quantity (given by previous quantity minus sold quantity)
-	 */
-	void updateItemQuantityById(Integer itemId, int newQuantity);
-
 	/**
 	 * Gets an item's name by its id.
 	 *

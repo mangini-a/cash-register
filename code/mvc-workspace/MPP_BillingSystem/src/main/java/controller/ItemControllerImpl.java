@@ -39,11 +39,11 @@ public class ItemControllerImpl implements ItemController {
 	}
 	
 	@Override
-	public void updateItem(int id, String newName, int newQuantity, double newUnitPrice, ItemCategory newCategory) {
+	public void updateItem(Integer itemId, String newName, int newQuantity, double newUnitPrice, ItemCategory newCategory) {
 		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			try {
-				Item item = session.get(Item.class, id);
+				Item item = session.get(Item.class, itemId);
 				if (item != null) {
 					item.setName(newName);
 					item.setQuantity(newQuantity);
@@ -52,7 +52,7 @@ public class ItemControllerImpl implements ItemController {
 					session.persist(item);
 					session.getTransaction().commit();
 				} else {
-					throw new IllegalArgumentException("Item not found with ID: " + id);
+					throw new IllegalArgumentException("Item not found with ID: " + itemId);
 				}
 			} catch (Exception e) {
 				session.getTransaction().rollback();
@@ -82,11 +82,11 @@ public class ItemControllerImpl implements ItemController {
 	}
 
 	@Override
-	public void removeItemById(int id) {
+	public void removeItemById(Integer itemId) {
 		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			try {
-				Item item = session.get(Item.class, id);
+				Item item = session.get(Item.class, itemId);
 				if (item != null) {
 					session.remove(item);
 				}

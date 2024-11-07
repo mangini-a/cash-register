@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import model.Invoice;
 import utils.HibernateSessionFactory;
@@ -66,23 +67,6 @@ public class InvoiceControllerImpl implements InvoiceController {
 	}
 
 	@Override
-	public void addInvoice(Integer userId, double totalPrice) {
-		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
-			session.beginTransaction();
-			try {
-				Invoice invoice = new Invoice(userId, Instant.now(), totalPrice);
-				session.persist(invoice);
-				session.getTransaction().commit();
-			} catch (Exception e) {
-				session.getTransaction().rollback();
-				System.err.println("Error adding invoice: " + e.getMessage());
-			    e.printStackTrace();
-				throw e; // Re-throw the exception to propagate it up the call stack
-			}
-		}
-	}
-
-	@Override
 	public void updateInventory() {
 		// For each purchased item
 		for (Integer itemId : cartLines.keySet()) {
@@ -96,64 +80,112 @@ public class InvoiceControllerImpl implements InvoiceController {
 			itemController.updateItemQuantityById(itemId, previousQty - soldQty);
 		}
 	}
+	
+	@Override
+	public void addInvoice(Integer userId, double totalPrice) {
+		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+	    Transaction transaction = null;
+		try {
+			transaction = session.beginTransaction();
+			Invoice invoice = new Invoice(userId, Instant.now(), totalPrice);
+			session.persist(invoice); // Use persist() to make the invoice entity persistent
+			transaction.commit(); // Commit the transaction
+		} catch (Exception e) {
+			if (transaction != null) {
+				transaction.rollback(); // Roll back only if the transaction is active
+			}
+			throw e; // Re-throw the exception to propagate it up the call stack
+		} finally {
+			session.close(); // Ensure the session is closed
+		}
+	}
 
 	@Override
 	public List<Integer> getAllInvoiceIds() {
-		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
-			session.beginTransaction();
-			try {
-				List<Integer> invoiceIds = session.createQuery("select i.id from Invoice i", Integer.class).list();
-				session.getTransaction().commit();
-				return invoiceIds;
-			} catch (Exception e) {
-				session.getTransaction().rollback();
-				throw e; // Re-throw the exception to propagate it up the call stack
+		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+	    Transaction transaction = null;
+	    List<Integer> invoiceIds = null; // Initialize the list to hold invoice IDs
+		try {
+			transaction = session.beginTransaction();
+			invoiceIds = session.createQuery("select i.id from Invoice i", Integer.class).list();
+			transaction.commit(); // Commit the transaction
+		} catch (Exception e) {
+			if (transaction != null) {
+				transaction.rollback(); // Roll back only if the transaction is active
 			}
+			throw e; // Re-throw the exception to propagate it up the call stack
+		} finally {
+			session.close(); // Ensure the session is closed
 		}
+		return invoiceIds; // Return the list of invoice IDs
 	}
 
 	@Override
 	public Instant getInvoiceIssueInstantById(Integer invoiceId) {
-		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
-			session.beginTransaction();
-			try {
-				Invoice invoice = session.get(Invoice.class, invoiceId);
-				session.getTransaction().commit();
-				return invoice.getIssueInstant();
-			} catch (Exception e) {
-				session.getTransaction().rollback();
-				throw e; // Re-throw the exception to propagate it up the call stack
+		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+	    Transaction transaction = null;
+	    Instant issueInstant = null; // Initialize the variable to hold the issue instant
+		try {
+			transaction = session.beginTransaction();
+			Invoice invoice = session.get(Invoice.class, invoiceId);
+			if (invoice != null) {
+				issueInstant = invoice.getIssueInstant(); // Get the issue instant if the invoice exists
 			}
+			transaction.commit(); // Commit the transaction
+		} catch (Exception e) {
+			if (transaction != null) {
+				transaction.rollback(); // Roll back only if the transaction is active
+			}
+			throw e; // Re-throw the exception to propagate it up the call stack
+		} finally {
+			session.close(); // Ensure the session is closed
 		}
+		return issueInstant; // Return the issue instant (may be null if invoice not found)
 	}
 
 	@Override
 	public double getInvoiceTotalPriceById(Integer invoiceId) {
-		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
-			session.beginTransaction();
-			try {
-				Invoice invoice = session.get(Invoice.class, invoiceId);
-				session.getTransaction().commit();
-				return invoice.getTotalPrice();
-			} catch (Exception e) {
-				session.getTransaction().rollback();
-				throw e; // Re-throw the exception to propagate it up the call stack
+		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+	    Transaction transaction = null;
+	    double totalPrice = 0.0; // Initialize the variable to hold the total price
+		try {
+			transaction = session.beginTransaction();
+			Invoice invoice = session.get(Invoice.class, invoiceId);
+			if (invoice != null) {
+				totalPrice = invoice.getTotalPrice(); // Get the total price if the invoice exists
 			}
+			transaction.commit(); // Commit the transaction
+		} catch (Exception e) {
+			if (transaction != null) {
+				transaction.rollback(); // Roll back only if the transaction is active
+			}
+			throw e; // Re-throw the exception to propagate it up the call stack
+		} finally {
+			session.close(); // Ensure the session is closed
 		}
+		return totalPrice; // Return the total price (may be 0.0 if invoice not found)
 	}
 
 	@Override
 	public int getInvoiceOperatorById(Integer invoiceId) {
-		try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
-			session.beginTransaction();
-			try {
-				Invoice invoice = session.get(Invoice.class, invoiceId);
-				session.getTransaction().commit();
-				return invoice.getOperator();
-			} catch (Exception e) {
-				session.getTransaction().rollback();
-				throw e; // Re-throw the exception to propagate it up the call stack
+		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+	    Transaction transaction = null;
+	    int operator = -1; // Initialize the variable to hold the operator (assuming -1 indicates not found)
+		try {
+			transaction = session.beginTransaction();
+			Invoice invoice = session.get(Invoice.class, invoiceId);
+			if (invoice != null) {
+				operator = invoice.getOperator(); // Get the operator if the invoice exists
 			}
-		}
+			transaction.commit(); // Commit the transaction
+		} catch (Exception e) {
+			if (transaction != null) {
+	            transaction.rollback(); // Roll back only if the transaction is active
+	        }
+			throw e; // Re-throw the exception to propagate it up the call stack
+		} finally {
+	        session.close(); // Ensure the session is closed
+	    }
+	    return operator; // Return the operator (may be -1 if invoice not found)
 	}
 }

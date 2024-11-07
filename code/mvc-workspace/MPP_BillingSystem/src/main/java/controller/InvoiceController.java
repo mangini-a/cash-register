@@ -29,17 +29,17 @@ public interface InvoiceController {
 	void emptyCartLines();
 	
 	/**
+	 * Updates the available quantity of each sold item.
+	 */
+	void updateInventory();
+	
+	/**
 	 * Adds a new invoice to the database.
 	 *
 	 * @param userId the id of the user who generated it
 	 * @param totalPrice the total cart amount
 	 */
 	void addInvoice(Integer userId, double totalPrice);
-
-	/**
-	 * Updates the available quantity of each sold item.
-	 */
-	void updateInventory();
 
 	/**
 	 * Gets all the invoice identifiers from the database.

@@ -47,19 +47,19 @@ public class UserControllerImpl implements UserController {
 	}
 	
 	@Override
-	public void updateUser(int id, String newPassword, UserRole newRole) {
+	public void updateUser(Integer userId, String newPassword, UserRole newRole) {
 		Session session = HibernateSessionFactory.getSessionFactory().openSession();
 	    Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
-			User user = session.get(User.class, id);
+			User user = session.get(User.class, userId);
 			if (user != null) {
 				user.setPassword(newPassword);
 				user.setRole(newRole);
 				session.persist(user); // Use persist() to update the user entity
 				transaction.commit(); // Commit the transaction
 			} else {
-				throw new IllegalArgumentException("User not found with ID: " + id);
+				throw new IllegalArgumentException("User not found with ID: " + userId);
 			}
 		} catch (Exception e) {
 			if (transaction != null) {
@@ -72,12 +72,12 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public void removeUserById(int id) {
+	public void removeUserById(Integer userId) {
 		Session session = HibernateSessionFactory.getSessionFactory().openSession();
 	    Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
-			User user = session.get(User.class, id);
+			User user = session.get(User.class, userId);
 			if (user != null) {
 				session.remove(user);
 			}
@@ -113,7 +113,7 @@ public class UserControllerImpl implements UserController {
 	}
 
 	@Override
-	public boolean isUserManager(int userId) {
+	public boolean isUserManager(Integer userId) {
 		Session session = HibernateSessionFactory.getSessionFactory().openSession();
 	    Transaction transaction = null;
 	    boolean isManager = false; // Default value

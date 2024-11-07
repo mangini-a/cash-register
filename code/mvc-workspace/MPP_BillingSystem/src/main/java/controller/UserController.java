@@ -20,18 +20,18 @@ public interface UserController {
 	/**
 	 * Updates an existing user in the database.
 	 *
-	 * @param id the user's id
+	 * @param userId the user's id
 	 * @param newPassword the user's new password
 	 * @param newRole the user's new role (only if it switches from being a CASHIER to a MANAGER)
 	 */
-	void updateUser(int id, String newPassword, UserRole newRole);
+	void updateUser(Integer userId, String newPassword, UserRole newRole);
 	
 	/**
 	 * Removes a user from the database by its id.
 	 *
-	 * @param id the user's id
+	 * @param userId the user's id
 	 */
-	void removeUserById(int id);
+	void removeUserById(Integer userId);
 	
 	/**
 	 * Gets all the user identifiers from the database.
@@ -43,10 +43,10 @@ public interface UserController {
 	/**
 	 * Checks if a user is a manager by its id.
 	 *
-	 * @param userId the user's id to be checked
+	 * @param userId the id of the user to be checked
 	 * @return true, if the user is actually a manager
 	 */
-	boolean isUserManager(int userId);
+	boolean isUserManager(Integer userId);
 	
 	/**
 	 * Gets a user's first name by its id.

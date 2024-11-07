@@ -3,9 +3,9 @@ package view;
 import java.awt.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -39,7 +39,7 @@ public class ViewEarningsPanel extends JPanel {
 	private Map<LocalDate, Double> calculateDailyProfits() {
 		// Fetch data from the database
 		List<Integer> invoiceIds = invoiceController.getAllInvoiceIds();
-	    Map<LocalDate, Double> dailyProfits = new HashMap<>();
+		Map<LocalDate, Double> dailyProfits = new TreeMap<>(); // Use TreeMap for sorted order
 
 	    for (Integer invoiceId : invoiceIds) {
 	        Instant issueInstant = invoiceController.getInvoiceIssueInstantById(invoiceId);

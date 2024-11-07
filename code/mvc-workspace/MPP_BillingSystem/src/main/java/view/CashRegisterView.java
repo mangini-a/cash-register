@@ -221,6 +221,8 @@ public class CashRegisterView extends JFrame {
 	 */
     private String formatPrice(double price) {
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.ITALY);
+        currencyFormat.setMinimumFractionDigits(2); // Ensure at least 2 decimal places
+        currencyFormat.setMaximumFractionDigits(2); // Ensure at most 2 decimal places
         return currencyFormat.format(price);
     }
 

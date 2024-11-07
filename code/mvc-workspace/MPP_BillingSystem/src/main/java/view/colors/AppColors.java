@@ -12,5 +12,5 @@ public class AppColors {
     public static final Color REMOVE_BUTTON_COLOR = new Color(255, 105, 97); // Light red
 	public static final Color UPDATE_BUTTON_COLOR = new Color(144, 238, 144); // Light green
 	
-	public static final Color HIGHLIGHT_COLOR = new Color(102, 255, 255); // Light teal
+	public static final Color HIGHLIGHT_COLOR = new Color(51, 127, 127); // Light teal
 }

@@ -39,8 +39,10 @@ public class StaffTableCellRenderer extends DefaultTableCellRenderer {
         // Highlight the row if it matches the logged-in manager's ID
         if (userId != null && userId == loggedManagerId) {
         	cell.setBackground(AppColors.HIGHLIGHT_COLOR); // Light teal for highlighting
+        	cell.setForeground(Color.WHITE);
         } else {
             cell.setBackground(Color.WHITE); // Default background
+            cell.setForeground(Color.BLACK);
         }
 		
 		return cell;

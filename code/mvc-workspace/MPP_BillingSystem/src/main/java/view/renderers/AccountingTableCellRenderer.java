@@ -3,6 +3,9 @@ package view.renderers;
 import java.awt.Color;
 import java.awt.Component;
 import java.text.NumberFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import javax.swing.JTable;
@@ -15,9 +18,13 @@ import view.colors.AppColors;
 public class AccountingTableCellRenderer extends DefaultTableCellRenderer {
 
 	private final int loggedManagerId;
+    private DateTimeFormatter formatter; // For formatting the Date column
+    private NumberFormat currencyFormat; // For formatting the Amount column
 
 	public AccountingTableCellRenderer(int loggedManagerId) {
         this.loggedManagerId = loggedManagerId;
+        this.formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss").withZone(ZoneId.systemDefault());
+        this.currencyFormat = NumberFormat.getCurrencyInstance(Locale.ITALY);
     }
 
 	@Override
@@ -35,10 +42,12 @@ public class AccountingTableCellRenderer extends DefaultTableCellRenderer {
 			cell.setBackground(row % 2 == 0 ? Color.WHITE : new Color(240, 240, 240)); // Alternate row colors
 		}
 		
-		// Check if the current column is the "Amount" column
-        if (column == table.getColumnCount() - 1 && value instanceof Number) {
+        // Check if the value is an Instant (within the first column) and format it
+        if (column == table.getColumnCount() - 6 && value instanceof Instant) {
+            Instant instantValue = (Instant) value;
+            setText(formatter.format(instantValue)); // Format the Instant for display
+        } else if (column == table.getColumnCount() - 1 && value instanceof Number) {
             // Format the value as currency in €
-            NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.ITALY);
             String formattedValue = currencyFormat.format(value);
             setText(formattedValue);
         } else {
@@ -46,7 +55,7 @@ public class AccountingTableCellRenderer extends DefaultTableCellRenderer {
             setText(value != null ? value.toString() : "");
         }
 
-		// Get the user ID from the table model
+		// Get the logged-in manager's ID from the table model
 		Integer userId = (Integer) table.getValueAt(row, 1); // The ID is in the second column
 
 		// Highlight the row if it matches the logged-in manager's ID

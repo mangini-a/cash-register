@@ -2,7 +2,7 @@ package view;
 
 import java.awt.*;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
@@ -70,23 +70,30 @@ public class ViewTransactionsPanel extends JPanel {
 
 		// Clear any existing data in the table model
 		invoiceTableModel.setRowCount(0);
+		
+		// Create a list to hold the rows
+	    List<Object[]> rows = new ArrayList<>();
 
-		// Create a DateTimeFormatter for formatting the Instant
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
-				.withZone(ZoneId.systemDefault());
-
-		// Populate the table model with fetched items
+		// Populate the list with fetched items
 		for (Integer invoiceId : invoiceIds) {
 			Instant issueInstant = invoiceController.getInvoiceIssueInstantById(invoiceId);
-			String formattedDate = formatter.format(issueInstant); // Format the Instant
 
-			Object[] rowData = { formattedDate, invoiceController.getInvoiceOperatorById(invoiceId),
+			Object[] rowData = { issueInstant, // Store the Instant for sorting
+					invoiceController.getInvoiceOperatorById(invoiceId),
 					userController.getUserFirstNameById(invoiceController.getInvoiceOperatorById(invoiceId)),
 					userController.getUserLastNameById(invoiceController.getInvoiceOperatorById(invoiceId)),
 					userController.getUserRoleById(invoiceController.getInvoiceOperatorById(invoiceId)),
 					invoiceController.getInvoiceTotalPriceById(invoiceId) };
-			invoiceTableModel.addRow(rowData);
+			rows.add(rowData);
 		}
+		
+		// Sort the rows based on the date (first element in each row)
+	    rows.sort((a, b) -> ((Instant) a[0]).compareTo((Instant) b[0]));
+
+	    // Add sorted rows to the table model
+	    for (Object[] row : rows) {
+	        invoiceTableModel.addRow(row);
+	    }
 	}
 
 	private void layoutComponents() {

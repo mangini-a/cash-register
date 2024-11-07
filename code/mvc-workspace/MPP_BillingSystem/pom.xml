@@ -25,6 +25,13 @@
 			<version>5.11.3</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- Hamcrest -->
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+			<version>3.0</version>
+			<scope>test</scope>
+		</dependency>
 		<!-- FlatLaf -->
 		<dependency>
 			<groupId>com.formdev</groupId>

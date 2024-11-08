@@ -1,6 +1,6 @@
 package controller;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -8,110 +8,163 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import model.User;
 import model.UserRole;
 
 public class UserControllerTest {
 
 	private UserControllerImpl userController;
-    private SessionFactory sessionFactory;
-
-    /**
-     * All tests are configured to use a test database, whose schema is created and dropped each time.
-     */
-    @Before
+	private SessionFactory testSessionFactory;
+	
+	@BeforeEach
     public void setUp() {
-        userController = UserControllerImpl.getInstance();
-        sessionFactory = new Configuration().configure("hibernate-test.cfg.xml").buildSessionFactory();
-    }
-
-    /**
-     * Deletes all entries from the Item table after any test is run.
-     */
-    @SuppressWarnings("deprecation")
-	@After
+    	// Set up the in-memory database
+    	testSessionFactory = new Configuration().configure("hibernate-test.cfg.xml").buildSessionFactory();
+    	
+    	// Initialize the singleton with the in-memory SessionFactory
+    	UserControllerImpl.setTestSessionFactory(testSessionFactory);
+    	userController = UserControllerImpl.getInstance();
+    	
+    	// Create a session and add a test user
+    	try (Session session = testSessionFactory.openSession()) {
+    		Transaction transaction = session.beginTransaction();
+    		User user = new User("Amanda", "Stockton", "xyz900", UserRole.CASHIER);
+    		session.persist(user);
+    		transaction.commit();
+    	}
+	}
+	
+	@SuppressWarnings("deprecation")
+	@AfterEach
     public void tearDown() {
-        // Clean up the database after tests
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
-            session.createQuery("delete from User").executeUpdate();
-            transaction.commit();
-        }
+    	// Clean up the in-memory database
+    	try (Session session = testSessionFactory.openSession()) {
+    		Transaction transaction = session.beginTransaction();
+    		session.createQuery("delete from User").executeUpdate();
+    		transaction.commit();
+    	}
+    	testSessionFactory.close();
     }
+	
+	@Test
+	public void testAddUser() {
+		// Act
+		userController.addUser("Jeff", "Landers", "787kmm", UserRole.MANAGER);
+		
+		// Assert 
+		List<Integer> userIds = userController.getAllUserIds();
+		assertEquals(2, userIds.size()); // We should have 2 users now
+	}
+	
+	@Test
+	public void testUpdateUser() {
+		// Arrange
+		Integer userId = userController.getAllUserIds().get(0); // Get the ID of the first user
+		
+		// Act
+		userController.updateUser(userId, "676kmm", UserRole.MANAGER);
+		
+		// Assert
+		String updatedPassword = userController.getUserPasswordById(userId);
+		assertEquals("676kmm", updatedPassword);
+		UserRole updatedRole = userController.getUserRoleById(userId);
+		assertEquals(UserRole.MANAGER, updatedRole);
+	}
+	
+	@Test
+	public void testRemoveUserById() {
+		// Arrange
+		Integer userId = userController.getAllUserIds().get(0); // Get the ID of the first user
+		
+		// Act
+		userController.removeUserById(userId);
+		
+		// Assert
+		List<Integer> userIds = userController.getAllUserIds();
+		assertEquals(0, userIds.size()); // The user should be removed
+	}
+	
+	@Test
+	public void testGetAllUserIds() {
+		// Act
+		userController.addUser("Lynn", "Hill", "643az", UserRole.CASHIER);
+		userController.addUser("Alex", "Honnold", "tcp721n", UserRole.MANAGER);
+		
+		// Assert
+		List<Integer> userIds = userController.getAllUserIds();
+		assertTrue(userIds.size() >= 3); // Ensure at least three users are present
+	}
+	
+	@Test
+	public void testIsUserManager_UserIsNotManager() {
+		// Arrange
+		Integer userId = userController.getAllUserIds().get(0); // Get the ID of the first user
 
-    @Test
-    public void testAddUser() {
-        int userId = userController.addUser("John", "Doe", "password123", UserRole.CASHIER);
-        assertNotEquals(0, userId); // Ensure the user ID is generated
+        // Act
+        boolean result = userController.isUserManager(userId);
+
+        // Assert
+        assertFalse(result, "User should be identified as a manager");
+	}
+	
+	@Test
+    public void testIsUserManager_UserDoesNotExist() {
+        // Act
+        boolean result = userController.isUserManager(999); // Assuming 999 is a non-existent user ID
+
+        // Assert
+        assertFalse(result, "Non-existent user should not be identified as a manager");
     }
-
-    @Test
-    public void testUpdateUser() {
-        int userId = userController.addUser("Jane", "Doe", "password456", UserRole.CASHIER);
-        userController.updateUser(userId, "newPassword", UserRole.MANAGER);
-
-        String updatedPassword = userController.getUserPasswordById(userId);
-        UserRole updatedRole = userController.getUserRoleById(userId);
-
-        assertEquals("newPassword", updatedPassword);
-        assertEquals(UserRole.MANAGER, updatedRole);
-    }
-
-    @Test
-    public void testRemoveUserById() {
-        int userId = userController.addUser("Mark", "Smith", "password789", UserRole.CASHIER);
-        userController.removeUserById(userId);
-
-        String firstName = userController.getUserFirstNameById(userId);
-        assertNull(firstName); // User should not be found
-    }
-
-    @Test
-    public void testGetAllUserIds() {
-        userController.addUser("Alice", "Johnson", "password111", UserRole.CASHIER);
-        userController.addUser("Bob", "Brown", "password222", UserRole.CASHIER);
-
-        List<Integer> userIds = userController.getAllUserIds();
-        assertTrue(userIds.size() >= 2); // Ensure at least two users are present
-    }
-
-    @Test
-    public void testIsUserManager() {
-        int userId = userController.addUser("Charlie", "Green", "password333", UserRole.MANAGER);
-        assertTrue(userController.isUserManager(userId));
-
-        int anotherUserId = userController.addUser("Diana", "White", "password444", UserRole.CASHIER);
-        assertFalse(userController.isUserManager(anotherUserId));
-    }
-
-    @Test
-    public void testGetUserFirstNameById() {
-        int userId = userController.addUser("Eve", "Black", "password555", UserRole.CASHIER);
-        String firstName = userController.getUserFirstNameById(userId);
-        assertEquals("Eve", firstName);
-    }
-
-    @Test
-    public void testGetUserLastNameById() {
-        int userId = userController.addUser("Frank", "Gray", "password666", UserRole.CASHIER);
-        String lastName = userController.getUserLastNameById(userId);
-        assertEquals("Gray", lastName);
-    }
-
-    @Test
-    public void testGetUserPasswordById() {
-        int userId = userController.addUser("Grace", "Blue", "password777", UserRole.CASHIER);
-        String password = userController.getUserPasswordById(userId);
-        assertEquals("password777", password);
-    }
-
-    @Test
-    public void testGetUserRoleById() {
-        int userId = userController.addUser("Hank", "Red", "password888", UserRole.MANAGER);
-        UserRole role = userController.getUserRoleById(userId);
-        assertEquals(UserRole.MANAGER, role);
-    }
+	
+	@Test
+	public void testGetUserFirstNameById() {
+		// Arrange
+		Integer userId = userController.getAllUserIds().get(0); // Get the ID of the first user
+		
+		// Act
+		String firstName = userController.getUserFirstNameById(userId);
+		
+		// Assert
+		assertEquals("Amanda", firstName); // The initial first name should be "Amanda"
+	}
+	
+	@Test
+	public void testGetUserLastNameById() {
+		// Arrange
+		Integer userId = userController.getAllUserIds().get(0); // Get the ID of the first user
+		
+		// Act
+		String lastName = userController.getUserLastNameById(userId);
+		
+		// Assert
+		assertEquals("Stockton", lastName); // The initial last name should be "Stockton"
+	}
+	
+	@Test
+	public void testGetUserPasswordById() {
+		// Arrange
+		Integer userId = userController.getAllUserIds().get(0); // Get the ID of the first user
+		
+		// Act
+		String password = userController.getUserPasswordById(userId);
+		
+		// Assert
+		assertEquals("xyz900", password); // The initial password should be "xyz900"
+	}
+	
+	@Test
+	public void testGetUserRoleById() {
+		// Arrange
+		Integer userId = userController.getAllUserIds().get(0); // Get the ID of the first user
+		
+		// Act
+		UserRole role = userController.getUserRoleById(userId);
+		
+		// Assert
+		assertEquals(UserRole.CASHIER, role); // The initial role should be UserRole.CASHIER
+	}
 }

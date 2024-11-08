@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import model.Invoice;
@@ -13,21 +14,39 @@ import utils.HibernateSessionFactory;
 
 public class InvoiceControllerImpl implements InvoiceController {
 	
-	// Private constructor to prevent instantiation
-	private InvoiceControllerImpl() {}
+	private static InvoiceControllerImpl instance;
+	private SessionFactory sessionFactory;
 	
-	private static class SingletonHelper {
-		private static final InvoiceControllerImpl singleInstance = new InvoiceControllerImpl();
-	}
-
-	public static InvoiceControllerImpl getInstance() {
-		return SingletonHelper.singleInstance;
-	}
-
 	// Get the only instance of ItemController to perform item-related operations on the DB
-	private ItemController itemController = ItemControllerImpl.getInstance();
+	private ItemController itemController;
+	
+	// Private constructor to prevent instantiation
+	private InvoiceControllerImpl(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+		this.itemController = ItemControllerImpl.getInstance();
+	}
+	
+	// Static method to get the singleton instance
+	public static InvoiceControllerImpl getInstance() {
+		if (instance == null) {
+			synchronized (InvoiceControllerImpl.class) {
+				if (instance == null) {
+					// Initialize with the SessionFactory from HibernateSessionFactory
+					instance = new InvoiceControllerImpl(HibernateSessionFactory.getSessionFactory());
+				}
+			}
+		}
+		return instance;
+	}
+	
+	// Static method to allow for a different SessionFactory (pointing to an in-memory database) in tests
+    public static void setTestSessionFactory(SessionFactory testSessionFactory) {
+    	synchronized (InvoiceControllerImpl.class) {
+    		instance = new InvoiceControllerImpl(testSessionFactory);
+    	}
+    }
 
-	// Create a Map to store item IDs and their selected quantity
+	// Create a Map to store the selected items' identifiers and desired quantity
 	private Map<Integer, Integer> cartLines = new HashMap<>();
 
 	// Set the initial cart price
@@ -83,7 +102,7 @@ public class InvoiceControllerImpl implements InvoiceController {
 	
 	@Override
 	public void addInvoice(Integer userId, double totalPrice) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
@@ -102,7 +121,7 @@ public class InvoiceControllerImpl implements InvoiceController {
 
 	@Override
 	public List<Integer> getAllInvoiceIds() {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 	    List<Integer> invoiceIds = null; // Initialize the list to hold invoice IDs
 		try {
@@ -122,7 +141,7 @@ public class InvoiceControllerImpl implements InvoiceController {
 
 	@Override
 	public Instant getInvoiceIssueInstantById(Integer invoiceId) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 	    Instant issueInstant = null; // Initialize the variable to hold the issue instant
 		try {
@@ -145,7 +164,7 @@ public class InvoiceControllerImpl implements InvoiceController {
 
 	@Override
 	public double getInvoiceTotalPriceById(Integer invoiceId) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 	    double totalPrice = 0.0; // Initialize the variable to hold the total price
 		try {
@@ -168,7 +187,7 @@ public class InvoiceControllerImpl implements InvoiceController {
 
 	@Override
 	public int getInvoiceOperatorById(Integer invoiceId) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 	    int operator = -1; // Initialize the variable to hold the operator (assuming -1 indicates not found)
 		try {

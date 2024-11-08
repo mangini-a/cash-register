@@ -19,22 +19,19 @@ import model.ItemCategory;
 public class ItemControllerTest {
 
 	private ItemControllerImpl itemController;
-    private SessionFactory sessionFactory;
+    private SessionFactory testSessionFactory;
     
     @BeforeEach
     public void setUp() {
     	// Set up the in-memory database
-    	sessionFactory = new Configuration().configure("hibernate-test.cfg.xml").buildSessionFactory();
+    	testSessionFactory = new Configuration().configure("hibernate-test.cfg.xml").buildSessionFactory();
     	
     	// Initialize the singleton with the in-memory SessionFactory
-    	ItemControllerImpl.setTestSessionFactory(sessionFactory);
+    	ItemControllerImpl.setTestSessionFactory(testSessionFactory);
     	itemController = ItemControllerImpl.getInstance();
     	
-    	// Debugging output
-        System.out.println("ItemController instance: " + itemController);
-    	
     	// Create a session and add a test item
-    	try (Session session = sessionFactory.openSession()) {
+    	try (Session session = testSessionFactory.openSession()) {
     		Transaction transaction = session.beginTransaction();
     		Item item = new Item("Test Item", 10, 2.90, ItemCategory.DAIRY);
     		session.persist(item);
@@ -46,12 +43,12 @@ public class ItemControllerTest {
 	@AfterEach
     public void tearDown() {
     	// Clean up the in-memory database
-    	try (Session session = sessionFactory.openSession()) {
+    	try (Session session = testSessionFactory.openSession()) {
     		Transaction transaction = session.beginTransaction();
     		session.createQuery("delete from Item").executeUpdate();
     		transaction.commit();
     	}
-    	sessionFactory.close();
+    	testSessionFactory.close();
     }
     
     @Test
@@ -117,7 +114,7 @@ public class ItemControllerTest {
 
         // Assert
         List<Integer> itemIds = itemController.getAllItemIds();
-        assertTrue(itemIds.size() >= 3); // Ensure at least two items are present
+        assertTrue(itemIds.size() >= 3); // Ensure at least three items are present
     }
 
     @Test

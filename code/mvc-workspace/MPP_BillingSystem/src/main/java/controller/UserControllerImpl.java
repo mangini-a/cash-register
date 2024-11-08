@@ -3,6 +3,7 @@ package controller;
 import java.util.List;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import model.User;
@@ -10,21 +11,38 @@ import model.UserRole;
 import utils.HibernateSessionFactory;
 
 public class UserControllerImpl implements UserController {
+	
+	private static UserControllerImpl instance;
+	private SessionFactory sessionFactory;
 
 	// Private constructor to prevent instantiation
-	private UserControllerImpl() {}
-
-	private static class SingletonHelper {
-		private static final UserControllerImpl singleInstance = new UserControllerImpl();
+	private UserControllerImpl(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
 	}
-
+	
+	// Static method to get the singleton instance
 	public static UserControllerImpl getInstance() {
-		return SingletonHelper.singleInstance;
+		if (instance == null) {
+			synchronized (UserControllerImpl.class) {
+				if (instance == null) {
+					// Initialize with the SessionFactory from HibernateSessionFactory
+					instance = new UserControllerImpl(HibernateSessionFactory.getSessionFactory());
+				}
+			}
+		}
+		return instance;
 	}
+	
+	// Static method to allow for a different SessionFactory (pointing to an in-memory database) in tests
+    public static void setTestSessionFactory(SessionFactory testSessionFactory) {
+    	synchronized (UserControllerImpl.class) {
+    		instance = new UserControllerImpl(testSessionFactory);
+    	}
+    }
 
 	@Override
 	public int addUser(String firstName, String lastName, String password, UserRole role) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 	    int userId = -1; // Default value for user ID
 		try {
@@ -48,7 +66,7 @@ public class UserControllerImpl implements UserController {
 	
 	@Override
 	public void updateUser(Integer userId, String newPassword, UserRole newRole) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
@@ -73,7 +91,7 @@ public class UserControllerImpl implements UserController {
 
 	@Override
 	public void removeUserById(Integer userId) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
@@ -94,7 +112,7 @@ public class UserControllerImpl implements UserController {
 
 	@Override
 	public List<Integer> getAllUserIds() {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 	    List<Integer> userIds = null; // Initialize the list to hold user IDs
 		try {
@@ -114,7 +132,7 @@ public class UserControllerImpl implements UserController {
 
 	@Override
 	public boolean isUserManager(Integer userId) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 	    boolean isManager = false; // Default value
 		try {
@@ -137,7 +155,7 @@ public class UserControllerImpl implements UserController {
 
 	@Override
 	public String getUserFirstNameById(Integer userId) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
@@ -156,7 +174,7 @@ public class UserControllerImpl implements UserController {
 
 	@Override
 	public String getUserLastNameById(Integer userId) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
@@ -175,7 +193,7 @@ public class UserControllerImpl implements UserController {
 	
 	@Override
 	public String getUserPasswordById(Integer userId) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
@@ -194,7 +212,7 @@ public class UserControllerImpl implements UserController {
 
 	@Override
 	public UserRole getUserRoleById(Integer userId) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();

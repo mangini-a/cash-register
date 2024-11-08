@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import model.Item;
@@ -12,27 +13,47 @@ import model.ItemCategory;
 import utils.HibernateSessionFactory;
 
 public class ItemControllerImpl implements ItemController {
+	
+	private static ItemControllerImpl instance;
+	private SessionFactory sessionFactory;
 
 	// Private constructor to prevent instantiation
-	private ItemControllerImpl() {}
-
-	private static class SingletonHelper {
-		private static final ItemControllerImpl singleInstance = new ItemControllerImpl();
+	private ItemControllerImpl(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
 	}
 
-	public static ItemControllerImpl getInstance() {
-		return SingletonHelper.singleInstance;
-	}
+	// Static method to get the singleton instance
+    public static ItemControllerImpl getInstance() {
+        if (instance == null) {
+            synchronized (ItemControllerImpl.class) {
+                if (instance == null) {
+                    // Initialize with the SessionFactory from HibernateSessionFactory
+                    instance = new ItemControllerImpl(HibernateSessionFactory.getSessionFactory());
+                }
+            }
+        }
+        return instance;
+    }
+    
+    // Static method to allow for a different SessionFactory (pointing to an in-memory database) in tests
+    public static void setTestSessionFactory(SessionFactory testSessionFactory) {
+        synchronized (ItemControllerImpl.class) {
+            instance = new ItemControllerImpl(testSessionFactory);
+        }
+    }
 
 	@Override
 	public void addItem(String name, int quantity, double unitPrice, ItemCategory category) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
 			Item item = new Item(name, quantity, unitPrice, category);
 			session.persist(item); // Persist the new item
 			transaction.commit(); // Commit the transaction
+			
+			// If you need the ID, you can retrieve it after the transaction
+	        System.out.println("Added item with ID: " + item.getId()); // Ensure you have a getter for ID
 		} catch (Exception e) {
 			if (transaction != null) {
 				transaction.rollback(); // Roll back only if the transaction is active
@@ -45,7 +66,7 @@ public class ItemControllerImpl implements ItemController {
 	
 	@Override
 	public void updateItem(Integer itemId, String newName, int newQuantity, double newUnitPrice, ItemCategory newCategory) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
@@ -72,7 +93,7 @@ public class ItemControllerImpl implements ItemController {
 
 	@Override
 	public void updateItemQuantityById(Integer itemId, int newQuantity) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
@@ -96,7 +117,7 @@ public class ItemControllerImpl implements ItemController {
 
 	@Override
 	public void removeItemById(Integer itemId) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
@@ -119,7 +140,7 @@ public class ItemControllerImpl implements ItemController {
 
 	@Override
 	public List<Integer> getAllItemIds() {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 	    List<Integer> itemIds = null; // Initialize the list to hold item IDs
 		try {
@@ -149,7 +170,7 @@ public class ItemControllerImpl implements ItemController {
 	
 	@Override
 	public String getItemNameById(Integer itemId) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 	    String itemName = null; // Initialize the variable to hold the item name
 		try {
@@ -174,7 +195,7 @@ public class ItemControllerImpl implements ItemController {
 
 	@Override
 	public int getItemQuantityById(Integer itemId) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 	    int itemQuantity = 0; // Initialize the variable to hold the item quantity
 		try {
@@ -199,7 +220,7 @@ public class ItemControllerImpl implements ItemController {
 
 	@Override
 	public double getItemUnitPriceById(Integer itemId) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 	    double itemUnitPrice = 0.0; // Initialize the variable to hold the item unit price
 		try {
@@ -224,7 +245,7 @@ public class ItemControllerImpl implements ItemController {
 
 	@Override
 	public ItemCategory getItemCategoryById(Integer itemId) {
-		Session session = HibernateSessionFactory.getSessionFactory().openSession();
+		Session session = sessionFactory.openSession();
 	    Transaction transaction = null;
 	    ItemCategory itemCategory = null; // Initialize the variable to hold the item category
 		try {

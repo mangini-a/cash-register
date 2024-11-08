@@ -19,12 +19,18 @@ public class UserControllerTest {
 	private UserControllerImpl userController;
     private SessionFactory sessionFactory;
 
+    /**
+     * All tests are configured to use a test database, whose schema is created and dropped each time.
+     */
     @Before
     public void setUp() {
         userController = UserControllerImpl.getInstance();
         sessionFactory = new Configuration().configure("hibernate-test.cfg.xml").buildSessionFactory();
     }
 
+    /**
+     * Deletes all entries from the Item table after any test is run.
+     */
     @SuppressWarnings("deprecation")
 	@After
     public void tearDown() {

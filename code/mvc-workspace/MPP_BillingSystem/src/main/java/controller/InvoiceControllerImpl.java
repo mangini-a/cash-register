@@ -40,7 +40,7 @@ public class InvoiceControllerImpl implements InvoiceController {
 	}
 
 	// Static method to allow for a different SessionFactory (pointing to an in-memory database) in tests
-	public static void setTestSessionFactory(SessionFactory testSessionFactory) {
+	static void setTestSessionFactory(SessionFactory testSessionFactory) {
 		synchronized (InvoiceControllerImpl.class) {
 			instance = new InvoiceControllerImpl(testSessionFactory);
 		}

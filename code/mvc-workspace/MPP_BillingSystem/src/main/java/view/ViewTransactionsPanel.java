@@ -13,7 +13,7 @@ import controller.UserController;
 import view.renderers.AccountingTableCellRenderer;
 
 @SuppressWarnings("serial")
-public class ViewTransactionsPanel extends JPanel {
+class ViewTransactionsPanel extends JPanel {
 
 	private JPanel tablePanel; // Container for the title label and the table itself
 	private DefaultTableModel invoiceTableModel;
@@ -23,7 +23,7 @@ public class ViewTransactionsPanel extends JPanel {
 	private UserController userController;
 	private InvoiceController invoiceController;
 
-	public ViewTransactionsPanel(int userId, UserController userController, InvoiceController invoiceController) {
+	ViewTransactionsPanel(int userId, UserController userController, InvoiceController invoiceController) {
 		this.userController = userController;
 		this.invoiceController = invoiceController;
 		initializeComponents();

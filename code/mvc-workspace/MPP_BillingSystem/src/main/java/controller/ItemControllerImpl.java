@@ -36,7 +36,7 @@ public class ItemControllerImpl implements ItemController {
     }
     
     // Static method to allow for a different SessionFactory (pointing to an in-memory database) in tests
-    public static void setTestSessionFactory(SessionFactory testSessionFactory) {
+    static void setTestSessionFactory(SessionFactory testSessionFactory) {
         synchronized (ItemControllerImpl.class) {
             instance = new ItemControllerImpl(testSessionFactory);
         }

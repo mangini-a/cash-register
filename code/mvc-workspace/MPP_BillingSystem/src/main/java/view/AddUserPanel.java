@@ -13,7 +13,7 @@ import view.listeners.PanelChangeListener;
 import view.renderers.StaffTableCellRenderer;
 
 @SuppressWarnings("serial")
-public class AddUserPanel extends JPanel {
+class AddUserPanel extends JPanel {
 
 	private JPanel tablePanel; // Container for the title label and the table itself
 	private DefaultTableModel userTableModel;
@@ -31,7 +31,7 @@ public class AddUserPanel extends JPanel {
 
 	private PanelChangeListener listener;
 	
-	public AddUserPanel(PanelChangeListener listener, int loggedManagerId, UserController userController) {
+	AddUserPanel(PanelChangeListener listener, int loggedManagerId, UserController userController) {
 		this.listener = listener;
 		this.userController = userController;
 		initializeComponents();

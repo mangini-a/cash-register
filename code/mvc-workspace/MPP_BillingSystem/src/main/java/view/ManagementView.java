@@ -12,7 +12,7 @@ import controller.UserController;
 import view.listeners.PanelChangeListener;
 
 @SuppressWarnings("serial")
-public class ManagementView extends JFrame implements PanelChangeListener {
+class ManagementView extends JFrame implements PanelChangeListener {
 
 	private JTabbedPane mainTabbedPane;
 	private JPanel mainPanel;
@@ -33,7 +33,7 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 	private JPanel btnBackToHomePanel;
 	private JButton btnBackToHome;
 	
-	public ManagementView(UserController userController, int userId) {
+	ManagementView(UserController userController, int userId) {
 		// Configure the frame
 		setTitle("Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

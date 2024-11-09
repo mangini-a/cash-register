@@ -5,7 +5,7 @@ public class StockExceededException extends Exception {
 	
 	private Integer availableQty;
 	
-	public StockExceededException(Integer availableQty) {
+	StockExceededException(Integer availableQty) {
 		this.availableQty = availableQty;
 	}
 

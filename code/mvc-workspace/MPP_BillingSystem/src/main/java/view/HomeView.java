@@ -28,7 +28,7 @@ public class HomeView extends JFrame {
 	 * @param userController the the only instance of UserControllerImpl
 	 * @param userId the user who logged in
 	 */
-	public HomeView(UserController userController, int userId) {
+	HomeView(UserController userController, int userId) {
 		this.userController = userController;
 		initialize();
 		setupUserButtons(userId);

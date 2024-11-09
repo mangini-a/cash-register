@@ -19,13 +19,13 @@ import controller.InvoiceController;
 import view.colors.AppColors;
 
 @SuppressWarnings("serial")
-public class ViewEarningsPanel extends JPanel {
+class ViewEarningsPanel extends JPanel {
 
 	private ChartPanel chartPanel; // Container for the histogram created using JFreeChart
 	private JFreeChart chart;
 	private InvoiceController invoiceController;
 
-	public ViewEarningsPanel(InvoiceController invoiceController) {
+	ViewEarningsPanel(InvoiceController invoiceController) {
 		this.invoiceController = invoiceController;
 		setLayout(new BorderLayout());
 		displayProfitGraph();

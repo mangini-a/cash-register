@@ -34,7 +34,7 @@ public class UserControllerImpl implements UserController {
 	}
 	
 	// Static method to allow for a different SessionFactory (pointing to an in-memory database) in tests
-    public static void setTestSessionFactory(SessionFactory testSessionFactory) {
+    static void setTestSessionFactory(SessionFactory testSessionFactory) {
     	synchronized (UserControllerImpl.class) {
     		instance = new UserControllerImpl(testSessionFactory);
     	}

@@ -22,7 +22,7 @@ import view.colors.AppColors;
 import view.renderers.CartTableCellRenderer;
 
 @SuppressWarnings("serial")
-public class CashRegisterView extends JFrame {
+class CashRegisterView extends JFrame {
 
 	private JPanel contentPane;
 
@@ -40,7 +40,7 @@ public class CashRegisterView extends JFrame {
 
 	private Set<Integer> quantityModel;
 
-	public CashRegisterView(UserController userController, int userId) {
+	CashRegisterView(UserController userController, int userId) {
 		// Setup the frame
 		setTitle("Cash Register");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

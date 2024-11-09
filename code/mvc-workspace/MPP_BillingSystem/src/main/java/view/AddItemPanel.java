@@ -16,7 +16,7 @@ import view.listeners.PanelChangeListener;
 import view.renderers.StockTableCellRenderer;
 
 @SuppressWarnings("serial")
-public class AddItemPanel extends JPanel {
+class AddItemPanel extends JPanel {
 
 	private JPanel tablePanel; // Container for the title label and the table itself
 	private DefaultTableModel itemTableModel;
@@ -32,7 +32,7 @@ public class AddItemPanel extends JPanel {
 
 	private PanelChangeListener listener;
 
-	public AddItemPanel(PanelChangeListener listener, ItemController itemController) {
+	AddItemPanel(PanelChangeListener listener, ItemController itemController) {
 		this.listener = listener;
 		this.itemController = itemController;
 		initializeComponents();

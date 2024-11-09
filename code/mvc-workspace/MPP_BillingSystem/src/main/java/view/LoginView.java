@@ -9,7 +9,7 @@ import controller.UserController;
 import view.colors.AppColors;
 
 @SuppressWarnings("serial")
-public class LoginView extends JFrame {
+class LoginView extends JFrame {
 
 	private JPanel contentPane;
 
@@ -37,7 +37,7 @@ public class LoginView extends JFrame {
 	 *
 	 * @param userController the only instance of UserControllerImpl
 	 */
-	public LoginView(UserController userController) {
+	LoginView(UserController userController) {
 		// Configure the frame
 		setTitle("Login");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

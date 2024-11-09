@@ -71,4 +71,11 @@ public interface InvoiceController {
 	 * @return the identifier of the operator who issued the invoice
 	 */
 	int getInvoiceOperatorById(Integer invoiceId);
+
+	/**
+	 * Removes the invoices issued by the selected user by its id (if any exist).
+	 *
+	 * @param selectedUserId the selected user id
+	 */
+	void removeUserInvoicesById(Integer selectedUserId);
 }

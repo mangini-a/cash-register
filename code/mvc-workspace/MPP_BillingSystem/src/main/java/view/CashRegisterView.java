@@ -313,17 +313,25 @@ public class CashRegisterView extends JFrame {
 	 * Prints a page (or a set of pages) representing the shopping cart table.
 	 */
 	private void printCart() {
-		PrinterJob printerJob = PrinterJob.getPrinterJob();
-		printerJob.setPrintable(cartTable.getPrintable(JTable.PrintMode.FIT_WIDTH, null, null));
-
-		boolean doPrint = printerJob.printDialog();
-		if (doPrint) {
-			try {
-				printerJob.print();
-			} catch (PrinterException ex) {
-				JOptionPane.showMessageDialog(null, "An error in the print system caused the job to be aborted.",
-						"Printout failed", JOptionPane.ERROR_MESSAGE);
+		// Acquire the string representing the amount reached
+		String stringTotalPrice = textFieldTotalPrice.getText();
+		
+		if (!stringTotalPrice.isBlank()) {
+			PrinterJob printerJob = PrinterJob.getPrinterJob();
+			printerJob.setPrintable(cartTable.getPrintable(JTable.PrintMode.FIT_WIDTH, null, null));
+			
+			boolean doPrint = printerJob.printDialog();
+			if (doPrint) {
+				try {
+					printerJob.print();
+				} catch (PrinterException ex) {
+					JOptionPane.showMessageDialog(null, "An error in the print system caused the job to be aborted.",
+							"Printout failed", JOptionPane.ERROR_MESSAGE);
+				}
 			}
+		} else {
+			JOptionPane.showMessageDialog(null, "Start by adding some items to the cart!", "Empty cart",
+					JOptionPane.WARNING_MESSAGE);
 		}
 	}
 

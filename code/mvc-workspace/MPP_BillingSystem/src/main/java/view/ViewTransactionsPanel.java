@@ -64,7 +64,7 @@ public class ViewTransactionsPanel extends JPanel {
 		populateInvoiceTable();
 	}
 
-	private void populateInvoiceTable() {
+	void populateInvoiceTable() {
 		// Fetch data from the database using Hibernate
 		List<Integer> invoiceIds = invoiceController.getAllInvoiceIds();
 

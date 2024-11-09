@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
+import controller.InvoiceController;
 import controller.UserController;
 import model.UserRole;
 import view.colors.AppColors;
@@ -29,15 +30,17 @@ public class ModifyUserPanel extends JPanel {
 	private JComboBox<UserRole> comboBoxRole;
 
 	private UserController userController;
-
+	private InvoiceController invoiceController;
+	
 	private PanelChangeListener listener;
 
 	private int loggedManagerId;
 
-	public ModifyUserPanel(PanelChangeListener listener, int loggedManagerId, UserController userController) {
+	public ModifyUserPanel(PanelChangeListener listener, int loggedManagerId, UserController userController, InvoiceController invoiceController) {
 		this.listener = listener;
 		this.loggedManagerId = loggedManagerId;
 		this.userController = userController;
+		this.invoiceController = invoiceController;
 		initializeComponents();
 		renderer = new StaffTableCellRenderer(loggedManagerId);
 		userTable.setDefaultRenderer(Object.class, renderer); // Apply the renderer to all columns
@@ -172,6 +175,7 @@ public class ModifyUserPanel extends JPanel {
 				JOptionPane.showMessageDialog(null, "You cannot remove yourself from the staff members!",
 						"Operation not allowed", JOptionPane.WARNING_MESSAGE);
 			} else {
+				invoiceController.removeUserInvoicesById(selectedUserId);
 				userController.removeUserById(selectedUserId);
 				listener.onUserChanged(); // Notify the listener
 				clearFields();

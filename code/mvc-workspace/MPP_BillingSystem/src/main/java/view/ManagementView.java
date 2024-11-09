@@ -45,7 +45,7 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 		// Create the main tabbed pane, to which three tabs are added
 		mainTabbedPane = new JTabbedPane();
 		mainTabbedPane.addTab("Stock", createStockTabbedPane(itemController));
-		mainTabbedPane.addTab("Staff", createStaffTabbedPane(userController, userId));
+		mainTabbedPane.addTab("Staff", createStaffTabbedPane(userController, invoiceController, userId));
 		mainTabbedPane.addTab("Accounting", createAccountingTabbedPane(userController, invoiceController, userId)); 
 
 		// Add the "Back to Home" button
@@ -83,12 +83,12 @@ public class ManagementView extends JFrame implements PanelChangeListener {
 		return stockTabbedPane;
 	}
 
-	private JTabbedPane createStaffTabbedPane(UserController userController, int userId) {
+	private JTabbedPane createStaffTabbedPane(UserController userController, InvoiceController invoiceController, int userId) {
 		JTabbedPane staffTabbedPane = new JTabbedPane();
 		addUserPanel = new AddUserPanel(this, userId, userController);
 		addUserPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
 		staffTabbedPane.addTab("Add a new user", addUserPanel);
-		modifyUserPanel = new ModifyUserPanel(this, userId, userController);
+		modifyUserPanel = new ModifyUserPanel(this, userId, userController, invoiceController);
 		modifyUserPanel.setBorder(new EmptyBorder(15, 15, 0, 15));
 		staffTabbedPane.addTab("Modify an existing user's credentials", modifyUserPanel);
 		return staffTabbedPane;
@@ -119,6 +119,10 @@ public class ManagementView extends JFrame implements PanelChangeListener {
         addUserPanel.populateUserTable();
         modifyUserPanel.populateUserTable();
         modifyUserPanel.populateComboBoxUserId(modifyUserPanel.getComboBoxUserId());
+        
+        // Refresh the Accounting tab's panels when a user is removed (it could have issued receipts)
+        viewTransactionsPanel.populateInvoiceTable();
+        viewEarningsPanel.displayProfitGraph(); // Update the graph with new data
 	}
 	
 	public void display() {

@@ -22,23 +22,29 @@ import view.colors.AppColors;
 public class ViewEarningsPanel extends JPanel {
 
 	private ChartPanel chartPanel; // Container for the histogram created using JFreeChart
+	private JFreeChart chart;
 	private InvoiceController invoiceController;
 
 	public ViewEarningsPanel(InvoiceController invoiceController) {
 		this.invoiceController = invoiceController;
-		displayProfitGraph();
 		setLayout(new BorderLayout());
-		layoutComponents();
+		displayProfitGraph();
 	}
 
-	private void displayProfitGraph() {
+	void displayProfitGraph() {
 		Map<LocalDate, Double> dailyProfits = calculateDailyProfits();
 		createProfitGraph(dailyProfits);
+		
+		// Check if the chart object is not null
+		if (chart == null) {
+		    System.out.println("Chart creation failed.");
+		}
 	}
 
 	private Map<LocalDate, Double> calculateDailyProfits() {
 		// Fetch data from the database
 		List<Integer> invoiceIds = invoiceController.getAllInvoiceIds();
+		
 		Map<LocalDate, Double> dailyProfits = new TreeMap<>(); // Use TreeMap for sorted order
 
 	    for (Integer invoiceId : invoiceIds) {
@@ -66,7 +72,7 @@ public class ViewEarningsPanel extends JPanel {
 	    }
 
 	    // Create chart
-	    JFreeChart chart = ChartFactory.createBarChart(
+	    chart = ChartFactory.createBarChart(
 	            null, // No title
 	            "Date", // X-Axis Label
 	            "Profit (€)", // Y-Axis Label
@@ -76,9 +82,19 @@ public class ViewEarningsPanel extends JPanel {
 	    // Customize the chart
         customizeChart(chart);
 
-	    // Create a ChartPanel that accommodates the graph
+        // Remove the old chart panel if it exists
+        if (chartPanel != null) {
+            remove(chartPanel); // Remove the old chart panel
+            revalidate(); // Refresh the layout
+    	    repaint(); // Repaint the panel
+        }
+        
+        // Create a new chart panel
 	    chartPanel = new ChartPanel(chart);
 	    chartPanel.setBorder(BorderFactory.createEtchedBorder());
+	    add(chartPanel, BorderLayout.CENTER); // Add the new chart panel
+	    revalidate(); // Refresh the layout
+	    repaint(); // Repaint the panel
 	}
 
 	private void customizeChart(JFreeChart chart) {
@@ -105,11 +121,5 @@ public class ViewEarningsPanel extends JPanel {
 	    renderer.setDrawBarOutline(true);
 	    renderer.setSeriesOutlinePaint(0, Color.BLACK);
 	    renderer.setSeriesOutlineStroke(0, new BasicStroke(1.0f));
-	}
-	
-	private void layoutComponents() {
-		add(chartPanel, BorderLayout.CENTER); // Add the chart panel to the center of the ViewEarningsPanel
-		revalidate(); // Refresh the panel to show the new chart
-		repaint(); // Repaint the panel
 	}
 }

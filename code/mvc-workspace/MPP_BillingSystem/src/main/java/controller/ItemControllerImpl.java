@@ -51,9 +51,6 @@ public class ItemControllerImpl implements ItemController {
 			Item item = new Item(name, quantity, unitPrice, category);
 			session.persist(item); // Persist the new item
 			transaction.commit(); // Commit the transaction
-			
-			// If you need the ID, you can retrieve it after the transaction
-	        System.out.println("Added item with ID: " + item.getId()); // Ensure you have a getter for ID
 		} catch (Exception e) {
 			if (transaction != null) {
 				transaction.rollback(); // Roll back only if the transaction is active

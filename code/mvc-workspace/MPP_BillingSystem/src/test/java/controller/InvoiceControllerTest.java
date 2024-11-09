@@ -29,7 +29,6 @@ public class InvoiceControllerTest {
     	
     	// Initialize the singleton with the in-memory SessionFactory
     	InvoiceControllerImpl.setTestSessionFactory(testSessionFactory);
-    	ItemControllerImpl.setTestSessionFactory(testSessionFactory);
     	invoiceController = InvoiceControllerImpl.getInstance();
     	
     	// Create a session and add a test user

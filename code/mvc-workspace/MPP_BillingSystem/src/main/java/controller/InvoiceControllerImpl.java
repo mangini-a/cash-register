@@ -226,7 +226,7 @@ public class InvoiceControllerImpl implements InvoiceController {
 						session.remove(invoice); // Remove the invoice if it exists
 						System.out.println("Removing invoice with ID: " + invoiceId);
 					} else {
-			            System.out.println("Invoice not found with ID:" + invoiceId);
+			            System.out.println("Invoice not found with ID: " + invoiceId);
 			        }
 		    	}
 		    }

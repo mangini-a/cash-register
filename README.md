@@ -2,6 +2,12 @@
 
 ## Indicazioni
 - [Workspace del progetto definitivo](https://github.com/mangini-a/cash-register/tree/main/code/mvc-workspace)
+- Credenziali da inserire in fase di **Login** per testare l'applicativo (nel primo caso come **CASHIER**, nel secondo come **MANAGER**):
+
+  | User ID | Password |
+  | ------- | -------- |
+  |    1    | Budapest |
+  |    4    |  Uno9999 |
 
 ## Obiettivo
 Realizzare un applicativo desktop utilizzando ***Hibernate ORM*** e ***Java Swing*** che consenta, nel contesto di un piccolo esercizio commerciale (quale un negozio di alimentari, una bottega, un minimarket), di:

@@ -2,7 +2,7 @@
 
 ## Indicazioni
 - [Workspace del progetto definitivo](https://github.com/mangini-a/cash-register/tree/main/code/mvc-workspace)
-- Credenziali da inserire in fase di **Login** per testare l'applicativo (nel primo caso come **CASHIER**, nel secondo come **MANAGER**):
+- Credenziali da inserire nella schermata di **Login** per testare l'applicativo (nel ruolo di **CASHIER** nel primo caso, mentre come **MANAGER** nel secondo):
 
   | User ID | Password |
   | ------- | -------- |

@@ -1,5 +1,8 @@
 # Mini-Market Billing System
 
+## Indicazioni
+> Il progetto definitivo si trova qui: code/mvc-workspace
+
 ## Obiettivo
 Realizzare un applicativo desktop utilizzando ***Hibernate ORM*** e ***Java Swing*** che consenta, nel contesto di un piccolo esercizio commerciale (quale un negozio di alimentari, una bottega, un minimarket), di:
 - *Emettere uno scontrino*

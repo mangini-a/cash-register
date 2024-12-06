@@ -1,6 +1,7 @@
 # Mini-Market Billing System
 
 ## Indicazioni
+- [Documentazione di progetto (strutturata in capitoli)](https://github.com/mangini-a/cash-register/blob/main/docs/relazione-progetto.pdf)
 - [Workspace del progetto definitivo](https://github.com/mangini-a/cash-register/tree/main/code/mvc-workspace)
 - Credenziali da inserire nella schermata di **Login** per testare l'applicativo (nel ruolo di **CASHIER** nel primo caso, mentre come **MANAGER** nel secondo):
 
